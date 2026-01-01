@@ -1,0 +1,35 @@
+// Test KERN code for flow execution features
+
+entity TestEntity {
+    id
+    value
+    status
+}
+
+rule TestRule:
+    if entity.id > 0 and entity.value > 10
+    then set_status(entity, "valid")
+
+flow TestFlow {
+    load_entities()
+    process_entities()
+    validate_results()
+}
+
+constraint ValidEntity: entity.id > 0
+
+// Test conditional execution
+flow ConditionalFlow {
+    if test_condition() 
+    then execute_if_branch()
+    else execute_else_branch()
+}
+
+// Test loop execution
+flow LoopFlow {
+    loop {
+        process_item()
+        if item_processed() 
+        then break
+    }
+}

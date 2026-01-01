@@ -1,0 +1,11 @@
+[package]
+name = "kern_bytecode"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+kern_parser = { path = "../kern-parser" }
+kern_lexer = { path = "../kern-lexer" }
+kern_graph_builder = { path = "../kern-graph-builder" }
+
+[dev-dependencies]

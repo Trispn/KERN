@@ -1,0 +1,12 @@
+[package]
+name = "kern_lexer"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+[dev-dependencies]
+
+[[bin]]
+name = "error_reporting_test"
+path = "src/error_reporting_test.rs"

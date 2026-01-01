@@ -1,0 +1,13 @@
+error: failed to get `kern_graph_builder` as a dependency of package `kern_vm v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-vm)`
+
+Caused by:
+  failed to load source for dependency `kern_graph_builder`
+
+Caused by:
+  Unable to update C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-graph-builder
+
+Caused by:
+  failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-graph-builder\Cargo.toml`
+
+Caused by:
+  The system cannot find the file specified. (os error 2)

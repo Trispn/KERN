@@ -1,0 +1,10 @@
+[package]
+name = "kern-semantic"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+kern-parser = { path = "../kern-parser" }
+kern-graph-builder = { path = "../kern-graph-builder" }
+
+[dev-dependencies]

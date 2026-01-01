@@ -1,0 +1,13 @@
+[package]
+name = "kern_vm"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+kern_parser = { path = "../kern-parser" }
+kern_lexer = { path = "../kern-lexer" }
+kern_graph_builder = { path = "../kern-graph-builder" }
+kern_rule_engine = { path = "../kern-rule-engine" }
+kern_bytecode = { path = "../kern-bytecode" }
+
+[dev-dependencies]

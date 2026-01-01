@@ -1,0 +1,65 @@
+#[derive(Debug, Clone, PartialEq)]
+pub enum TokenKind {
+    // Keywords
+    Entity,
+    Rule,
+    Flow,
+    Constraint,
+    If,
+    Then,
+    Else,
+    True,
+    False,
+    Sym,
+    Num,
+    Bool,
+    Vec,
+    Ref,
+    Ctx,
+    While,
+    For,
+    Return,
+    Break,
+    Continue,
+
+    // Literals
+    Identifier,
+    StringLiteral,
+    NumberLiteral,
+
+    // Operators
+    Plus,
+    Minus,
+    Star,
+    Slash,
+    Percent,
+    Bang,
+    Equal,
+    EqualEqual,
+    BangEqual,
+    Less,
+    LessEqual,
+    Greater,
+    GreaterEqual,
+    Ampersand,
+    AmpersandAmpersand,
+    Pipe,
+    PipePipe,
+
+    // Delimiters
+    LeftParen,
+    RightParen,
+    LeftBrace,
+    RightBrace,
+    LeftBracket,
+    RightBracket,
+    Colon,
+    Semicolon,
+    Comma,
+    Dot,
+    Arrow,
+
+    // Special
+    Eof,
+    Error,
+}

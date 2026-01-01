@@ -1,0 +1,11 @@
+[package]
+name = "kern_parser"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+kern_lexer = { path = "../kern-lexer" }
+
+[dev-dependencies]
+rstest = "0.18"
+serial_test = "3.0"
