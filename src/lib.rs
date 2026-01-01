@@ -1,21 +1,16 @@
 pub mod lexer {
-    pub mod token;
-    pub mod lexer;
-    pub mod keywords;
     pub mod token_kind;
+    pub mod token;
+    pub mod keywords;
+    pub mod lexer;
 }
 
 pub mod parser {
-    pub mod parser;
-    pub mod parser_state;
     pub mod ast_nodes;
-    pub mod entity_parser;
-    pub mod rule_parser;
-    pub mod flow_parser;
-    pub mod constraint_parser;
-    pub mod expression_parser;
+    pub mod parser_state;
     pub mod precedence;
     pub mod parser_error;
+    pub mod parser;
 }
 
 pub mod shared {
