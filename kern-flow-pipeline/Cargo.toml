@@ -8,8 +8,5 @@ name = "kern_flow_pipeline"
 path = "lib.rs"
 
 [dependencies]
-kern_graph_builder = { path = "../kern-graph-builder" }
-kern_rule_engine = { path = "../kern-rule-engine" }
-kern_parser = { path = "../kern-parser" }
 
 [dev-dependencies]

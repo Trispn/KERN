@@ -26,7 +26,3 @@ path = "src/main.rs"
 
 [dependencies]
 kern_flow_pipeline = { path = "./kern-flow-pipeline" }
-kern_graph_builder = { path = "./kern-graph-builder" }
-kern_rule_engine = { path = "./kern-rule-engine" }
-kern_parser = { path = "./kern-parser" }
-kern_lexer = { path = "./kern-lexer" }

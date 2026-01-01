@@ -219,6 +219,10 @@ impl BytecodeCompiler {
         // Compile rule evaluation
         self.instructions.push(Instruction::new(Opcode::CallRule as u8, node.flags as u8, node.id as u64));
 
+        // Add rule execution instructions
+        self.instructions.push(Instruction::new(Opcode::CheckCondition as u8, node.flags as u8, node.id as u64));
+        self.instructions.push(Instruction::new(Opcode::IncrementExecCount as u8, node.flags as u8, node.id as u64));
+
         Ok(())
     }
 
@@ -241,6 +245,36 @@ impl BytecodeCompiler {
             },
             0x03 => { // HALT
                 self.instructions.push(Instruction::new(Opcode::Halt as u8, node.flags as u8, 0));
+            },
+            // Context operations
+            0x40 => { // PUSH_CTX
+                let ctx_id = node.id as u64;
+                self.instructions.push(Instruction::new(Opcode::PushCtx as u8, node.flags as u8, ctx_id));
+            },
+            0x41 => { // POP_CTX
+                let ctx_id = node.id as u64;
+                self.instructions.push(Instruction::new(Opcode::PopCtx as u8, node.flags as u8, ctx_id));
+            },
+            0x42 => { // SET_SYMBOL
+                // operand: encoded as (symbol_id << 32) | value_reg
+                let symbol_id = self.get_or_create_symbol("temp_symbol"); // In real impl, get actual symbol
+                let value_reg = node.input_regs[0] as u64;
+                let operand = (symbol_id << 32) | value_reg;
+                self.instructions.push(Instruction::new(Opcode::SetSymbol as u8, node.flags as u8, operand));
+            },
+            0x43 => { // GET_SYMBOL
+                // operand: encoded as (symbol_id << 32) | dest_reg
+                let symbol_id = self.get_or_create_symbol("temp_symbol"); // In real impl, get actual symbol
+                let dest_reg = node.output_regs[0] as u64;
+                let operand = (symbol_id << 32) | dest_reg;
+                self.instructions.push(Instruction::new(Opcode::GetSymbol as u8, node.flags as u8, operand));
+            },
+            0x44 => { // COPY_CTX
+                // operand: encoded as (src_ctx << 32) | dst_ctx
+                let src_ctx = node.input_regs[0] as u64;
+                let dst_ctx = node.output_regs[0] as u64;
+                let operand = (src_ctx << 32) | dst_ctx;
+                self.instructions.push(Instruction::new(Opcode::CopyCtx as u8, node.flags as u8, operand));
             },
             _ => {
                 println!("Compiling control node with opcode: {}", node.opcode);
@@ -265,6 +299,15 @@ impl BytecodeCompiler {
                     self.instructions.push(Instruction::new(Opcode::Connect as u8, node.flags as u8, operand));
                 }
             },
+            0x22 => { // MERGE
+                // operand: encoded as (node_list_addr << 32) | count
+                // For now, just add a placeholder
+                self.instructions.push(Instruction::new(Opcode::Merge as u8, node.flags as u8, node.id as u64));
+            },
+            0x23 => { // DELETE_NODE
+                // operand: node_id
+                self.instructions.push(Instruction::new(Opcode::DeleteNode as u8, node.flags as u8, node.id as u64));
+            },
             _ => {
                 println!("Compiling graph node with opcode: {}", node.opcode);
             }
@@ -273,8 +316,27 @@ impl BytecodeCompiler {
     }
 
     fn compile_io_node(&mut self, node: &kern_graph_builder::GraphNode) -> Result<(), &'static str> {
-        // Compile external interface calls
+        // Compile external interface calls and error handling
         match node.opcode {
+            0x50 => { // THROW
+                // operand: error code
+                let error_code = node.id as u64;
+                self.instructions.push(Instruction::new(Opcode::Throw as u8, node.flags as u8, error_code));
+            },
+            0x51 => { // TRY
+                // operand: address of try block
+                let try_addr = node.id as u64;
+                self.instructions.push(Instruction::new(Opcode::Try as u8, node.flags as u8, try_addr));
+            },
+            0x52 => { // CATCH
+                // operand: address of catch block
+                let catch_addr = node.id as u64;
+                self.instructions.push(Instruction::new(Opcode::Catch as u8, node.flags as u8, catch_addr));
+            },
+            0x53 => { // CLEAR_ERR
+                // operand: unused
+                self.instructions.push(Instruction::new(Opcode::ClearErr as u8, node.flags as u8, 0));
+            },
             0x60 => { // CALL_EXTERN
                 // operand: function ID
                 self.instructions.push(Instruction::new(Opcode::CallExtern as u8, node.flags as u8, node.id as u64));
@@ -302,6 +364,18 @@ impl BytecodeCompiler {
             self.symbol_table.insert(symbol.to_string(), id);
             self.next_symbol_id += 1;
             id
+        }
+    }
+
+    // Helper function to compile context operations
+    fn compile_context_op(&mut self, opcode: u8, flags: u8, operand: u64) -> Instruction {
+        match opcode {
+            0x40 => Instruction::new(Opcode::PushCtx as u8, flags, operand),  // PUSH_CTX
+            0x41 => Instruction::new(Opcode::PopCtx as u8, flags, operand),   // POP_CTX
+            0x42 => Instruction::new(Opcode::SetSymbol as u8, flags, operand), // SET_SYMBOL
+            0x43 => Instruction::new(Opcode::GetSymbol as u8, flags, operand), // GET_SYMBOL
+            0x44 => Instruction::new(Opcode::CopyCtx as u8, flags, operand),   // COPY_CTX
+            _ => Instruction::new(Opcode::Nop as u8, flags, operand), // Default to NOP for unknown opcodes
         }
     }
 
@@ -474,8 +548,182 @@ mod tests {
 }
 
 #[cfg(test)]
-mod decoder_tests {
+mod comprehensive_instruction_tests {
     use super::*;
+
+    #[test]
+    fn test_control_flow_instructions() {
+        // Test NOP
+        let nop_instr = Instruction::new(Opcode::Nop as u8, 0, 0);
+        assert_eq!(nop_instr.opcode, Opcode::Nop as u8);
+
+        // Test JMP
+        let jmp_instr = Instruction::new(Opcode::Jmp as u8, 0, 100);
+        assert_eq!(jmp_instr.opcode, Opcode::Jmp as u8);
+        assert_eq!(jmp_instr.operand, 100);
+
+        // Test JMP_IF
+        let jmp_if_instr = Instruction::new(Opcode::JmpIf as u8, 0, 50);
+        assert_eq!(jmp_if_instr.opcode, Opcode::JmpIf as u8);
+        assert_eq!(jmp_if_instr.operand, 50);
+
+        // Test HALT
+        let halt_instr = Instruction::new(Opcode::Halt as u8, 0, 0);
+        assert_eq!(halt_instr.opcode, Opcode::Halt as u8);
+    }
+
+    #[test]
+    fn test_data_symbol_instructions() {
+        // Test LOAD_SYM
+        let load_sym_instr = Instruction::new(Opcode::LoadSym as u8, 0, 123);
+        assert_eq!(load_sym_instr.opcode, Opcode::LoadSym as u8);
+        assert_eq!(load_sym_instr.operand, 123);
+
+        // Test LOAD_NUM
+        let load_num_instr = Instruction::new(Opcode::LoadNum as u8, 0, 456);
+        assert_eq!(load_num_instr.opcode, Opcode::LoadNum as u8);
+        assert_eq!(load_num_instr.operand, 456);
+
+        // Test MOVE
+        let src_reg = 1u64;
+        let dst_reg = 2u64;
+        let move_operand = (src_reg << 32) | dst_reg;
+        let move_instr = Instruction::new(Opcode::Move as u8, 0, move_operand);
+        assert_eq!(move_instr.opcode, Opcode::Move as u8);
+        assert_eq!(move_instr.operand, move_operand);
+
+        // Test COMPARE
+        let reg_a = 3u64;
+        let reg_b = 4u64;
+        let compare_operand = (reg_a << 32) | reg_b;
+        let compare_instr = Instruction::new(Opcode::Compare as u8, 0, compare_operand);
+        assert_eq!(compare_instr.opcode, Opcode::Compare as u8);
+        assert_eq!(compare_instr.operand, compare_operand);
+    }
+
+    #[test]
+    fn test_graph_operation_instructions() {
+        // Test CREATE_NODE
+        let create_node_instr = Instruction::new(Opcode::CreateNode as u8, 0, 789);
+        assert_eq!(create_node_instr.opcode, Opcode::CreateNode as u8);
+        assert_eq!(create_node_instr.operand, 789);
+
+        // Test CONNECT
+        let from_id = 10u64;
+        let to_id = 20u64;
+        let connect_operand = (from_id << 32) | to_id;
+        let connect_instr = Instruction::new(Opcode::Connect as u8, 0, connect_operand);
+        assert_eq!(connect_instr.opcode, Opcode::Connect as u8);
+        assert_eq!(connect_instr.operand, connect_operand);
+
+        // Test MERGE
+        let merge_instr = Instruction::new(Opcode::Merge as u8, 0, 30);
+        assert_eq!(merge_instr.opcode, Opcode::Merge as u8);
+        assert_eq!(merge_instr.operand, 30);
+
+        // Test DELETE_NODE
+        let delete_node_instr = Instruction::new(Opcode::DeleteNode as u8, 0, 40);
+        assert_eq!(delete_node_instr.opcode, Opcode::DeleteNode as u8);
+        assert_eq!(delete_node_instr.operand, 40);
+    }
+
+    #[test]
+    fn test_rule_execution_instructions() {
+        // Test CALL_RULE
+        let call_rule_instr = Instruction::new(Opcode::CallRule as u8, 0, 1000);
+        assert_eq!(call_rule_instr.opcode, Opcode::CallRule as u8);
+        assert_eq!(call_rule_instr.operand, 1000);
+
+        // Test RETURN_RULE
+        let return_rule_instr = Instruction::new(Opcode::ReturnRule as u8, 0, 0);
+        assert_eq!(return_rule_instr.opcode, Opcode::ReturnRule as u8);
+
+        // Test CHECK_CONDITION
+        let check_condition_instr = Instruction::new(Opcode::CheckCondition as u8, 0, 2000);
+        assert_eq!(check_condition_instr.opcode, Opcode::CheckCondition as u8);
+        assert_eq!(check_condition_instr.operand, 2000);
+
+        // Test INCREMENT_EXEC_COUNT
+        let inc_exec_count_instr = Instruction::new(Opcode::IncrementExecCount as u8, 0, 3000);
+        assert_eq!(inc_exec_count_instr.opcode, Opcode::IncrementExecCount as u8);
+        assert_eq!(inc_exec_count_instr.operand, 3000);
+    }
+
+    #[test]
+    fn test_context_state_instructions() {
+        // Test PUSH_CTX
+        let push_ctx_instr = Instruction::new(Opcode::PushCtx as u8, 0, 500);
+        assert_eq!(push_ctx_instr.opcode, Opcode::PushCtx as u8);
+        assert_eq!(push_ctx_instr.operand, 500);
+
+        // Test POP_CTX
+        let pop_ctx_instr = Instruction::new(Opcode::PopCtx as u8, 0, 600);
+        assert_eq!(pop_ctx_instr.opcode, Opcode::PopCtx as u8);
+        assert_eq!(pop_ctx_instr.operand, 600);
+
+        // Test SET_SYMBOL
+        let symbol_id = 700u64;
+        let value_reg = 10u64;
+        let set_symbol_operand = (symbol_id << 32) | value_reg;
+        let set_symbol_instr = Instruction::new(Opcode::SetSymbol as u8, 0, set_symbol_operand);
+        assert_eq!(set_symbol_instr.opcode, Opcode::SetSymbol as u8);
+        assert_eq!(set_symbol_instr.operand, set_symbol_operand);
+
+        // Test GET_SYMBOL
+        let get_symbol_operand = (symbol_id << 32) | value_reg;
+        let get_symbol_instr = Instruction::new(Opcode::GetSymbol as u8, 0, get_symbol_operand);
+        assert_eq!(get_symbol_instr.opcode, Opcode::GetSymbol as u8);
+        assert_eq!(get_symbol_instr.operand, get_symbol_operand);
+
+        // Test COPY_CTX
+        let src_ctx = 800u64;
+        let dst_ctx = 900u64;
+        let copy_ctx_operand = (src_ctx << 32) | dst_ctx;
+        let copy_ctx_instr = Instruction::new(Opcode::CopyCtx as u8, 0, copy_ctx_operand);
+        assert_eq!(copy_ctx_instr.opcode, Opcode::CopyCtx as u8);
+        assert_eq!(copy_ctx_instr.operand, copy_ctx_operand);
+    }
+
+    #[test]
+    fn test_error_handling_instructions() {
+        // Test THROW
+        let throw_instr = Instruction::new(Opcode::Throw as u8, 0, 1);
+        assert_eq!(throw_instr.opcode, Opcode::Throw as u8);
+        assert_eq!(throw_instr.operand, 1);
+
+        // Test TRY
+        let try_instr = Instruction::new(Opcode::Try as u8, 0, 100);
+        assert_eq!(try_instr.opcode, Opcode::Try as u8);
+        assert_eq!(try_instr.operand, 100);
+
+        // Test CATCH
+        let catch_instr = Instruction::new(Opcode::Catch as u8, 0, 200);
+        assert_eq!(catch_instr.opcode, Opcode::Catch as u8);
+        assert_eq!(catch_instr.operand, 200);
+
+        // Test CLEAR_ERR
+        let clear_err_instr = Instruction::new(Opcode::ClearErr as u8, 0, 0);
+        assert_eq!(clear_err_instr.opcode, Opcode::ClearErr as u8);
+        assert_eq!(clear_err_instr.operand, 0);
+    }
+
+    #[test]
+    fn test_external_interface_instructions() {
+        // Test CALL_EXTERN
+        let call_extern_instr = Instruction::new(Opcode::CallExtern as u8, 0, 1001);
+        assert_eq!(call_extern_instr.opcode, Opcode::CallExtern as u8);
+        assert_eq!(call_extern_instr.operand, 1001);
+
+        // Test READ_IO
+        let read_io_instr = Instruction::new(Opcode::ReadIo as u8, 0, 2001);
+        assert_eq!(read_io_instr.opcode, Opcode::ReadIo as u8);
+        assert_eq!(read_io_instr.operand, 2001);
+
+        // Test WRITE_IO
+        let write_io_instr = Instruction::new(Opcode::WriteIo as u8, 0, 3001);
+        assert_eq!(write_io_instr.opcode, Opcode::WriteIo as u8);
+        assert_eq!(write_io_instr.operand, 3001);
+    }
 
     #[test]
     fn test_decoder_algorithm() {

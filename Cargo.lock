@@ -133,10 +133,6 @@ name = "kern-compiler"
 version = "0.1.0"
 dependencies = [
  "kern_flow_pipeline",
- "kern_graph_builder",
- "kern_lexer",
- "kern_parser",
- "kern_rule_engine",
 ]
 
 [[package]]
@@ -159,11 +155,6 @@ dependencies = [
 [[package]]
 name = "kern_flow_pipeline"
 version = "0.1.0"
-dependencies = [
- "kern_graph_builder",
- "kern_parser",
- "kern_rule_engine",
-]
 
 [[package]]
 name = "kern_graph_builder"
