@@ -1,1 +1,11 @@
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.05s
+error: failed to load manifest for workspace member `C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-bytecode`
+referenced by workspace at `C:\Users\LENOVO\OneDrive\Desktop\KERN\Cargo.toml`
+
+Caused by:
+  failed to load manifest for dependency `kern_graph_builder`
+
+Caused by:
+  failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-graph-builder\Cargo.toml`
+
+Caused by:
+  The system cannot find the file specified. (os error 2)

@@ -1,6 +1,26 @@
+mod rule_engine;
+mod pattern_matcher;
+mod scheduler;
+mod conflict_resolver;
+mod priority_manager;
+mod recursion_guard;
+
+mod implementation;
+
+pub use rule_engine::*;
+pub use pattern_matcher::*;
+pub use scheduler::*;
+pub use conflict_resolver::*;
+pub use priority_manager::*;
+pub use recursion_guard::*;
+pub use implementation::*;
+
 use kern_graph_builder::{ExecutionGraph, GraphNode, GraphNodeType, EdgeType};
 use kern_parser::{Comparator, LogicalOp};
 use std::collections::HashMap;
+
+#[cfg(test)]
+mod tests;
 
 // Define the rule engine execution context
 #[derive(Debug, Clone)]

@@ -20,6 +20,10 @@ pub mod shared {
     pub mod config;
 }
 
+pub mod flow_pipeline {
+    pub use kern_flow_pipeline::*;
+}
+
 use lexer::lexer::Lexer;
 use parser::parser::Parser;
 use shared::diagnostics::Diagnostics;

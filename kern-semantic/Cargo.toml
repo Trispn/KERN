@@ -3,8 +3,12 @@ name = "kern-semantic"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+name = "kern_semantic"
+path = "src/lib.rs"
+
 [dependencies]
-kern-parser = { path = "../kern-parser" }
-kern-graph-builder = { path = "../kern-graph-builder" }
+kern_parser = { path = "../kern-parser" }
+kern_graph_builder = { path = "../kern-graph-builder" }
 
 [dev-dependencies]

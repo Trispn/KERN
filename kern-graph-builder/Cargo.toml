@@ -1,0 +1,14 @@
+[package]
+name = "kern_graph_builder"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "kern_graph_builder"
+path = "src/lib.rs"
+
+[dependencies]
+kern_parser = { path = "../kern-parser" }
+kern-ast = { path = "../kern-ast" }
+
+[dev-dependencies]

@@ -1,3 +1,16 @@
+[workspace]
+members = [
+    "kern-ast",
+    "kern-bytecode",
+    "kern-flow-pipeline",
+    "kern-graph-builder",
+    "kern-lexer",
+    "kern-parser",
+    "kern-rule-engine",
+    "kern-semantic",
+    "kern-vm",
+]
+
 [package]
 name = "kern-compiler"
 version = "0.1.0"
@@ -12,3 +25,8 @@ name = "kern_compiler"
 path = "src/main.rs"
 
 [dependencies]
+kern_flow_pipeline = { path = "./kern-flow-pipeline" }
+kern_graph_builder = { path = "./kern-graph-builder" }
+kern_rule_engine = { path = "./kern-rule-engine" }
+kern_parser = { path = "./kern-parser" }
+kern_lexer = { path = "./kern-lexer" }
