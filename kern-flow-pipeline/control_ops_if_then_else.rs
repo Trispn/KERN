@@ -1,5 +1,5 @@
+use crate::flow_evaluator::{FlowEvaluationError, FlowEvaluator};
 use crate::flow_execution_context::FlowExecutionContext;
-use crate::flow_evaluator::{FlowEvaluator, FlowEvaluationError};
 use crate::types::Value;
 
 /// Handles if/then/else control operations in the flow pipeline
@@ -8,11 +8,11 @@ pub struct IfThenElseHandler;
 impl IfThenElseHandler {
     /// Executes an if/then/else control operation
     pub fn execute_if_then_else(
-        evaluator: &mut FlowEvaluator,
+        _evaluator: &mut FlowEvaluator,
         condition: bool,
         true_branch: Option<Value>,
         false_branch: Option<Value>,
-        context: &mut FlowExecutionContext,
+        _context: &mut FlowExecutionContext,
     ) -> Result<Value, FlowEvaluationError> {
         if condition {
             if let Some(true_val) = true_branch {

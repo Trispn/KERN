@@ -1,10 +1,13 @@
-use crate::{ProgramNode, SourceLocation, IdentifierNode, TypeNode, ExpressionNode, 
-           EntityNode, RuleNode, FlowNode, ConstraintNode, ActionNode, ParameterNode, 
-           FlowStepNode, AttributeNode, RuleRefNode, ConstraintRefNode, 
-           AssignActionNode, EmitActionNode, BinaryExprNode, UnaryExprNode, 
-           LiteralExprNode, IdentifierExprNode, CallExprNode, LiteralValue, 
-           BinaryOperator, UnaryOperator, SeverityLevel};
-use std::io::{Write, Result as IoResult};
+use crate::constraint_node::SeverityLevel;
+use crate::entity_node::{AttributeNode, ConstraintRefNode, RuleRefNode};
+use crate::flow_node::FlowStepNode;
+use crate::rule_node::{ActionNode, AssignActionNode, EmitActionNode, ParameterNode};
+use crate::{
+    BinaryExprNode, BinaryOperator, CallExprNode, ConstraintNode, EntityNode, ExpressionNode,
+    FlowNode, IdentifierExprNode, IdentifierNode, LiteralExprNode, LiteralValue, ProgramNode,
+    RuleNode, TypeNode, UnaryExprNode, UnaryOperator,
+};
+use std::io::{Result as IoResult, Write};
 
 const KAST_MAGIC: &[u8] = b"KAST";
 const KAST_VERSION: u16 = 1;
@@ -88,31 +91,31 @@ pub fn serialize_ast<W: Write>(writer: &mut W, program: &ProgramNode) -> IoResul
     // Write header
     writer.write_all(KAST_MAGIC)?;
     writer.write_all(&KAST_VERSION.to_le_bytes())?;
-    
+
     // For simplicity in this implementation, we'll serialize the AST directly
     // In a real implementation, we would build a symbol table and serialize
     // references to nodes and strings
-    
+
     // Serialize the program node
     serialize_program_node(writer, program)?;
-    
+
     Ok(())
 }
 
 fn serialize_program_node<W: Write>(writer: &mut W, node: &ProgramNode) -> IoResult<()> {
     // Write node kind
     writer.write_all(&NodeKind::Program.as_u16().to_le_bytes())?;
-    
+
     // Write location
     writer.write_all(&node.location.file_id.to_le_bytes())?;
     writer.write_all(&node.location.line.to_le_bytes())?;
     writer.write_all(&node.location.column.to_le_bytes())?;
     writer.write_all(&node.location.length.to_le_bytes())?;
-    
+
     // Write field count
     let field_count = 4u16; // entities, rules, flows, constraints
     writer.write_all(&field_count.to_le_bytes())?;
-    
+
     // Serialize entities
     writer.write_all(&FieldKind::NodeList.as_u8().to_le_bytes())?;
     let entity_count = node.entities.len() as u32;
@@ -120,7 +123,7 @@ fn serialize_program_node<W: Write>(writer: &mut W, node: &ProgramNode) -> IoRes
     for entity in &node.entities {
         serialize_entity_node(writer, entity)?;
     }
-    
+
     // Serialize rules
     writer.write_all(&FieldKind::NodeList.as_u8().to_le_bytes())?;
     let rule_count = node.rules.len() as u32;
@@ -128,7 +131,7 @@ fn serialize_program_node<W: Write>(writer: &mut W, node: &ProgramNode) -> IoRes
     for rule in &node.rules {
         serialize_rule_node(writer, rule)?;
     }
-    
+
     // Serialize flows
     writer.write_all(&FieldKind::NodeList.as_u8().to_le_bytes())?;
     let flow_count = node.flows.len() as u32;
@@ -136,7 +139,7 @@ fn serialize_program_node<W: Write>(writer: &mut W, node: &ProgramNode) -> IoRes
     for flow in &node.flows {
         serialize_flow_node(writer, flow)?;
     }
-    
+
     // Serialize constraints
     writer.write_all(&FieldKind::NodeList.as_u8().to_le_bytes())?;
     let constraint_count = node.constraints.len() as u32;
@@ -144,26 +147,26 @@ fn serialize_program_node<W: Write>(writer: &mut W, node: &ProgramNode) -> IoRes
     for constraint in &node.constraints {
         serialize_constraint_node(writer, constraint)?;
     }
-    
+
     Ok(())
 }
 
 fn serialize_entity_node<W: Write>(writer: &mut W, node: &EntityNode) -> IoResult<()> {
     writer.write_all(&NodeKind::Entity.as_u16().to_le_bytes())?;
-    
+
     // Write location
     writer.write_all(&node.location.file_id.to_le_bytes())?;
     writer.write_all(&node.location.line.to_le_bytes())?;
     writer.write_all(&node.location.column.to_le_bytes())?;
     writer.write_all(&node.location.length.to_le_bytes())?;
-    
+
     // Write field count
     let field_count = 4u16; // name, attributes, rules, constraints
     writer.write_all(&field_count.to_le_bytes())?;
-    
+
     // Serialize name
     serialize_identifier_node(writer, &node.name)?;
-    
+
     // Serialize attributes
     writer.write_all(&FieldKind::NodeList.as_u8().to_le_bytes())?;
     let attr_count = node.attributes.len() as u32;
@@ -171,7 +174,7 @@ fn serialize_entity_node<W: Write>(writer: &mut W, node: &EntityNode) -> IoResul
     for attr in &node.attributes {
         serialize_attribute_node(writer, attr)?;
     }
-    
+
     // Serialize rules
     writer.write_all(&FieldKind::NodeList.as_u8().to_le_bytes())?;
     let rule_ref_count = node.rules.len() as u32;
@@ -179,7 +182,7 @@ fn serialize_entity_node<W: Write>(writer: &mut W, node: &EntityNode) -> IoResul
     for rule_ref in &node.rules {
         serialize_rule_ref_node(writer, rule_ref)?;
     }
-    
+
     // Serialize constraints
     writer.write_all(&FieldKind::NodeList.as_u8().to_le_bytes())?;
     let constraint_ref_count = node.constraints.len() as u32;
@@ -187,29 +190,29 @@ fn serialize_entity_node<W: Write>(writer: &mut W, node: &EntityNode) -> IoResul
     for constraint_ref in &node.constraints {
         serialize_constraint_ref_node(writer, constraint_ref)?;
     }
-    
+
     Ok(())
 }
 
 fn serialize_attribute_node<W: Write>(writer: &mut W, node: &AttributeNode) -> IoResult<()> {
     writer.write_all(&NodeKind::Attribute.as_u16().to_le_bytes())?;
-    
+
     // Write location
     writer.write_all(&node.location.file_id.to_le_bytes())?;
     writer.write_all(&node.location.line.to_le_bytes())?;
     writer.write_all(&node.location.column.to_le_bytes())?;
     writer.write_all(&node.location.length.to_le_bytes())?;
-    
+
     // Write field count
     let field_count = 3u16; // name, type, default_value
     writer.write_all(&field_count.to_le_bytes())?;
-    
+
     // Serialize name
     serialize_identifier_node(writer, &node.name)?;
-    
+
     // Serialize type
     serialize_type_node(writer, &node.r#type)?;
-    
+
     // Serialize default value (if present)
     match &node.default_value {
         Some(expr) => {
@@ -221,26 +224,26 @@ fn serialize_attribute_node<W: Write>(writer: &mut W, node: &AttributeNode) -> I
             // For now, we'll just skip
         }
     }
-    
+
     Ok(())
 }
 
 fn serialize_rule_node<W: Write>(writer: &mut W, node: &RuleNode) -> IoResult<()> {
     writer.write_all(&NodeKind::Rule.as_u16().to_le_bytes())?;
-    
+
     // Write location
     writer.write_all(&node.location.file_id.to_le_bytes())?;
     writer.write_all(&node.location.line.to_le_bytes())?;
     writer.write_all(&node.location.column.to_le_bytes())?;
     writer.write_all(&node.location.length.to_le_bytes())?;
-    
+
     // Write field count
     let field_count = 4u16; // name, parameters, condition, actions
     writer.write_all(&field_count.to_le_bytes())?;
-    
+
     // Serialize name
     serialize_identifier_node(writer, &node.name)?;
-    
+
     // Serialize parameters
     writer.write_all(&FieldKind::NodeList.as_u8().to_le_bytes())?;
     let param_count = node.parameters.len() as u32;
@@ -248,11 +251,11 @@ fn serialize_rule_node<W: Write>(writer: &mut W, node: &RuleNode) -> IoResult<()
     for param in &node.parameters {
         serialize_parameter_node(writer, param)?;
     }
-    
+
     // Serialize condition
     writer.write_all(&FieldKind::NodeRef.as_u8().to_le_bytes())?;
     serialize_expression_node(writer, &node.condition)?;
-    
+
     // Serialize actions
     writer.write_all(&FieldKind::NodeList.as_u8().to_le_bytes())?;
     let action_count = node.actions.len() as u32;
@@ -260,26 +263,26 @@ fn serialize_rule_node<W: Write>(writer: &mut W, node: &RuleNode) -> IoResult<()
     for action in &node.actions {
         serialize_action_node(writer, action)?;
     }
-    
+
     Ok(())
 }
 
 fn serialize_flow_node<W: Write>(writer: &mut W, node: &FlowNode) -> IoResult<()> {
     writer.write_all(&NodeKind::Flow.as_u16().to_le_bytes())?;
-    
+
     // Write location
     writer.write_all(&node.location.file_id.to_le_bytes())?;
     writer.write_all(&node.location.line.to_le_bytes())?;
     writer.write_all(&node.location.column.to_le_bytes())?;
     writer.write_all(&node.location.length.to_le_bytes())?;
-    
+
     // Write field count
     let field_count = 2u16; // name, steps
     writer.write_all(&field_count.to_le_bytes())?;
-    
+
     // Serialize name
     serialize_identifier_node(writer, &node.name)?;
-    
+
     // Serialize steps
     writer.write_all(&FieldKind::NodeList.as_u8().to_le_bytes())?;
     let step_count = node.steps.len() as u32;
@@ -287,30 +290,30 @@ fn serialize_flow_node<W: Write>(writer: &mut W, node: &FlowNode) -> IoResult<()
     for step in &node.steps {
         serialize_flow_step_node(writer, step)?;
     }
-    
+
     Ok(())
 }
 
 fn serialize_constraint_node<W: Write>(writer: &mut W, node: &ConstraintNode) -> IoResult<()> {
     writer.write_all(&NodeKind::Constraint.as_u16().to_le_bytes())?;
-    
+
     // Write location
     writer.write_all(&node.location.file_id.to_le_bytes())?;
     writer.write_all(&node.location.line.to_le_bytes())?;
     writer.write_all(&node.location.column.to_le_bytes())?;
     writer.write_all(&node.location.length.to_le_bytes())?;
-    
+
     // Write field count
     let field_count = 3u16; // name, expression, severity
     writer.write_all(&field_count.to_le_bytes())?;
-    
+
     // Serialize name
     serialize_identifier_node(writer, &node.name)?;
-    
+
     // Serialize expression
     writer.write_all(&FieldKind::NodeRef.as_u8().to_le_bytes())?;
     serialize_expression_node(writer, &node.expression)?;
-    
+
     // Serialize severity
     writer.write_all(&FieldKind::Enum.as_u8().to_le_bytes())?;
     let severity_code = match node.severity {
@@ -320,7 +323,7 @@ fn serialize_constraint_node<W: Write>(writer: &mut W, node: &ConstraintNode) ->
         SeverityLevel::Fatal => 3u8,
     };
     writer.write_all(&severity_code.to_le_bytes())?;
-    
+
     Ok(())
 }
 
@@ -336,21 +339,21 @@ fn serialize_expression_node<W: Write>(writer: &mut W, node: &ExpressionNode) ->
 
 fn serialize_binary_expr_node<W: Write>(writer: &mut W, node: &BinaryExprNode) -> IoResult<()> {
     writer.write_all(&NodeKind::BinaryExpr.as_u16().to_le_bytes())?;
-    
+
     // Write location
     writer.write_all(&node.location.file_id.to_le_bytes())?;
     writer.write_all(&node.location.line.to_le_bytes())?;
     writer.write_all(&node.location.column.to_le_bytes())?;
     writer.write_all(&node.location.length.to_le_bytes())?;
-    
+
     // Write field count
     let field_count = 3u16; // left, operator, right
     writer.write_all(&field_count.to_le_bytes())?;
-    
+
     // Serialize left
     writer.write_all(&FieldKind::NodeRef.as_u8().to_le_bytes())?;
     serialize_expression_node(writer, &node.left)?;
-    
+
     // Serialize operator
     writer.write_all(&FieldKind::Enum.as_u8().to_le_bytes())?;
     let op_code = match node.operator {
@@ -370,27 +373,27 @@ fn serialize_binary_expr_node<W: Write>(writer: &mut W, node: &BinaryExprNode) -
         BinaryOperator::Xor => 13u8,
     };
     writer.write_all(&op_code.to_le_bytes())?;
-    
+
     // Serialize right
     writer.write_all(&FieldKind::NodeRef.as_u8().to_le_bytes())?;
     serialize_expression_node(writer, &node.right)?;
-    
+
     Ok(())
 }
 
 fn serialize_unary_expr_node<W: Write>(writer: &mut W, node: &UnaryExprNode) -> IoResult<()> {
     writer.write_all(&NodeKind::UnaryExpr.as_u16().to_le_bytes())?;
-    
+
     // Write location
     writer.write_all(&node.location.file_id.to_le_bytes())?;
     writer.write_all(&node.location.line.to_le_bytes())?;
     writer.write_all(&node.location.column.to_le_bytes())?;
     writer.write_all(&node.location.length.to_le_bytes())?;
-    
+
     // Write field count
     let field_count = 2u16; // operator, operand
     writer.write_all(&field_count.to_le_bytes())?;
-    
+
     // Serialize operator
     writer.write_all(&FieldKind::Enum.as_u8().to_le_bytes())?;
     let op_code = match node.operator {
@@ -399,27 +402,27 @@ fn serialize_unary_expr_node<W: Write>(writer: &mut W, node: &UnaryExprNode) -> 
         UnaryOperator::Pos => 2u8,
     };
     writer.write_all(&op_code.to_le_bytes())?;
-    
+
     // Serialize operand
     writer.write_all(&FieldKind::NodeRef.as_u8().to_le_bytes())?;
     serialize_expression_node(writer, &node.operand)?;
-    
+
     Ok(())
 }
 
 fn serialize_literal_expr_node<W: Write>(writer: &mut W, node: &LiteralExprNode) -> IoResult<()> {
     writer.write_all(&NodeKind::LiteralExpr.as_u16().to_le_bytes())?;
-    
+
     // Write location
     writer.write_all(&node.location.file_id.to_le_bytes())?;
     writer.write_all(&node.location.line.to_le_bytes())?;
     writer.write_all(&node.location.column.to_le_bytes())?;
     writer.write_all(&node.location.length.to_le_bytes())?;
-    
+
     // Write field count
     let field_count = 1u16; // value
     writer.write_all(&field_count.to_le_bytes())?;
-    
+
     // Serialize value
     writer.write_all(&FieldKind::Enum.as_u8().to_le_bytes())?;
     match &node.value {
@@ -445,45 +448,48 @@ fn serialize_literal_expr_node<W: Write>(writer: &mut W, node: &LiteralExprNode)
             writer.write_all(&4u8.to_le_bytes())?; // Null type
         }
     }
-    
+
     Ok(())
 }
 
-fn serialize_identifier_expr_node<W: Write>(writer: &mut W, node: &IdentifierExprNode) -> IoResult<()> {
+fn serialize_identifier_expr_node<W: Write>(
+    writer: &mut W,
+    node: &IdentifierExprNode,
+) -> IoResult<()> {
     writer.write_all(&NodeKind::IdentifierExpr.as_u16().to_le_bytes())?;
-    
+
     // Write location
     writer.write_all(&node.location.file_id.to_le_bytes())?;
     writer.write_all(&node.location.line.to_le_bytes())?;
     writer.write_all(&node.location.column.to_le_bytes())?;
     writer.write_all(&node.location.length.to_le_bytes())?;
-    
+
     // Write field count
     let field_count = 1u16; // name
     writer.write_all(&field_count.to_le_bytes())?;
-    
+
     // Serialize name
     serialize_identifier_node(writer, &node.name)?;
-    
+
     Ok(())
 }
 
 fn serialize_call_expr_node<W: Write>(writer: &mut W, node: &CallExprNode) -> IoResult<()> {
     writer.write_all(&NodeKind::CallExpr.as_u16().to_le_bytes())?;
-    
+
     // Write location
     writer.write_all(&node.location.file_id.to_le_bytes())?;
     writer.write_all(&node.location.line.to_le_bytes())?;
     writer.write_all(&node.location.column.to_le_bytes())?;
     writer.write_all(&node.location.length.to_le_bytes())?;
-    
+
     // Write field count
     let field_count = 2u16; // callee, args
     writer.write_all(&field_count.to_le_bytes())?;
-    
+
     // Serialize callee
     serialize_identifier_node(writer, &node.callee)?;
-    
+
     // Serialize args
     writer.write_all(&FieldKind::NodeList.as_u8().to_le_bytes())?;
     let arg_count = node.args.len() as u32;
@@ -491,7 +497,7 @@ fn serialize_call_expr_node<W: Write>(writer: &mut W, node: &CallExprNode) -> Io
     for arg in &node.args {
         serialize_expression_node(writer, arg)?;
     }
-    
+
     Ok(())
 }
 
@@ -504,87 +510,87 @@ fn serialize_action_node<W: Write>(writer: &mut W, node: &ActionNode) -> IoResul
 
 fn serialize_assign_action_node<W: Write>(writer: &mut W, node: &AssignActionNode) -> IoResult<()> {
     writer.write_all(&NodeKind::AssignAction.as_u16().to_le_bytes())?;
-    
+
     // Write location
     writer.write_all(&node.location.file_id.to_le_bytes())?;
     writer.write_all(&node.location.line.to_le_bytes())?;
     writer.write_all(&node.location.column.to_le_bytes())?;
     writer.write_all(&node.location.length.to_le_bytes())?;
-    
+
     // Write field count
     let field_count = 2u16; // target, value
     writer.write_all(&field_count.to_le_bytes())?;
-    
+
     // Serialize target
     serialize_identifier_node(writer, &node.target)?;
-    
+
     // Serialize value
     writer.write_all(&FieldKind::NodeRef.as_u8().to_le_bytes())?;
     serialize_expression_node(writer, &node.value)?;
-    
+
     Ok(())
 }
 
 fn serialize_emit_action_node<W: Write>(writer: &mut W, node: &EmitActionNode) -> IoResult<()> {
     writer.write_all(&NodeKind::EmitAction.as_u16().to_le_bytes())?;
-    
+
     // Write location
     writer.write_all(&node.location.file_id.to_le_bytes())?;
     writer.write_all(&node.location.line.to_le_bytes())?;
     writer.write_all(&node.location.column.to_le_bytes())?;
     writer.write_all(&node.location.length.to_le_bytes())?;
-    
+
     // Write field count
     let field_count = 1u16; // event
     writer.write_all(&field_count.to_le_bytes())?;
-    
+
     // Serialize event
     serialize_identifier_node(writer, &node.event)?;
-    
+
     Ok(())
 }
 
 fn serialize_parameter_node<W: Write>(writer: &mut W, node: &ParameterNode) -> IoResult<()> {
     writer.write_all(&NodeKind::Parameter.as_u16().to_le_bytes())?;
-    
+
     // Write location
     writer.write_all(&node.location.file_id.to_le_bytes())?;
     writer.write_all(&node.location.line.to_le_bytes())?;
     writer.write_all(&node.location.column.to_le_bytes())?;
     writer.write_all(&node.location.length.to_le_bytes())?;
-    
+
     // Write field count
     let field_count = 2u16; // name, type
     writer.write_all(&field_count.to_le_bytes())?;
-    
+
     // Serialize name
     serialize_identifier_node(writer, &node.name)?;
-    
+
     // Serialize type
     serialize_type_node(writer, &node.r#type)?;
-    
+
     Ok(())
 }
 
 fn serialize_flow_step_node<W: Write>(writer: &mut W, node: &FlowStepNode) -> IoResult<()> {
     writer.write_all(&NodeKind::FlowStep.as_u16().to_le_bytes())?;
-    
+
     // Write location
     writer.write_all(&node.location.file_id.to_le_bytes())?;
     writer.write_all(&node.location.line.to_le_bytes())?;
     writer.write_all(&node.location.column.to_le_bytes())?;
     writer.write_all(&node.location.length.to_le_bytes())?;
-    
+
     // Write field count
     let field_count = 3u16; // from, to, condition
     writer.write_all(&field_count.to_le_bytes())?;
-    
+
     // Serialize from
     serialize_identifier_node(writer, &node.from)?;
-    
+
     // Serialize to
     serialize_identifier_node(writer, &node.to)?;
-    
+
     // Serialize condition (if present)
     match &node.condition {
         Some(expr) => {
@@ -596,89 +602,92 @@ fn serialize_flow_step_node<W: Write>(writer: &mut W, node: &FlowStepNode) -> Io
             // For now, we'll just skip
         }
     }
-    
+
     Ok(())
 }
 
 fn serialize_type_node<W: Write>(writer: &mut W, node: &TypeNode) -> IoResult<()> {
     writer.write_all(&NodeKind::Type.as_u16().to_le_bytes())?;
-    
+
     // Write location
     writer.write_all(&node.location.file_id.to_le_bytes())?;
     writer.write_all(&node.location.line.to_le_bytes())?;
     writer.write_all(&node.location.column.to_le_bytes())?;
     writer.write_all(&node.location.length.to_le_bytes())?;
-    
+
     // Write field count
     let field_count = 2u16; // name, nullable
     writer.write_all(&field_count.to_le_bytes())?;
-    
+
     // Serialize name
     serialize_identifier_node(writer, &node.name)?;
-    
+
     // Serialize nullable
     writer.write_all(&FieldKind::Bool.as_u8().to_le_bytes())?;
     writer.write_all(&[node.nullable as u8])?;
-    
+
     Ok(())
 }
 
 fn serialize_identifier_node<W: Write>(writer: &mut W, node: &IdentifierNode) -> IoResult<()> {
     writer.write_all(&NodeKind::Identifier.as_u16().to_le_bytes())?;
-    
+
     // Write location
     writer.write_all(&node.location.file_id.to_le_bytes())?;
     writer.write_all(&node.location.line.to_le_bytes())?;
     writer.write_all(&node.location.column.to_le_bytes())?;
     writer.write_all(&node.location.length.to_le_bytes())?;
-    
+
     // Write field count
     let field_count = 1u16; // text
     writer.write_all(&field_count.to_le_bytes())?;
-    
+
     // Serialize text
     writer.write_all(&FieldKind::StringId.as_u8().to_le_bytes())?;
     let bytes = node.text.as_bytes();
     writer.write_all(&(bytes.len() as u32).to_le_bytes())?;
     writer.write_all(bytes)?;
-    
+
     Ok(())
 }
 
 fn serialize_rule_ref_node<W: Write>(writer: &mut W, node: &RuleRefNode) -> IoResult<()> {
     writer.write_all(&NodeKind::RuleRef.as_u16().to_le_bytes())?;
-    
+
     // Write location
     writer.write_all(&node.location.file_id.to_le_bytes())?;
     writer.write_all(&node.location.line.to_le_bytes())?;
     writer.write_all(&node.location.column.to_le_bytes())?;
     writer.write_all(&node.location.length.to_le_bytes())?;
-    
+
     // Write field count
     let field_count = 1u16; // name
     writer.write_all(&field_count.to_le_bytes())?;
-    
+
     // Serialize name
     serialize_identifier_node(writer, &node.name)?;
-    
+
     Ok(())
 }
 
-fn serialize_constraint_ref_node<W: Write>(writer: &mut W, node: &ConstraintRefNode) -> IoResult<()> {
+fn serialize_constraint_ref_node<W: Write>(
+    writer: &mut W,
+    node: &ConstraintRefNode,
+) -> IoResult<()> {
     writer.write_all(&NodeKind::ConstraintRef.as_u16().to_le_bytes())?;
-    
+
     // Write location
     writer.write_all(&node.location.file_id.to_le_bytes())?;
     writer.write_all(&node.location.line.to_le_bytes())?;
     writer.write_all(&node.location.column.to_le_bytes())?;
     writer.write_all(&node.location.length.to_le_bytes())?;
-    
+
     // Write field count
     let field_count = 1u16; // name
     writer.write_all(&field_count.to_le_bytes())?;
-    
+
     // Serialize name
     serialize_identifier_node(writer, &node.name)?;
-    
+
     Ok(())
 }

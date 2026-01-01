@@ -1,7 +1,5 @@
-use std::collections::HashMap;
-
 // Import the shared types
-use crate::types::{Value, SymbolTable};
+use crate::types::{SymbolTable, Value};
 
 /// FlowExecutionContext tracks step execution and nested flow contexts
 #[derive(Debug, Clone)]

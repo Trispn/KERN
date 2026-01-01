@@ -1,20 +1,20 @@
-use crate::{IdentifierNode, AttributeNode, RuleRefNode, ConstraintRefNode, SourceLocation};
+use crate::{IdentifierNode, SourceLocation};
 
 /// EntityNode represents an entity definition in KERN.
 #[derive(Debug, Clone, PartialEq)]
 pub struct EntityNode {
     /// Name of the entity
     pub name: IdentifierNode,
-    
+
     /// Attributes of the entity
     pub attributes: Vec<AttributeNode>,
-    
+
     /// Rules associated with this entity
     pub rules: Vec<RuleRefNode>,
-    
+
     /// Constraints associated with this entity
     pub constraints: Vec<ConstraintRefNode>,
-    
+
     /// Source location of the entity
     pub location: SourceLocation,
 }
@@ -24,13 +24,13 @@ pub struct EntityNode {
 pub struct AttributeNode {
     /// Name of the attribute
     pub name: IdentifierNode,
-    
+
     /// Type of the attribute
     pub r#type: crate::TypeNode,
-    
+
     /// Default value of the attribute (optional)
     pub default_value: Option<crate::ExpressionNode>,
-    
+
     /// Source location of the attribute
     pub location: SourceLocation,
 }
@@ -40,7 +40,7 @@ pub struct AttributeNode {
 pub struct RuleRefNode {
     /// Name of the referenced rule
     pub name: IdentifierNode,
-    
+
     /// Source location of the rule reference
     pub location: SourceLocation,
 }
@@ -50,7 +50,7 @@ pub struct RuleRefNode {
 pub struct ConstraintRefNode {
     /// Name of the referenced constraint
     pub name: IdentifierNode,
-    
+
     /// Source location of the constraint reference
     pub location: SourceLocation,
 }
@@ -108,7 +108,7 @@ impl ConstraintRefNode {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{TypeNode, LiteralExprNode, LiteralValue};
+    use crate::{LiteralExprNode, LiteralValue, TypeNode};
 
     #[test]
     fn test_entity_node_creation() {
@@ -118,19 +118,19 @@ mod tests {
             IdentifierNode::new_with_default_location("int".to_string()),
             false,
         );
-        
+
         let default_value = Some(crate::ExpressionNode::Literal(LiteralExprNode {
             value: LiteralValue::Integer(0),
             location: SourceLocation::default(),
         }));
-        
+
         let attribute = AttributeNode::new(
             attr_name,
             attr_type,
             default_value,
             SourceLocation::default(),
         );
-        
+
         let entity = EntityNode::new(
             name,
             vec![attribute],
@@ -138,7 +138,7 @@ mod tests {
             vec![],
             SourceLocation::new(1, 5, 1, 15),
         );
-        
+
         assert_eq!(entity.name.text(), "Person");
         assert_eq!(entity.attributes.len(), 1);
         assert_eq!(entity.attributes[0].name.text(), "age");

@@ -1,5 +1,5 @@
 use crate::flow_execution_context::FlowExecutionContext;
-use crate::types::{SymbolTable, Value};
+
 use std::collections::HashMap;
 
 /// Manages flow execution contexts
@@ -29,7 +29,11 @@ impl ContextManager {
     }
 
     /// Creates a new execution context with a parent
-    pub fn create_context_with_parent(&mut self, flow_id: u32, parent_id: u32) -> Result<u32, ContextError> {
+    pub fn create_context_with_parent(
+        &mut self,
+        flow_id: u32,
+        parent_id: u32,
+    ) -> Result<u32, ContextError> {
         let parent_context = self.get_context(parent_id)?.clone();
         let context_id = self.contexts.len() as u32;
         let new_context = FlowExecutionContext::with_parent(flow_id, parent_context);
@@ -48,14 +52,19 @@ impl ContextManager {
     }
 
     /// Gets a mutable reference to a specific context
-    pub fn get_context_mut(&mut self, context_id: u32) -> Result<&mut FlowExecutionContext, ContextError> {
-        self.contexts.get_mut(&context_id)
+    pub fn get_context_mut(
+        &mut self,
+        context_id: u32,
+    ) -> Result<&mut FlowExecutionContext, ContextError> {
+        self.contexts
+            .get_mut(&context_id)
             .ok_or(ContextError::ContextNotFound(context_id))
     }
 
     /// Gets a reference to a specific context
     pub fn get_context(&self, context_id: u32) -> Result<&FlowExecutionContext, ContextError> {
-        self.contexts.get(&context_id)
+        self.contexts
+            .get(&context_id)
             .ok_or(ContextError::ContextNotFound(context_id))
     }
 
@@ -89,7 +98,9 @@ impl ContextManager {
 
         // Merge local symbols from child to parent
         for (key, value) in &child_context.local_symbols.symbols {
-            parent_context.local_symbols.insert(key.clone(), value.clone());
+            parent_context
+                .local_symbols
+                .insert(key.clone(), value.clone());
         }
 
         Ok(())
@@ -105,7 +116,8 @@ impl ContextManager {
         if self.contexts.remove(&context_id).is_some() {
             // If we're removing the current context, switch to parent if available
             if context_id == self.current_context_id {
-                if let Some(_context) = self.contexts.get(&0) { // Fallback to initial context
+                if let Some(_context) = self.contexts.get(&0) {
+                    // Fallback to initial context
                     self.current_context_id = 0;
                 }
             }

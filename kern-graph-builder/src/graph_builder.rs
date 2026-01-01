@@ -1,32 +1,35 @@
-use kern_parser::{AstNode, Program, Definition, EntityDef, RuleDef, FlowDef, ConstraintDef, Condition, Expression, Term, Predicate, Action, IfAction, LoopAction, HaltAction, Assignment, ControlAction};
+use kern_parser::{
+    Action, Assignment, AstNode, Condition, ConstraintDef, ControlAction, Definition, EntityDef,
+    Expression, FlowDef, HaltAction, IfAction, LoopAction, Predicate, Program, RuleDef, Term,
+};
 use std::collections::HashMap;
 
 // Define the execution graph data structures as specified in the KERN language documentation
 #[derive(Debug, Clone, PartialEq)]
 pub enum GraphNodeType {
-    Op,        // bytecode operation
-    Rule,      // rule evaluation
-    Control,   // if / loop / jump
-    Graph,     // graph manipulation
-    Io,        // external interface
+    Op,      // bytecode operation
+    Rule,    // rule evaluation
+    Control, // if / loop / jump
+    Graph,   // graph manipulation
+    Io,      // external interface
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Copy)]
 pub enum EdgeType {
-    Control,    // execution order
-    Data,       // value dependency
-    Condition,  // conditional routing
+    Control,   // execution order
+    Data,      // value dependency
+    Condition, // conditional routing
 }
 
 #[derive(Debug, Clone)]
 pub struct GraphNode {
     pub id: u32,
     pub node_type: GraphNodeType,
-    pub opcode: u8,          // bytecode opcode
+    pub opcode: u8, // bytecode opcode
     pub flags: u16,
-    pub input_regs: [u16; 4],   // register indices
+    pub input_regs: [u16; 4], // register indices
     pub output_regs: [u16; 2],
-    pub first_edge: u32,     // edge index
+    pub first_edge: u32, // edge index
     pub edge_count: u16,
     pub meta: NodeMeta,
 }
@@ -53,13 +56,13 @@ pub struct RuleNode {
     pub base: GraphNode,
     pub rule_id: u32,
     pub priority: u16,
-    pub evaluation_mode: u8,  // 0 = eager, 1 = lazy
+    pub evaluation_mode: u8, // 0 = eager, 1 = lazy
 }
 
 #[derive(Debug, Clone)]
 pub struct GraphOpNode {
     pub base: GraphNode,
-    pub graph_op_type: u8,   // 0 = create, 1 = match, 2 = traverse
+    pub graph_op_type: u8, // 0 = create, 1 = match, 2 = traverse
     pub operand_id: u32,
 }
 
@@ -111,7 +114,7 @@ pub struct GraphEdge {
     pub from_node: u32,
     pub to_node: u32,
     pub edge_type: EdgeType,
-    pub condition_flag: u8,  // used only for conditional edges
+    pub condition_flag: u8, // used only for conditional edges
 }
 
 impl GraphEdge {
@@ -148,19 +151,19 @@ impl GraphEdge {
 
 #[derive(Debug, Clone)]
 pub struct NodeMeta {
-    pub source_ref: u32,   // mapping to KERN source
-    pub cost_hint: u16,    // heuristic cost
+    pub source_ref: u32, // mapping to KERN source
+    pub cost_hint: u16,  // heuristic cost
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub struct Register {
-    pub reg_type: u8,       // sym, num, ref, vec (represented as u8)
-    pub value_id: u32,      // index into value table
+    pub reg_type: u8,  // sym, num, ref, vec (represented as u8)
+    pub value_id: u32, // index into value table
 }
 
 #[derive(Debug, Clone)]
 pub struct RegisterSet {
-    pub regs: [Register; 16],   // R0–R15
+    pub regs: [Register; 16], // R0–R15
 }
 
 #[derive(Debug, Clone)]
@@ -178,7 +181,7 @@ pub struct ContextPool {
 #[derive(Debug, Clone)]
 pub struct EntryPoint {
     pub node_id: u32,
-    pub entry_type: u8,    // 0=rule, 1=flow, 2=external call
+    pub entry_type: u8, // 0=rule, 1=flow, 2=external call
 }
 
 #[derive(Debug, Clone)]
@@ -188,6 +191,18 @@ pub enum SpecializedNode {
     Loop(LoopNode),
     Rule(RuleNode),
     GraphOp(GraphOpNode),
+}
+
+impl SpecializedNode {
+    pub fn get_base(&self) -> &GraphNode {
+        match self {
+            SpecializedNode::Base(node) => node,
+            SpecializedNode::If(node) => &node.base,
+            SpecializedNode::Loop(node) => &node.base,
+            SpecializedNode::Rule(node) => &node.base,
+            SpecializedNode::GraphOp(node) => &node.base,
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -230,7 +245,10 @@ impl GraphBuilder {
             edges: Vec::new(),
             entry_points: Vec::new(),
             registers: RegisterSet {
-                regs: [Register { reg_type: 0, value_id: 0 }; 16],
+                regs: [Register {
+                    reg_type: 0,
+                    value_id: 0,
+                }; 16],
             },
             contexts: ContextPool {
                 contexts: Vec::new(),
@@ -246,16 +264,16 @@ impl GraphBuilder {
             match definition {
                 Definition::Entity(entity_def) => {
                     self.process_entity_def(entity_def);
-                },
+                }
                 Definition::Rule(rule_def) => {
                     self.process_rule_def(rule_def);
-                },
+                }
                 Definition::Flow(flow_def) => {
                     self.process_flow_def(flow_def);
-                },
+                }
                 Definition::Constraint(constraint_def) => {
                     self.process_constraint_def(constraint_def);
-                },
+                }
             }
         }
 
@@ -397,7 +415,7 @@ impl GraphBuilder {
         match condition {
             Condition::Expression(expr) => {
                 self.process_expression(expr, parent_node_id);
-            },
+            }
             Condition::LogicalOp(left, op, right) => {
                 self.process_condition(left, parent_node_id);
                 // Process the logical operator
@@ -405,14 +423,14 @@ impl GraphBuilder {
                     kern_parser::LogicalOp::And => {
                         // Handle AND operation
                         println!("Processing AND operation");
-                    },
+                    }
                     kern_parser::LogicalOp::Or => {
                         // Handle OR operation
                         println!("Processing OR operation");
-                    },
+                    }
                 }
                 self.process_condition(right, parent_node_id);
-            },
+            }
         }
     }
 
@@ -424,12 +442,12 @@ impl GraphBuilder {
                 self.node_id_counter += 1;
 
                 let opcode = match op {
-                    kern_parser::Comparator::Equal => 0x13,       // COMPARE with flags for ==
-                    kern_parser::Comparator::NotEqual => 0x13,    // COMPARE with flags for !=
-                    kern_parser::Comparator::Greater => 0x13,     // COMPARE with flags for >
-                    kern_parser::Comparator::Less => 0x13,        // COMPARE with flags for <
+                    kern_parser::Comparator::Equal => 0x13, // COMPARE with flags for ==
+                    kern_parser::Comparator::NotEqual => 0x13, // COMPARE with flags for !=
+                    kern_parser::Comparator::Greater => 0x13, // COMPARE with flags for >
+                    kern_parser::Comparator::Less => 0x13,  // COMPARE with flags for <
                     kern_parser::Comparator::GreaterEqual => 0x13, // COMPARE with flags for >=
-                    kern_parser::Comparator::LessEqual => 0x13,   // COMPARE with flags for <=
+                    kern_parser::Comparator::LessEqual => 0x13, // COMPARE with flags for <=
                 };
 
                 let flags = match op {
@@ -464,16 +482,16 @@ impl GraphBuilder {
 
                 // Create an edge from the parent to this comparison node
                 self.create_edge(parent_node_id, compare_node_id, EdgeType::Data);
-            },
+            }
             Expression::Predicate(predicate) => {
                 self.process_predicate(predicate, parent_node_id);
-            },
+            }
         }
     }
 
     fn process_term(&mut self, term: &Term, parent_node_id: u32) {
         match term {
-            Term::Identifier(name) => {
+            Term::Identifier(_name) => {
                 // Create a node to load the identifier value
                 let load_node_id = self.node_id_counter;
                 self.node_id_counter += 1;
@@ -495,8 +513,8 @@ impl GraphBuilder {
 
                 self.nodes.push(SpecializedNode::Base(load_node));
                 self.create_edge(parent_node_id, load_node_id, EdgeType::Data);
-            },
-            Term::Number(value) => {
+            }
+            Term::Number(_value) => {
                 // Create a node to load the number value
                 let load_node_id = self.node_id_counter;
                 self.node_id_counter += 1;
@@ -518,8 +536,8 @@ impl GraphBuilder {
 
                 self.nodes.push(SpecializedNode::Base(load_node));
                 self.create_edge(parent_node_id, load_node_id, EdgeType::Data);
-            },
-            Term::QualifiedRef(entity, field) => {
+            }
+            Term::QualifiedRef(_entity, _field) => {
                 // Create a node to load the qualified reference
                 let load_node_id = self.node_id_counter;
                 self.node_id_counter += 1;
@@ -541,7 +559,7 @@ impl GraphBuilder {
 
                 self.nodes.push(SpecializedNode::Base(load_node));
                 self.create_edge(parent_node_id, load_node_id, EdgeType::Data);
-            },
+            }
         }
     }
 
@@ -580,13 +598,13 @@ impl GraphBuilder {
         match action {
             Action::Predicate(predicate) => {
                 self.process_predicate(predicate, parent_node_id);
-            },
+            }
             Action::Assignment(assignment) => {
                 self.process_assignment(assignment, parent_node_id);
-            },
+            }
             Action::Control(control_action) => {
                 self.process_control_action(control_action, parent_node_id);
-            },
+            }
         }
     }
 
@@ -623,13 +641,13 @@ impl GraphBuilder {
         match control_action {
             ControlAction::If(if_action) => {
                 self.process_if_action(if_action, parent_node_id);
-            },
+            }
             ControlAction::Loop(loop_action) => {
                 self.process_loop_action(loop_action, parent_node_id);
-            },
+            }
             ControlAction::Halt(halt_action) => {
                 self.process_halt_action(halt_action, parent_node_id);
-            },
+            }
         }
     }
 
@@ -773,7 +791,10 @@ impl GraphBuilder {
         // Check for dangling edges
         for edge in &graph.edges {
             if edge.from_node >= graph.node_count || edge.to_node >= graph.node_count {
-                return Err(format!("Dangling edge: ({}, {})", edge.from_node, edge.to_node));
+                return Err(format!(
+                    "Dangling edge: ({}, {})",
+                    edge.from_node, edge.to_node
+                ));
             }
         }
 
@@ -832,11 +853,18 @@ impl GraphBuilder {
 
         for entry_point in &graph.entry_points {
             if !visited[entry_point.node_id as usize] {
-                let mut path = Vec::new();
+                let mut path: Vec<u32> = Vec::new();
                 let mut rec_stack = vec![false; graph.node_count as usize];
                 let mut path_stack = Vec::new();
 
-                if self.find_cycle_util(graph, entry_point.node_id, &mut visited, &mut rec_stack, &mut path_stack, &mut all_cycles) {
+                if self.find_cycle_util(
+                    graph,
+                    entry_point.node_id,
+                    &mut visited,
+                    &mut rec_stack,
+                    &mut path_stack,
+                    &mut all_cycles,
+                ) {
                     // At least one cycle was found, continue checking
                 }
             }
@@ -897,13 +925,22 @@ impl GraphBuilder {
                 let to_idx = edge.to_node as usize;
 
                 if !visited[to_idx] {
-                    if self.find_cycle_util(graph, edge.to_node, visited, rec_stack, path_stack, all_cycles) {
+                    if self.find_cycle_util(
+                        graph,
+                        edge.to_node,
+                        visited,
+                        rec_stack,
+                        path_stack,
+                        all_cycles,
+                    ) {
                         return true;
                     }
                 } else if rec_stack[to_idx] {
                     // Found a back edge, which indicates a cycle
                     // Extract the cycle from the path stack
-                    if let Some(cycle_start_idx) = path_stack.iter().position(|&n| n == edge.to_node) {
+                    if let Some(cycle_start_idx) =
+                        path_stack.iter().position(|&n| n == edge.to_node)
+                    {
                         let cycle = path_stack[cycle_start_idx..].to_vec();
                         all_cycles.push(cycle);
                         return true; // Found at least one cycle
@@ -957,8 +994,10 @@ impl GraphBuilder {
             // Update edges to use new indices
             let mut new_edges = Vec::new();
             for edge in &graph.edges {
-                if let (Some(new_from), Some(new_to)) =
-                    (node_mapping[edge.from_node as usize], node_mapping[edge.to_node as usize]) {
+                if let (Some(new_from), Some(new_to)) = (
+                    node_mapping[edge.from_node as usize],
+                    node_mapping[edge.to_node as usize],
+                ) {
                     new_edges.push(GraphEdge {
                         from_node: new_from,
                         to_node: new_to,
@@ -1016,7 +1055,7 @@ impl GraphBuilder {
 
         // Look for consecutive LOAD operations that can be combined
         for i in 0..graph.nodes.len() {
-            if let GraphNodeType::Op = graph.nodes[i].node_type {
+            if let GraphNodeType::Op = graph.nodes[i].get_base().node_type {
                 // Check if this is a simple operation that could be combined
                 // with the next one (in a more complex implementation)
             }
@@ -1066,6 +1105,10 @@ mod tests {
         assert!(!graph.edges.is_empty());
         assert!(!graph.entry_points.is_empty());
 
-        println!("Generated execution graph with {} nodes and {} edges", graph.nodes.len(), graph.edges.len());
+        println!(
+            "Generated execution graph with {} nodes and {} edges",
+            graph.nodes.len(),
+            graph.edges.len()
+        );
     }
 }

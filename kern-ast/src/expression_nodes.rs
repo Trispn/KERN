@@ -1,4 +1,4 @@
-use crate::{IdentifierNode, SourceLocation, TypeNode};
+use crate::{IdentifierNode, SourceLocation};
 
 /// BinaryOperator represents operators for binary expressions
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -110,19 +110,19 @@ mod tests {
             value: LiteralValue::Integer(5),
             location: SourceLocation::default(),
         });
-        
+
         let right = ExpressionNode::Literal(LiteralExprNode {
             value: LiteralValue::Integer(3),
             location: SourceLocation::default(),
         });
-        
+
         let binary_expr = ExpressionNode::Binary(BinaryExprNode {
             left: Box::new(left),
             operator: BinaryOperator::Add,
             right: Box::new(right),
             location: SourceLocation::new(1, 5, 10, 5),
         });
-        
+
         if let ExpressionNode::Binary(bin_node) = &binary_expr {
             assert_eq!(bin_node.operator, BinaryOperator::Add);
             assert_eq!(bin_node.location.line, 5);
@@ -130,14 +130,14 @@ mod tests {
             panic!("Expected Binary expression");
         }
     }
-    
+
     #[test]
     fn test_literal_expression_creation() {
         let literal_expr = ExpressionNode::Literal(LiteralExprNode {
             value: LiteralValue::String("hello".to_string()),
             location: SourceLocation::new(1, 3, 5, 7),
         });
-        
+
         if let ExpressionNode::Literal(lit_node) = &literal_expr {
             match &lit_node.value {
                 LiteralValue::String(s) => assert_eq!(s, "hello"),

@@ -1,7 +1,7 @@
-use std::collections::HashMap;
+use crate::flow_evaluator::{FlowEvaluationError, FlowEvaluator};
 use crate::flow_execution_context::FlowExecutionContext;
-use crate::flow_evaluator::{FlowEvaluator, FlowEvaluationError};
 use crate::types::Value;
+use std::collections::HashMap;
 
 /// Manages lazy evaluation of flow steps
 pub struct LazyEvaluationManager {
@@ -20,7 +20,7 @@ impl LazyEvaluationManager {
         &mut self,
         step_id: u32,
         evaluator: &mut FlowEvaluator,
-        step: Value,
+        _step: Value,
         context: &mut FlowExecutionContext,
     ) -> Result<Value, FlowEvaluationError> {
         let cache_key = format!("step_{}", step_id);
@@ -59,6 +59,7 @@ impl LazyEvaluationManager {
 
     /// Checks if a step has been evaluated
     pub fn is_evaluated(&self, step_id: u32) -> bool {
-        self.evaluated_results.contains_key(&format!("step_{}", step_id))
+        self.evaluated_results
+            .contains_key(&format!("step_{}", step_id))
     }
 }

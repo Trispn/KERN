@@ -1,5 +1,5 @@
-   0.156604100s  INFO prepare_target{force=false package_id=kern-ast v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-ast) target="kern_ast"}: cargo::core::compiler::fingerprint: fingerprint error for kern-ast v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-ast)/Check { test: false }/TargetInner { ..: lib_target("kern_ast", ["lib"], "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-ast\\src\\lib.rs", Edition2021) }
-   0.156723500s  INFO prepare_target{force=false package_id=kern-ast v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-ast) target="kern_ast"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-ast-68bb90ccc09bd525\lib-kern_ast`
+   1.563970300s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="assertions"}: cargo::core::compiler::fingerprint: fingerprint error for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "assertions", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\assertions.rs", Edition2021) }
+   1.564061100s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="assertions"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-compiler-dd7d70a9e64aef85\test-integration-test-assertions`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -26,8 +26,8 @@ Stack backtrace:
   18: git_midx_writer_dump
   19: BaseThreadInitThunk
   20: RtlUserThreadStart
-   0.189241700s  INFO prepare_target{force=false package_id=kern-ast v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-ast) target="kern_ast"}: cargo::core::compiler::fingerprint: fingerprint error for kern-ast v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-ast)/Check { test: true }/TargetInner { ..: lib_target("kern_ast", ["lib"], "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-ast\\src\\lib.rs", Edition2021) }
-   0.189290300s  INFO prepare_target{force=false package_id=kern-ast v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-ast) target="kern_ast"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-ast-69c0255176ac6b91\test-lib-kern_ast`
+   1.592403100s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="ast_tests"}: cargo::core::compiler::fingerprint: fingerprint error for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "ast_tests", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\ast_tests.rs", Edition2021) }
+   1.592510100s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="ast_tests"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-compiler-20382b46b1c390bc\test-integration-test-ast_tests`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -54,8 +54,8 @@ Stack backtrace:
   18: git_midx_writer_dump
   19: BaseThreadInitThunk
   20: RtlUserThreadStart
-   0.196827200s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="assertions"}: cargo::core::compiler::fingerprint: fingerprint error for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "assertions", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\assertions.rs", Edition2021) }
-   0.196887000s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="assertions"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-compiler-dd7d70a9e64aef85\test-integration-test-assertions`
+   1.594261000s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="edge_case_tests"}: cargo::core::compiler::fingerprint: fingerprint error for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "edge_case_tests", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\edge_case_tests.rs", Edition2021) }
+   1.594359200s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="edge_case_tests"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-compiler-0c9cea99b802ba06\test-integration-test-edge_case_tests`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -82,8 +82,8 @@ Stack backtrace:
   18: git_midx_writer_dump
   19: BaseThreadInitThunk
   20: RtlUserThreadStart
-   0.198629000s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="ast_tests"}: cargo::core::compiler::fingerprint: fingerprint error for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "ast_tests", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\ast_tests.rs", Edition2021) }
-   0.198712000s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="ast_tests"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-compiler-20382b46b1c390bc\test-integration-test-ast_tests`
+   1.596166000s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="error_recovery_tests"}: cargo::core::compiler::fingerprint: fingerprint error for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "error_recovery_tests", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\error_recovery_tests.rs", Edition2021) }
+   1.596276400s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="error_recovery_tests"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-compiler-73aec0dd6f8748bc\test-integration-test-error_recovery_tests`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -110,8 +110,8 @@ Stack backtrace:
   18: git_midx_writer_dump
   19: BaseThreadInitThunk
   20: RtlUserThreadStart
-   0.200527000s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="edge_case_tests"}: cargo::core::compiler::fingerprint: fingerprint error for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "edge_case_tests", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\edge_case_tests.rs", Edition2021) }
-   0.200581400s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="edge_case_tests"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-compiler-0c9cea99b802ba06\test-integration-test-edge_case_tests`
+   1.598116100s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="flow_pipeline_tests"}: cargo::core::compiler::fingerprint: fingerprint error for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "flow_pipeline_tests", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\flow_pipeline_tests.rs", Edition2021) }
+   1.598161700s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="flow_pipeline_tests"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-compiler-ba2e0f24666cdc95\test-integration-test-flow_pipeline_tests`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -138,8 +138,8 @@ Stack backtrace:
   18: git_midx_writer_dump
   19: BaseThreadInitThunk
   20: RtlUserThreadStart
-   0.203990400s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="error_recovery_tests"}: cargo::core::compiler::fingerprint: fingerprint error for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "error_recovery_tests", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\error_recovery_tests.rs", Edition2021) }
-   0.204046800s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="error_recovery_tests"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-compiler-73aec0dd6f8748bc\test-integration-test-error_recovery_tests`
+   1.599505600s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="lexer_tests"}: cargo::core::compiler::fingerprint: fingerprint error for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "lexer_tests", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\lexer_tests.rs", Edition2021) }
+   1.599558800s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="lexer_tests"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-compiler-808b5d6b2721126c\test-integration-test-lexer_tests`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -166,8 +166,8 @@ Stack backtrace:
   18: git_midx_writer_dump
   19: BaseThreadInitThunk
   20: RtlUserThreadStart
-   0.206034400s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="flow_pipeline_tests"}: cargo::core::compiler::fingerprint: fingerprint error for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "flow_pipeline_tests", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\flow_pipeline_tests.rs", Edition2021) }
-   0.206089900s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="flow_pipeline_tests"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-compiler-ba2e0f24666cdc95\test-integration-test-flow_pipeline_tests`
+   1.601204400s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="main_test_runner"}: cargo::core::compiler::fingerprint: fingerprint error for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "main_test_runner", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\main_test_runner.rs", Edition2021) }
+   1.601246300s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="main_test_runner"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-compiler-643abebf2cba4955\test-integration-test-main_test_runner`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -194,8 +194,8 @@ Stack backtrace:
   18: git_midx_writer_dump
   19: BaseThreadInitThunk
   20: RtlUserThreadStart
-   0.207734200s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="lexer_tests"}: cargo::core::compiler::fingerprint: fingerprint error for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "lexer_tests", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\lexer_tests.rs", Edition2021) }
-   0.207855000s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="lexer_tests"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-compiler-808b5d6b2721126c\test-integration-test-lexer_tests`
+   1.602604900s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="parser_tests"}: cargo::core::compiler::fingerprint: fingerprint error for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "parser_tests", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\parser_tests.rs", Edition2021) }
+   1.602648500s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="parser_tests"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-compiler-9fbe3c85471cd967\test-integration-test-parser_tests`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -222,8 +222,8 @@ Stack backtrace:
   18: git_midx_writer_dump
   19: BaseThreadInitThunk
   20: RtlUserThreadStart
-   0.210320900s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="main_test_runner"}: cargo::core::compiler::fingerprint: fingerprint error for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "main_test_runner", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\main_test_runner.rs", Edition2021) }
-   0.210372900s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="main_test_runner"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-compiler-643abebf2cba4955\test-integration-test-main_test_runner`
+   1.604521000s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="rule_engine_tests"}: cargo::core::compiler::fingerprint: fingerprint error for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "rule_engine_tests", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\rule_engine_tests.rs", Edition2021) }
+   1.604579300s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="rule_engine_tests"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-compiler-98b11425e14d899d\test-integration-test-rule_engine_tests`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -250,8 +250,8 @@ Stack backtrace:
   18: git_midx_writer_dump
   19: BaseThreadInitThunk
   20: RtlUserThreadStart
-   0.212069000s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="parser_tests"}: cargo::core::compiler::fingerprint: fingerprint error for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "parser_tests", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\parser_tests.rs", Edition2021) }
-   0.212112800s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="parser_tests"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-compiler-9fbe3c85471cd967\test-integration-test-parser_tests`
+   1.605951200s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="semantic_tests"}: cargo::core::compiler::fingerprint: fingerprint error for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "semantic_tests", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\semantic_tests.rs", Edition2021) }
+   1.605998000s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="semantic_tests"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-compiler-854962f3c1845886\test-integration-test-semantic_tests`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -278,8 +278,8 @@ Stack backtrace:
   18: git_midx_writer_dump
   19: BaseThreadInitThunk
   20: RtlUserThreadStart
-   0.213960400s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="rule_engine_tests"}: cargo::core::compiler::fingerprint: fingerprint error for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "rule_engine_tests", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\rule_engine_tests.rs", Edition2021) }
-   0.214067100s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="rule_engine_tests"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-compiler-98b11425e14d899d\test-integration-test-rule_engine_tests`
+   1.607390700s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="test_runner"}: cargo::core::compiler::fingerprint: fingerprint error for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "test_runner", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\test_runner.rs", Edition2021) }
+   1.607432000s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="test_runner"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-compiler-a38901cb1acdd6f3\test-integration-test-test_runner`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -306,8 +306,8 @@ Stack backtrace:
   18: git_midx_writer_dump
   19: BaseThreadInitThunk
   20: RtlUserThreadStart
-   0.215874900s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="semantic_tests"}: cargo::core::compiler::fingerprint: fingerprint error for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "semantic_tests", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\semantic_tests.rs", Edition2021) }
-   0.215923400s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="semantic_tests"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-compiler-854962f3c1845886\test-integration-test-semantic_tests`
+   1.616635400s  INFO prepare_target{force=false package_id=kern-semantic v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-semantic) target="kern_semantic"}: cargo::core::compiler::fingerprint: fingerprint error for kern-semantic v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-semantic)/Check { test: false }/TargetInner { ..: lib_target("kern_semantic", ["lib"], "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-semantic\\src\\lib.rs", Edition2021) }
+   1.616730100s  INFO prepare_target{force=false package_id=kern-semantic v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-semantic) target="kern_semantic"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-semantic-68065e62a93a24fa\lib-kern_semantic`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -334,64 +334,8 @@ Stack backtrace:
   18: git_midx_writer_dump
   19: BaseThreadInitThunk
   20: RtlUserThreadStart
-   0.217682700s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="test_runner"}: cargo::core::compiler::fingerprint: fingerprint error for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "test_runner", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\test_runner.rs", Edition2021) }
-   0.217736300s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="test_runner"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-compiler-a38901cb1acdd6f3\test-integration-test-test_runner`
-
-Caused by:
-    The system cannot find the file specified. (os error 2)
-
-Stack backtrace:
-   0: git_midx_writer_dump
-   1: git_midx_writer_dump
-   2: git_midx_writer_dump
-   3: git_midx_writer_dump
-   4: git_filter_source_repo
-   5: git_filter_source_repo
-   6: git_filter_source_repo
-   7: git_filter_source_repo
-   8: git_filter_source_repo
-   9: git_filter_source_repo
-  10: git_filter_source_repo
-  11: git_libgit2_prerelease
-  12: <unknown>
-  13: <unknown>
-  14: <unknown>
-  15: <unknown>
-  16: git_midx_writer_dump
-  17: git_filter_source_repo
-  18: git_midx_writer_dump
-  19: BaseThreadInitThunk
-  20: RtlUserThreadStart
-   0.220672300s  INFO prepare_target{force=false package_id=kern-semantic v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-semantic) target="kern_semantic"}: cargo::core::compiler::fingerprint: fingerprint error for kern-semantic v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-semantic)/Check { test: false }/TargetInner { ..: lib_target("kern_semantic", ["lib"], "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-semantic\\src\\lib.rs", Edition2021) }
-   0.220728900s  INFO prepare_target{force=false package_id=kern-semantic v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-semantic) target="kern_semantic"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-semantic-68065e62a93a24fa\lib-kern_semantic`
-
-Caused by:
-    The system cannot find the file specified. (os error 2)
-
-Stack backtrace:
-   0: git_midx_writer_dump
-   1: git_midx_writer_dump
-   2: git_midx_writer_dump
-   3: git_midx_writer_dump
-   4: git_filter_source_repo
-   5: git_filter_source_repo
-   6: git_filter_source_repo
-   7: git_filter_source_repo
-   8: git_filter_source_repo
-   9: git_filter_source_repo
-  10: git_filter_source_repo
-  11: git_libgit2_prerelease
-  12: <unknown>
-  13: <unknown>
-  14: <unknown>
-  15: <unknown>
-  16: git_midx_writer_dump
-  17: git_filter_source_repo
-  18: git_midx_writer_dump
-  19: BaseThreadInitThunk
-  20: RtlUserThreadStart
-   0.221576900s  INFO prepare_target{force=false package_id=kern_graph_builder v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-graph-builder) target="kern_graph_builder"}: cargo::core::compiler::fingerprint: fingerprint error for kern_graph_builder v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-graph-builder)/Check { test: false }/TargetInner { ..: lib_target("kern_graph_builder", ["lib"], "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-graph-builder\\src\\lib.rs", Edition2021) }
-   0.221618600s  INFO prepare_target{force=false package_id=kern_graph_builder v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-graph-builder) target="kern_graph_builder"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern_graph_builder-d46686097aa15b05\lib-kern_graph_builder`
+   1.617735600s  INFO prepare_target{force=false package_id=kern_graph_builder v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-graph-builder) target="kern_graph_builder"}: cargo::core::compiler::fingerprint: fingerprint error for kern_graph_builder v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-graph-builder)/Check { test: false }/TargetInner { ..: lib_target("kern_graph_builder", ["lib"], "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-graph-builder\\src\\lib.rs", Edition2021) }
+   1.617812800s  INFO prepare_target{force=false package_id=kern_graph_builder v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-graph-builder) target="kern_graph_builder"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern_graph_builder-d46686097aa15b05\lib-kern_graph_builder`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -419,8 +363,177 @@ Stack backtrace:
   19: git_midx_writer_dump
   20: BaseThreadInitThunk
   21: RtlUserThreadStart
-   0.222410600s  INFO prepare_target{force=false package_id=kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser) target="kern_parser"}: cargo::core::compiler::fingerprint: fingerprint error for kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser)/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("kern_parser", ["lib"], "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-parser\\src\\lib.rs", Edition2021) }
-   0.222448800s  INFO prepare_target{force=false package_id=kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser) target="kern_parser"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern_parser-91524a0b66bd3696\lib-kern_parser`
+   1.626564300s  INFO prepare_target{force=false package_id=kern-semantic v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-semantic) target="kern_semantic"}: cargo::core::compiler::fingerprint: fingerprint error for kern-semantic v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-semantic)/Check { test: true }/TargetInner { ..: lib_target("kern_semantic", ["lib"], "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-semantic\\src\\lib.rs", Edition2021) }
+   1.626651000s  INFO prepare_target{force=false package_id=kern-semantic v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-semantic) target="kern_semantic"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-semantic-500bf71671d76dc8\test-lib-kern_semantic`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_libgit2_prerelease
+  12: <unknown>
+  13: <unknown>
+  14: <unknown>
+  15: <unknown>
+  16: git_midx_writer_dump
+  17: git_filter_source_repo
+  18: git_midx_writer_dump
+  19: BaseThreadInitThunk
+  20: RtlUserThreadStart
+   1.634337600s  INFO prepare_target{force=false package_id=kern_bytecode v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-bytecode) target="kern_bytecode"}: cargo::core::compiler::fingerprint: fingerprint error for kern_bytecode v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-bytecode)/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("kern_bytecode", ["lib"], "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-bytecode\\src\\lib.rs", Edition2021) }
+   1.634389100s  INFO prepare_target{force=false package_id=kern_bytecode v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-bytecode) target="kern_bytecode"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern_bytecode-acc66b978078e4bb\lib-kern_bytecode`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_libgit2_prerelease
+  12: <unknown>
+  13: <unknown>
+  14: <unknown>
+  15: <unknown>
+  16: git_midx_writer_dump
+  17: git_filter_source_repo
+  18: git_midx_writer_dump
+  19: BaseThreadInitThunk
+  20: RtlUserThreadStart
+   1.635292300s  INFO prepare_target{force=false package_id=kern_bytecode v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-bytecode) target="kern_bytecode"}: cargo::core::compiler::fingerprint: fingerprint error for kern_bytecode v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-bytecode)/Check { test: true }/TargetInner { name_inferred: true, ..: lib_target("kern_bytecode", ["lib"], "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-bytecode\\src\\lib.rs", Edition2021) }
+   1.635352600s  INFO prepare_target{force=false package_id=kern_bytecode v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-bytecode) target="kern_bytecode"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern_bytecode-2f455559c9f9aeb7\test-lib-kern_bytecode`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_libgit2_prerelease
+  12: <unknown>
+  13: <unknown>
+  14: <unknown>
+  15: <unknown>
+  16: git_midx_writer_dump
+  17: git_filter_source_repo
+  18: git_midx_writer_dump
+  19: BaseThreadInitThunk
+  20: RtlUserThreadStart
+   1.637002200s  INFO prepare_target{force=false package_id=kern_graph_builder v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-graph-builder) target="kern_graph_builder"}: cargo::core::compiler::fingerprint: fingerprint error for kern_graph_builder v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-graph-builder)/Check { test: true }/TargetInner { ..: lib_target("kern_graph_builder", ["lib"], "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-graph-builder\\src\\lib.rs", Edition2021) }
+   1.637081200s  INFO prepare_target{force=false package_id=kern_graph_builder v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-graph-builder) target="kern_graph_builder"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern_graph_builder-70bb2ac7f3006e72\test-lib-kern_graph_builder`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_libgit2_prerelease
+  12: <unknown>
+  13: <unknown>
+  14: <unknown>
+  15: <unknown>
+  16: git_midx_writer_dump
+  17: git_filter_source_repo
+  18: git_midx_writer_dump
+  19: BaseThreadInitThunk
+  20: RtlUserThreadStart
+   1.679119400s  INFO prepare_target{force=false package_id=kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser) target="kern_parser"}: cargo::core::compiler::fingerprint: fingerprint error for kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser)/Check { test: true }/TargetInner { name_inferred: true, ..: lib_target("kern_parser", ["lib"], "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-parser\\src\\lib.rs", Edition2021) }
+   1.679171600s  INFO prepare_target{force=false package_id=kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser) target="kern_parser"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern_parser-87f17a8b92bf24e0\test-lib-kern_parser`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_libgit2_prerelease
+  12: <unknown>
+  13: <unknown>
+  14: <unknown>
+  15: <unknown>
+  16: git_midx_writer_dump
+  17: git_filter_source_repo
+  18: git_midx_writer_dump
+  19: BaseThreadInitThunk
+  20: RtlUserThreadStart
+   1.680352800s  INFO prepare_target{force=false package_id=rstest v0.18.2 target="rstest"}: cargo::core::compiler::fingerprint: fingerprint error for rstest v0.18.2/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("rstest", ["lib"], "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\rstest-0.18.2\\src\\lib.rs", Edition2021) }
+   1.680413400s  INFO prepare_target{force=false package_id=rstest v0.18.2 target="rstest"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\rstest-fabc17133ddd98be\lib-rstest`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_libgit2_prerelease
+  13: <unknown>
+  14: <unknown>
+  15: <unknown>
+  16: <unknown>
+  17: git_midx_writer_dump
+  18: git_filter_source_repo
+  19: git_midx_writer_dump
+  20: BaseThreadInitThunk
+  21: RtlUserThreadStart
+   1.681545800s  INFO prepare_target{force=false package_id=futures v0.3.31 target="futures"}: cargo::core::compiler::fingerprint: fingerprint error for futures v0.3.31/Check { test: false }/TargetInner { ..: lib_target("futures", ["lib"], "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\futures-0.3.31\\src\\lib.rs", Edition2018) }
+   1.681594900s  INFO prepare_target{force=false package_id=futures v0.3.31 target="futures"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\futures-2f260bce26cf3fd8\lib-futures`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -449,235 +562,8 @@ Stack backtrace:
   20: git_midx_writer_dump
   21: BaseThreadInitThunk
   22: RtlUserThreadStart
-   0.224295100s  INFO prepare_target{force=false package_id=kern-semantic v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-semantic) target="kern_semantic"}: cargo::core::compiler::fingerprint: fingerprint error for kern-semantic v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-semantic)/Check { test: true }/TargetInner { ..: lib_target("kern_semantic", ["lib"], "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-semantic\\src\\lib.rs", Edition2021) }
-   0.224340600s  INFO prepare_target{force=false package_id=kern-semantic v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-semantic) target="kern_semantic"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-semantic-500bf71671d76dc8\test-lib-kern_semantic`
-
-Caused by:
-    The system cannot find the file specified. (os error 2)
-
-Stack backtrace:
-   0: git_midx_writer_dump
-   1: git_midx_writer_dump
-   2: git_midx_writer_dump
-   3: git_midx_writer_dump
-   4: git_filter_source_repo
-   5: git_filter_source_repo
-   6: git_filter_source_repo
-   7: git_filter_source_repo
-   8: git_filter_source_repo
-   9: git_filter_source_repo
-  10: git_filter_source_repo
-  11: git_libgit2_prerelease
-  12: <unknown>
-  13: <unknown>
-  14: <unknown>
-  15: <unknown>
-  16: git_midx_writer_dump
-  17: git_filter_source_repo
-  18: git_midx_writer_dump
-  19: BaseThreadInitThunk
-  20: RtlUserThreadStart
-   0.225300000s  INFO prepare_target{force=false package_id=kern_bytecode v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-bytecode) target="kern_bytecode"}: cargo::core::compiler::fingerprint: fingerprint error for kern_bytecode v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-bytecode)/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("kern_bytecode", ["lib"], "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-bytecode\\src\\lib.rs", Edition2021) }
-   0.225339600s  INFO prepare_target{force=false package_id=kern_bytecode v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-bytecode) target="kern_bytecode"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern_bytecode-acc66b978078e4bb\lib-kern_bytecode`
-
-Caused by:
-    The system cannot find the file specified. (os error 2)
-
-Stack backtrace:
-   0: git_midx_writer_dump
-   1: git_midx_writer_dump
-   2: git_midx_writer_dump
-   3: git_midx_writer_dump
-   4: git_filter_source_repo
-   5: git_filter_source_repo
-   6: git_filter_source_repo
-   7: git_filter_source_repo
-   8: git_filter_source_repo
-   9: git_filter_source_repo
-  10: git_filter_source_repo
-  11: git_libgit2_prerelease
-  12: <unknown>
-  13: <unknown>
-  14: <unknown>
-  15: <unknown>
-  16: git_midx_writer_dump
-  17: git_filter_source_repo
-  18: git_midx_writer_dump
-  19: BaseThreadInitThunk
-  20: RtlUserThreadStart
-   0.226201000s  INFO prepare_target{force=false package_id=kern_bytecode v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-bytecode) target="kern_bytecode"}: cargo::core::compiler::fingerprint: fingerprint error for kern_bytecode v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-bytecode)/Check { test: true }/TargetInner { name_inferred: true, ..: lib_target("kern_bytecode", ["lib"], "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-bytecode\\src\\lib.rs", Edition2021) }
-   0.226238500s  INFO prepare_target{force=false package_id=kern_bytecode v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-bytecode) target="kern_bytecode"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern_bytecode-2f455559c9f9aeb7\test-lib-kern_bytecode`
-
-Caused by:
-    The system cannot find the file specified. (os error 2)
-
-Stack backtrace:
-   0: git_midx_writer_dump
-   1: git_midx_writer_dump
-   2: git_midx_writer_dump
-   3: git_midx_writer_dump
-   4: git_filter_source_repo
-   5: git_filter_source_repo
-   6: git_filter_source_repo
-   7: git_filter_source_repo
-   8: git_filter_source_repo
-   9: git_filter_source_repo
-  10: git_filter_source_repo
-  11: git_libgit2_prerelease
-  12: <unknown>
-  13: <unknown>
-  14: <unknown>
-  15: <unknown>
-  16: git_midx_writer_dump
-  17: git_filter_source_repo
-  18: git_midx_writer_dump
-  19: BaseThreadInitThunk
-  20: RtlUserThreadStart
-   0.230690500s  INFO prepare_target{force=false package_id=kern_flow_pipeline v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-flow-pipeline) target="kern_flow_pipeline"}: cargo::core::compiler::fingerprint: fingerprint error for kern_flow_pipeline v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-flow-pipeline)/Check { test: true }/TargetInner { ..: lib_target("kern_flow_pipeline", ["lib"], "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-flow-pipeline\\lib.rs", Edition2021) }
-   0.230738500s  INFO prepare_target{force=false package_id=kern_flow_pipeline v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-flow-pipeline) target="kern_flow_pipeline"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern_flow_pipeline-56b42c363869de3f\test-lib-kern_flow_pipeline`
-
-Caused by:
-    The system cannot find the file specified. (os error 2)
-
-Stack backtrace:
-   0: git_midx_writer_dump
-   1: git_midx_writer_dump
-   2: git_midx_writer_dump
-   3: git_midx_writer_dump
-   4: git_filter_source_repo
-   5: git_filter_source_repo
-   6: git_filter_source_repo
-   7: git_filter_source_repo
-   8: git_filter_source_repo
-   9: git_filter_source_repo
-  10: git_filter_source_repo
-  11: git_libgit2_prerelease
-  12: <unknown>
-  13: <unknown>
-  14: <unknown>
-  15: <unknown>
-  16: git_midx_writer_dump
-  17: git_filter_source_repo
-  18: git_midx_writer_dump
-  19: BaseThreadInitThunk
-  20: RtlUserThreadStart
-   0.232079800s  INFO prepare_target{force=false package_id=kern_graph_builder v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-graph-builder) target="kern_graph_builder"}: cargo::core::compiler::fingerprint: fingerprint error for kern_graph_builder v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-graph-builder)/Check { test: true }/TargetInner { ..: lib_target("kern_graph_builder", ["lib"], "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-graph-builder\\src\\lib.rs", Edition2021) }
-   0.232135300s  INFO prepare_target{force=false package_id=kern_graph_builder v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-graph-builder) target="kern_graph_builder"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern_graph_builder-70bb2ac7f3006e72\test-lib-kern_graph_builder`
-
-Caused by:
-    The system cannot find the file specified. (os error 2)
-
-Stack backtrace:
-   0: git_midx_writer_dump
-   1: git_midx_writer_dump
-   2: git_midx_writer_dump
-   3: git_midx_writer_dump
-   4: git_filter_source_repo
-   5: git_filter_source_repo
-   6: git_filter_source_repo
-   7: git_filter_source_repo
-   8: git_filter_source_repo
-   9: git_filter_source_repo
-  10: git_filter_source_repo
-  11: git_libgit2_prerelease
-  12: <unknown>
-  13: <unknown>
-  14: <unknown>
-  15: <unknown>
-  16: git_midx_writer_dump
-  17: git_filter_source_repo
-  18: git_midx_writer_dump
-  19: BaseThreadInitThunk
-  20: RtlUserThreadStart
-   0.253107700s  INFO prepare_target{force=false package_id=kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser) target="kern_parser"}: cargo::core::compiler::fingerprint: fingerprint error for kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser)/Check { test: true }/TargetInner { name_inferred: true, ..: lib_target("kern_parser", ["lib"], "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-parser\\src\\lib.rs", Edition2021) }
-   0.253164300s  INFO prepare_target{force=false package_id=kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser) target="kern_parser"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern_parser-87f17a8b92bf24e0\test-lib-kern_parser`
-
-Caused by:
-    The system cannot find the file specified. (os error 2)
-
-Stack backtrace:
-   0: git_midx_writer_dump
-   1: git_midx_writer_dump
-   2: git_midx_writer_dump
-   3: git_midx_writer_dump
-   4: git_filter_source_repo
-   5: git_filter_source_repo
-   6: git_filter_source_repo
-   7: git_filter_source_repo
-   8: git_filter_source_repo
-   9: git_filter_source_repo
-  10: git_filter_source_repo
-  11: git_libgit2_prerelease
-  12: <unknown>
-  13: <unknown>
-  14: <unknown>
-  15: <unknown>
-  16: git_midx_writer_dump
-  17: git_filter_source_repo
-  18: git_midx_writer_dump
-  19: BaseThreadInitThunk
-  20: RtlUserThreadStart
-   0.254817700s  INFO prepare_target{force=false package_id=rstest v0.18.2 target="rstest"}: cargo::core::compiler::fingerprint: fingerprint error for rstest v0.18.2/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("rstest", ["lib"], "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\rstest-0.18.2\\src\\lib.rs", Edition2021) }
-   0.254908700s  INFO prepare_target{force=false package_id=rstest v0.18.2 target="rstest"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\rstest-fabc17133ddd98be\lib-rstest`
-
-Caused by:
-    The system cannot find the file specified. (os error 2)
-
-Stack backtrace:
-   0: git_midx_writer_dump
-   1: git_midx_writer_dump
-   2: git_midx_writer_dump
-   3: git_midx_writer_dump
-   4: git_filter_source_repo
-   5: git_filter_source_repo
-   6: git_filter_source_repo
-   7: git_filter_source_repo
-   8: git_filter_source_repo
-   9: git_filter_source_repo
-  10: git_filter_source_repo
-  11: git_filter_source_repo
-  12: git_libgit2_prerelease
-  13: <unknown>
-  14: <unknown>
-  15: <unknown>
-  16: <unknown>
-  17: git_midx_writer_dump
-  18: git_filter_source_repo
-  19: git_midx_writer_dump
-  20: BaseThreadInitThunk
-  21: RtlUserThreadStart
-   0.256761200s  INFO prepare_target{force=false package_id=futures v0.3.31 target="futures"}: cargo::core::compiler::fingerprint: fingerprint error for futures v0.3.31/Check { test: false }/TargetInner { ..: lib_target("futures", ["lib"], "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\futures-0.3.31\\src\\lib.rs", Edition2018) }
-   0.256812300s  INFO prepare_target{force=false package_id=futures v0.3.31 target="futures"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\futures-2f260bce26cf3fd8\lib-futures`
-
-Caused by:
-    The system cannot find the file specified. (os error 2)
-
-Stack backtrace:
-   0: git_midx_writer_dump
-   1: git_midx_writer_dump
-   2: git_midx_writer_dump
-   3: git_midx_writer_dump
-   4: git_filter_source_repo
-   5: git_filter_source_repo
-   6: git_filter_source_repo
-   7: git_filter_source_repo
-   8: git_filter_source_repo
-   9: git_filter_source_repo
-  10: git_filter_source_repo
-  11: git_filter_source_repo
-  12: git_filter_source_repo
-  13: git_libgit2_prerelease
-  14: <unknown>
-  15: <unknown>
-  16: <unknown>
-  17: <unknown>
-  18: git_midx_writer_dump
-  19: git_filter_source_repo
-  20: git_midx_writer_dump
-  21: BaseThreadInitThunk
-  22: RtlUserThreadStart
-   0.263017200s  INFO prepare_target{force=false package_id=futures-executor v0.3.31 target="futures_executor"}: cargo::core::compiler::fingerprint: fingerprint error for futures-executor v0.3.31/Check { test: false }/TargetInner { ..: lib_target("futures_executor", ["lib"], "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\futures-executor-0.3.31\\src\\lib.rs", Edition2018) }
-   0.263077800s  INFO prepare_target{force=false package_id=futures-executor v0.3.31 target="futures_executor"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\futures-executor-d90c3fcad4ec952d\lib-futures_executor`
+   1.683815800s  INFO prepare_target{force=false package_id=futures-executor v0.3.31 target="futures_executor"}: cargo::core::compiler::fingerprint: fingerprint error for futures-executor v0.3.31/Check { test: false }/TargetInner { ..: lib_target("futures_executor", ["lib"], "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\futures-executor-0.3.31\\src\\lib.rs", Edition2018) }
+   1.683868400s  INFO prepare_target{force=false package_id=futures-executor v0.3.31 target="futures_executor"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\futures-executor-d90c3fcad4ec952d\lib-futures_executor`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -707,8 +593,8 @@ Stack backtrace:
   21: git_midx_writer_dump
   22: BaseThreadInitThunk
   23: RtlUserThreadStart
-   0.264801800s  INFO prepare_target{force=false package_id=futures-util v0.3.31 target="futures_util"}: cargo::core::compiler::fingerprint: fingerprint error for futures-util v0.3.31/Check { test: false }/TargetInner { ..: lib_target("futures_util", ["lib"], "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\futures-util-0.3.31\\src\\lib.rs", Edition2018) }
-   0.264850300s  INFO prepare_target{force=false package_id=futures-util v0.3.31 target="futures_util"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\futures-util-97773a0493b0c782\lib-futures_util`
+   1.685160100s  INFO prepare_target{force=false package_id=futures-util v0.3.31 target="futures_util"}: cargo::core::compiler::fingerprint: fingerprint error for futures-util v0.3.31/Check { test: false }/TargetInner { ..: lib_target("futures_util", ["lib"], "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\futures-util-0.3.31\\src\\lib.rs", Edition2018) }
+   1.685200800s  INFO prepare_target{force=false package_id=futures-util v0.3.31 target="futures_util"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\futures-util-97773a0493b0c782\lib-futures_util`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -739,8 +625,8 @@ Stack backtrace:
   22: git_midx_writer_dump
   23: BaseThreadInitThunk
   24: RtlUserThreadStart
-   0.266572600s  INFO prepare_target{force=false package_id=futures-macro v0.3.31 target="futures_macro"}: cargo::core::compiler::fingerprint: fingerprint error for futures-macro v0.3.31/Build/TargetInner { for_host: true, proc_macro: true, ..: lib_target("futures_macro", ["proc-macro"], "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\futures-macro-0.3.31\\src\\lib.rs", Edition2018) }
-   0.266621300s  INFO prepare_target{force=false package_id=futures-macro v0.3.31 target="futures_macro"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\futures-macro-7ddb333b39fb1b99\lib-futures_macro`
+   1.686840600s  INFO prepare_target{force=false package_id=futures-macro v0.3.31 target="futures_macro"}: cargo::core::compiler::fingerprint: fingerprint error for futures-macro v0.3.31/Build/TargetInner { for_host: true, proc_macro: true, ..: lib_target("futures_macro", ["proc-macro"], "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\futures-macro-0.3.31\\src\\lib.rs", Edition2018) }
+   1.686886200s  INFO prepare_target{force=false package_id=futures-macro v0.3.31 target="futures_macro"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\futures-macro-7ddb333b39fb1b99\lib-futures_macro`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -772,8 +658,8 @@ Stack backtrace:
   23: git_midx_writer_dump
   24: BaseThreadInitThunk
   25: RtlUserThreadStart
-   0.267650500s  INFO prepare_target{force=false package_id=proc-macro2 v1.0.104 target="proc_macro2"}: cargo::core::compiler::fingerprint: fingerprint error for proc-macro2 v1.0.104/Build/TargetInner { ..: lib_target("proc_macro2", ["lib"], "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\proc-macro2-1.0.104\\src\\lib.rs", Edition2021) }
-   0.267697400s  INFO prepare_target{force=false package_id=proc-macro2 v1.0.104 target="proc_macro2"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\proc-macro2-48dcac74067616df\lib-proc_macro2`
+   1.687736500s  INFO prepare_target{force=false package_id=proc-macro2 v1.0.104 target="proc_macro2"}: cargo::core::compiler::fingerprint: fingerprint error for proc-macro2 v1.0.104/Build/TargetInner { ..: lib_target("proc_macro2", ["lib"], "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\proc-macro2-1.0.104\\src\\lib.rs", Edition2021) }
+   1.702521700s  INFO prepare_target{force=false package_id=proc-macro2 v1.0.104 target="proc_macro2"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\proc-macro2-48dcac74067616df\lib-proc_macro2`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -806,8 +692,8 @@ Stack backtrace:
   24: git_midx_writer_dump
   25: BaseThreadInitThunk
   26: RtlUserThreadStart
-   0.271840100s  INFO prepare_target{force=false package_id=proc-macro2 v1.0.104 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for proc-macro2 v1.0.104/RunCustomBuild/TargetInner { ..: custom_build_target("build-script-build", "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\proc-macro2-1.0.104\\build.rs", Edition2021) }
-   0.271925700s  INFO prepare_target{force=false package_id=proc-macro2 v1.0.104 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\proc-macro2-07f5aeaff04384ca\run-build-script-build-script-build`
+   1.705105600s  INFO prepare_target{force=false package_id=proc-macro2 v1.0.104 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for proc-macro2 v1.0.104/RunCustomBuild/TargetInner { ..: custom_build_target("build-script-build", "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\proc-macro2-1.0.104\\build.rs", Edition2021) }
+   1.705189300s  INFO prepare_target{force=false package_id=proc-macro2 v1.0.104 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\proc-macro2-07f5aeaff04384ca\run-build-script-build-script-build`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -842,8 +728,8 @@ Stack backtrace:
   26: git_midx_writer_dump
   27: BaseThreadInitThunk
   28: RtlUserThreadStart
-   0.272655800s  INFO prepare_target{force=false package_id=proc-macro2 v1.0.104 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for proc-macro2 v1.0.104/Build/TargetInner { ..: custom_build_target("build-script-build", "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\proc-macro2-1.0.104\\build.rs", Edition2021) }
-   0.272692700s  INFO prepare_target{force=false package_id=proc-macro2 v1.0.104 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\proc-macro2-7d029da569cf7233\build-script-build-script-build`
+   1.705815800s  INFO prepare_target{force=false package_id=proc-macro2 v1.0.104 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for proc-macro2 v1.0.104/Build/TargetInner { ..: custom_build_target("build-script-build", "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\proc-macro2-1.0.104\\build.rs", Edition2021) }
+   1.705884300s  INFO prepare_target{force=false package_id=proc-macro2 v1.0.104 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\proc-macro2-7d029da569cf7233\build-script-build-script-build`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -878,8 +764,8 @@ Stack backtrace:
   26: git_midx_writer_dump
   27: BaseThreadInitThunk
   28: RtlUserThreadStart
-   0.274347100s  INFO prepare_target{force=false package_id=quote v1.0.42 target="quote"}: cargo::core::compiler::fingerprint: fingerprint error for quote v1.0.42/Build/TargetInner { ..: lib_target("quote", ["lib"], "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\quote-1.0.42\\src\\lib.rs", Edition2018) }
-   0.274393200s  INFO prepare_target{force=false package_id=quote v1.0.42 target="quote"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\quote-daa13cd727f537e0\lib-quote`
+   1.740979800s  INFO prepare_target{force=false package_id=quote v1.0.42 target="quote"}: cargo::core::compiler::fingerprint: fingerprint error for quote v1.0.42/Build/TargetInner { ..: lib_target("quote", ["lib"], "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\quote-1.0.42\\src\\lib.rs", Edition2018) }
+   1.741021700s  INFO prepare_target{force=false package_id=quote v1.0.42 target="quote"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\quote-daa13cd727f537e0\lib-quote`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -912,8 +798,8 @@ Stack backtrace:
   24: git_midx_writer_dump
   25: BaseThreadInitThunk
   26: RtlUserThreadStart
-   0.277610100s  INFO prepare_target{force=false package_id=quote v1.0.42 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for quote v1.0.42/RunCustomBuild/TargetInner { ..: custom_build_target("build-script-build", "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\quote-1.0.42\\build.rs", Edition2018) }
-   0.277704400s  INFO prepare_target{force=false package_id=quote v1.0.42 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\quote-8080ea7385d148b8\run-build-script-build-script-build`
+   1.742698200s  INFO prepare_target{force=false package_id=quote v1.0.42 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for quote v1.0.42/RunCustomBuild/TargetInner { ..: custom_build_target("build-script-build", "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\quote-1.0.42\\build.rs", Edition2018) }
+   1.742755300s  INFO prepare_target{force=false package_id=quote v1.0.42 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\quote-8080ea7385d148b8\run-build-script-build-script-build`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -948,8 +834,8 @@ Stack backtrace:
   26: git_midx_writer_dump
   27: BaseThreadInitThunk
   28: RtlUserThreadStart
-   0.278668100s  INFO prepare_target{force=false package_id=quote v1.0.42 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for quote v1.0.42/Build/TargetInner { ..: custom_build_target("build-script-build", "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\quote-1.0.42\\build.rs", Edition2018) }
-   0.278784100s  INFO prepare_target{force=false package_id=quote v1.0.42 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\quote-3db939cd83aaa4bc\build-script-build-script-build`
+   1.743186500s  INFO prepare_target{force=false package_id=quote v1.0.42 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for quote v1.0.42/Build/TargetInner { ..: custom_build_target("build-script-build", "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\quote-1.0.42\\build.rs", Edition2018) }
+   1.743215300s  INFO prepare_target{force=false package_id=quote v1.0.42 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\quote-3db939cd83aaa4bc\build-script-build-script-build`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -984,8 +870,8 @@ Stack backtrace:
   26: git_midx_writer_dump
   27: BaseThreadInitThunk
   28: RtlUserThreadStart
-   0.280219100s  INFO prepare_target{force=false package_id=syn v2.0.112 target="syn"}: cargo::core::compiler::fingerprint: fingerprint error for syn v2.0.112/Build/TargetInner { ..: lib_target("syn", ["lib"], "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\syn-2.0.112\\src\\lib.rs", Edition2021) }
-   0.280285000s  INFO prepare_target{force=false package_id=syn v2.0.112 target="syn"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\syn-abf579c5861d1e3b\lib-syn`
+   1.746587100s  INFO prepare_target{force=false package_id=syn v2.0.112 target="syn"}: cargo::core::compiler::fingerprint: fingerprint error for syn v2.0.112/Build/TargetInner { ..: lib_target("syn", ["lib"], "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\syn-2.0.112\\src\\lib.rs", Edition2021) }
+   1.746699600s  INFO prepare_target{force=false package_id=syn v2.0.112 target="syn"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\syn-abf579c5861d1e3b\lib-syn`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -1018,8 +904,8 @@ Stack backtrace:
   24: git_midx_writer_dump
   25: BaseThreadInitThunk
   26: RtlUserThreadStart
-   0.283673500s  INFO prepare_target{force=false package_id=rstest_macros v0.18.2 target="rstest_macros"}: cargo::core::compiler::fingerprint: fingerprint error for rstest_macros v0.18.2/Build/TargetInner { name_inferred: true, for_host: true, proc_macro: true, ..: lib_target("rstest_macros", ["proc-macro"], "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\rstest_macros-0.18.2\\src\\lib.rs", Edition2021) }
-   0.283842400s  INFO prepare_target{force=false package_id=rstest_macros v0.18.2 target="rstest_macros"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\rstest_macros-62210b736a54c9ca\lib-rstest_macros`
+   1.750231500s  INFO prepare_target{force=false package_id=rstest_macros v0.18.2 target="rstest_macros"}: cargo::core::compiler::fingerprint: fingerprint error for rstest_macros v0.18.2/Build/TargetInner { name_inferred: true, for_host: true, proc_macro: true, ..: lib_target("rstest_macros", ["proc-macro"], "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\rstest_macros-0.18.2\\src\\lib.rs", Edition2021) }
+   1.750318800s  INFO prepare_target{force=false package_id=rstest_macros v0.18.2 target="rstest_macros"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\rstest_macros-62210b736a54c9ca\lib-rstest_macros`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -1048,8 +934,8 @@ Stack backtrace:
   20: git_midx_writer_dump
   21: BaseThreadInitThunk
   22: RtlUserThreadStart
-   0.290830200s  INFO prepare_target{force=false package_id=rstest_macros v0.18.2 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for rstest_macros v0.18.2/RunCustomBuild/TargetInner { ..: custom_build_target("build-script-build", "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\rstest_macros-0.18.2\\build.rs", Edition2021) }
-   0.290877100s  INFO prepare_target{force=false package_id=rstest_macros v0.18.2 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\rstest_macros-4a6324055f0d9b59\run-build-script-build-script-build`
+   1.770353400s  INFO prepare_target{force=false package_id=rstest_macros v0.18.2 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for rstest_macros v0.18.2/RunCustomBuild/TargetInner { ..: custom_build_target("build-script-build", "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\rstest_macros-0.18.2\\build.rs", Edition2021) }
+   1.770510200s  INFO prepare_target{force=false package_id=rstest_macros v0.18.2 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\rstest_macros-4a6324055f0d9b59\run-build-script-build-script-build`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -1080,8 +966,8 @@ Stack backtrace:
   22: git_midx_writer_dump
   23: BaseThreadInitThunk
   24: RtlUserThreadStart
-   0.291390300s  INFO prepare_target{force=false package_id=rstest_macros v0.18.2 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for rstest_macros v0.18.2/Build/TargetInner { ..: custom_build_target("build-script-build", "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\rstest_macros-0.18.2\\build.rs", Edition2021) }
-   0.291427800s  INFO prepare_target{force=false package_id=rstest_macros v0.18.2 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\rstest_macros-cdf57a529f9dd405\build-script-build-script-build`
+   1.771327200s  INFO prepare_target{force=false package_id=rstest_macros v0.18.2 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for rstest_macros v0.18.2/Build/TargetInner { ..: custom_build_target("build-script-build", "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\rstest_macros-0.18.2\\build.rs", Edition2021) }
+   1.771390700s  INFO prepare_target{force=false package_id=rstest_macros v0.18.2 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\rstest_macros-cdf57a529f9dd405\build-script-build-script-build`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -1112,8 +998,8 @@ Stack backtrace:
   22: git_midx_writer_dump
   23: BaseThreadInitThunk
   24: RtlUserThreadStart
-   0.296208600s  INFO prepare_target{force=false package_id=serial_test v3.2.0 target="serial_test"}: cargo::core::compiler::fingerprint: fingerprint error for serial_test v3.2.0/Check { test: false }/TargetInner { ..: lib_target("serial_test", ["lib"], "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\serial_test-3.2.0\\src\\lib.rs", Edition2018) }
-   0.296254600s  INFO prepare_target{force=false package_id=serial_test v3.2.0 target="serial_test"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\serial_test-cc63404a1aec3b37\lib-serial_test`
+   1.773716100s  INFO prepare_target{force=false package_id=serial_test v3.2.0 target="serial_test"}: cargo::core::compiler::fingerprint: fingerprint error for serial_test v3.2.0/Check { test: false }/TargetInner { ..: lib_target("serial_test", ["lib"], "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\serial_test-3.2.0\\src\\lib.rs", Edition2018) }
+   1.773757600s  INFO prepare_target{force=false package_id=serial_test v3.2.0 target="serial_test"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\serial_test-cc63404a1aec3b37\lib-serial_test`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -1141,8 +1027,8 @@ Stack backtrace:
   19: git_midx_writer_dump
   20: BaseThreadInitThunk
   21: RtlUserThreadStart
-   0.298179300s  INFO prepare_target{force=false package_id=parking_lot v0.12.5 target="parking_lot"}: cargo::core::compiler::fingerprint: fingerprint error for parking_lot v0.12.5/Check { test: false }/TargetInner { ..: lib_target("parking_lot", ["lib"], "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\parking_lot-0.12.5\\src\\lib.rs", Edition2021) }
-   0.298221700s  INFO prepare_target{force=false package_id=parking_lot v0.12.5 target="parking_lot"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\parking_lot-3f344499be8b5a99\lib-parking_lot`
+   1.775763900s  INFO prepare_target{force=false package_id=parking_lot v0.12.5 target="parking_lot"}: cargo::core::compiler::fingerprint: fingerprint error for parking_lot v0.12.5/Check { test: false }/TargetInner { ..: lib_target("parking_lot", ["lib"], "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\parking_lot-0.12.5\\src\\lib.rs", Edition2021) }
+   1.775876500s  INFO prepare_target{force=false package_id=parking_lot v0.12.5 target="parking_lot"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\parking_lot-3f344499be8b5a99\lib-parking_lot`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -1171,8 +1057,8 @@ Stack backtrace:
   20: git_midx_writer_dump
   21: BaseThreadInitThunk
   22: RtlUserThreadStart
-   0.299719100s  INFO prepare_target{force=false package_id=parking_lot_core v0.9.12 target="parking_lot_core"}: cargo::core::compiler::fingerprint: fingerprint error for parking_lot_core v0.9.12/Check { test: false }/TargetInner { ..: lib_target("parking_lot_core", ["lib"], "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\parking_lot_core-0.9.12\\src\\lib.rs", Edition2021) }
-   0.299761800s  INFO prepare_target{force=false package_id=parking_lot_core v0.9.12 target="parking_lot_core"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\parking_lot_core-fa09327a685e3c98\lib-parking_lot_core`
+   1.779769900s  INFO prepare_target{force=false package_id=parking_lot_core v0.9.12 target="parking_lot_core"}: cargo::core::compiler::fingerprint: fingerprint error for parking_lot_core v0.9.12/Check { test: false }/TargetInner { ..: lib_target("parking_lot_core", ["lib"], "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\parking_lot_core-0.9.12\\src\\lib.rs", Edition2021) }
+   1.779812100s  INFO prepare_target{force=false package_id=parking_lot_core v0.9.12 target="parking_lot_core"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\parking_lot_core-fa09327a685e3c98\lib-parking_lot_core`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -1202,8 +1088,8 @@ Stack backtrace:
   21: git_midx_writer_dump
   22: BaseThreadInitThunk
   23: RtlUserThreadStart
-   0.302139400s  INFO prepare_target{force=false package_id=parking_lot_core v0.9.12 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for parking_lot_core v0.9.12/RunCustomBuild/TargetInner { ..: custom_build_target("build-script-build", "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\parking_lot_core-0.9.12\\build.rs", Edition2021) }
-   0.302197200s  INFO prepare_target{force=false package_id=parking_lot_core v0.9.12 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\parking_lot_core-d7075c44b5f985c0\run-build-script-build-script-build`
+   1.796986600s  INFO prepare_target{force=false package_id=parking_lot_core v0.9.12 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for parking_lot_core v0.9.12/RunCustomBuild/TargetInner { ..: custom_build_target("build-script-build", "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\parking_lot_core-0.9.12\\build.rs", Edition2021) }
+   1.797098800s  INFO prepare_target{force=false package_id=parking_lot_core v0.9.12 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\parking_lot_core-d7075c44b5f985c0\run-build-script-build-script-build`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -1235,8 +1121,8 @@ Stack backtrace:
   23: git_midx_writer_dump
   24: BaseThreadInitThunk
   25: RtlUserThreadStart
-   0.302650700s  INFO prepare_target{force=false package_id=parking_lot_core v0.9.12 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for parking_lot_core v0.9.12/Build/TargetInner { ..: custom_build_target("build-script-build", "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\parking_lot_core-0.9.12\\build.rs", Edition2021) }
-   0.302681500s  INFO prepare_target{force=false package_id=parking_lot_core v0.9.12 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\parking_lot_core-62270fb0de8406d7\build-script-build-script-build`
+   1.797770300s  INFO prepare_target{force=false package_id=parking_lot_core v0.9.12 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for parking_lot_core v0.9.12/Build/TargetInner { ..: custom_build_target("build-script-build", "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\parking_lot_core-0.9.12\\build.rs", Edition2021) }
+   1.797831700s  INFO prepare_target{force=false package_id=parking_lot_core v0.9.12 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\parking_lot_core-62270fb0de8406d7\build-script-build-script-build`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -1268,8 +1154,8 @@ Stack backtrace:
   23: git_midx_writer_dump
   24: BaseThreadInitThunk
   25: RtlUserThreadStart
-   0.305809300s  INFO prepare_target{force=false package_id=serial_test_derive v3.2.0 target="serial_test_derive"}: cargo::core::compiler::fingerprint: fingerprint error for serial_test_derive v3.2.0/Build/TargetInner { for_host: true, proc_macro: true, ..: lib_target("serial_test_derive", ["proc-macro"], "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\serial_test_derive-3.2.0\\src\\lib.rs", Edition2018) }
-   0.305858800s  INFO prepare_target{force=false package_id=serial_test_derive v3.2.0 target="serial_test_derive"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\serial_test_derive-15a79f7cf52f093a\lib-serial_test_derive`
+   1.801117600s  INFO prepare_target{force=false package_id=serial_test_derive v3.2.0 target="serial_test_derive"}: cargo::core::compiler::fingerprint: fingerprint error for serial_test_derive v3.2.0/Build/TargetInner { for_host: true, proc_macro: true, ..: lib_target("serial_test_derive", ["proc-macro"], "C:\\Users\\LENOVO\\.cargo\\registry\\src\\index.crates.io-1949cf8c6b5b557f\\serial_test_derive-3.2.0\\src\\lib.rs", Edition2018) }
+   1.801176900s  INFO prepare_target{force=false package_id=serial_test_derive v3.2.0 target="serial_test_derive"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\serial_test_derive-15a79f7cf52f093a\lib-serial_test_derive`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -1298,8 +1184,8 @@ Stack backtrace:
   20: git_midx_writer_dump
   21: BaseThreadInitThunk
   22: RtlUserThreadStart
-   0.306936800s  INFO prepare_target{force=false package_id=kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser) target="error_recovery"}: cargo::core::compiler::fingerprint: fingerprint error for kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser)/Check { test: true }/TargetInner { kind: "test", name: "error_recovery", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-parser\\tests\\error_recovery.rs", Edition2021) }
-   0.307025200s  INFO prepare_target{force=false package_id=kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser) target="error_recovery"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern_parser-b3c1897ebbfa0019\test-integration-test-error_recovery`
+   1.802067300s  INFO prepare_target{force=false package_id=kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser) target="error_recovery"}: cargo::core::compiler::fingerprint: fingerprint error for kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser)/Check { test: true }/TargetInner { kind: "test", name: "error_recovery", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-parser\\tests\\error_recovery.rs", Edition2021) }
+   1.802141400s  INFO prepare_target{force=false package_id=kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser) target="error_recovery"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern_parser-b3c1897ebbfa0019\test-integration-test-error_recovery`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -1326,8 +1212,8 @@ Stack backtrace:
   18: git_midx_writer_dump
   19: BaseThreadInitThunk
   20: RtlUserThreadStart
-   0.308972500s  INFO prepare_target{force=false package_id=kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser) target="grammar_productions"}: cargo::core::compiler::fingerprint: fingerprint error for kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser)/Check { test: true }/TargetInner { kind: "test", name: "grammar_productions", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-parser\\tests\\grammar_productions.rs", Edition2021) }
-   0.309019400s  INFO prepare_target{force=false package_id=kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser) target="grammar_productions"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern_parser-a7be6bc770cd9687\test-integration-test-grammar_productions`
+   1.805359200s  INFO prepare_target{force=false package_id=kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser) target="grammar_productions"}: cargo::core::compiler::fingerprint: fingerprint error for kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser)/Check { test: true }/TargetInner { kind: "test", name: "grammar_productions", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-parser\\tests\\grammar_productions.rs", Edition2021) }
+   1.805408600s  INFO prepare_target{force=false package_id=kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser) target="grammar_productions"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern_parser-a7be6bc770cd9687\test-integration-test-grammar_productions`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -1354,8 +1240,8 @@ Stack backtrace:
   18: git_midx_writer_dump
   19: BaseThreadInitThunk
   20: RtlUserThreadStart
-   0.311430500s  INFO prepare_target{force=false package_id=kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser) target="grammar_verification"}: cargo::core::compiler::fingerprint: fingerprint error for kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser)/Check { test: true }/TargetInner { kind: "test", name: "grammar_verification", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-parser\\tests\\grammar_verification.rs", Edition2021) }
-   0.311531900s  INFO prepare_target{force=false package_id=kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser) target="grammar_verification"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern_parser-7f5c92ea3f8a4546\test-integration-test-grammar_verification`
+   1.824537400s  INFO prepare_target{force=false package_id=kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser) target="grammar_verification"}: cargo::core::compiler::fingerprint: fingerprint error for kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser)/Check { test: true }/TargetInner { kind: "test", name: "grammar_verification", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-parser\\tests\\grammar_verification.rs", Edition2021) }
+   1.824594500s  INFO prepare_target{force=false package_id=kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser) target="grammar_verification"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern_parser-7f5c92ea3f8a4546\test-integration-test-grammar_verification`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -1382,8 +1268,8 @@ Stack backtrace:
   18: git_midx_writer_dump
   19: BaseThreadInitThunk
   20: RtlUserThreadStart
-   0.313385500s  INFO prepare_target{force=false package_id=kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser) target="validation_edge_cases"}: cargo::core::compiler::fingerprint: fingerprint error for kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser)/Check { test: true }/TargetInner { kind: "test", name: "validation_edge_cases", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-parser\\tests\\validation_edge_cases.rs", Edition2021) }
-   0.313434400s  INFO prepare_target{force=false package_id=kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser) target="validation_edge_cases"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern_parser-2a6922e95ffc6538\test-integration-test-validation_edge_cases`
+   1.826501900s  INFO prepare_target{force=false package_id=kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser) target="validation_edge_cases"}: cargo::core::compiler::fingerprint: fingerprint error for kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser)/Check { test: true }/TargetInner { kind: "test", name: "validation_edge_cases", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-parser\\tests\\validation_edge_cases.rs", Edition2021) }
+   1.826546600s  INFO prepare_target{force=false package_id=kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser) target="validation_edge_cases"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern_parser-2a6922e95ffc6538\test-integration-test-validation_edge_cases`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -1410,8 +1296,8 @@ Stack backtrace:
   18: git_midx_writer_dump
   19: BaseThreadInitThunk
   20: RtlUserThreadStart
-   0.315025400s  INFO prepare_target{force=false package_id=kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser) target="comprehensive_test"}: cargo::core::compiler::fingerprint: fingerprint error for kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser)/Check { test: false }/TargetInner { kind: "example", name: "comprehensive_test", tested: false, benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-parser\\examples\\comprehensive_test.rs", Edition2021) }
-   0.315080000s  INFO prepare_target{force=false package_id=kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser) target="comprehensive_test"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern_parser-b6e0f0d13336f459\example-comprehensive_test`
+   1.828262500s  INFO prepare_target{force=false package_id=kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser) target="comprehensive_test"}: cargo::core::compiler::fingerprint: fingerprint error for kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser)/Check { test: false }/TargetInner { kind: "example", name: "comprehensive_test", tested: false, benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-parser\\examples\\comprehensive_test.rs", Edition2021) }
+   1.828360200s  INFO prepare_target{force=false package_id=kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser) target="comprehensive_test"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern_parser-b6e0f0d13336f459\example-comprehensive_test`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -1438,8 +1324,8 @@ Stack backtrace:
   18: git_midx_writer_dump
   19: BaseThreadInitThunk
   20: RtlUserThreadStart
-   0.316280700s  INFO prepare_target{force=false package_id=kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser) target="test_parser"}: cargo::core::compiler::fingerprint: fingerprint error for kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser)/Check { test: false }/TargetInner { kind: "example", name: "test_parser", tested: false, benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-parser\\examples\\test_parser.rs", Edition2021) }
-   0.316334900s  INFO prepare_target{force=false package_id=kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser) target="test_parser"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern_parser-274a16f6ee994856\example-test_parser`
+   1.829894600s  INFO prepare_target{force=false package_id=kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser) target="test_parser"}: cargo::core::compiler::fingerprint: fingerprint error for kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser)/Check { test: false }/TargetInner { kind: "example", name: "test_parser", tested: false, benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-parser\\examples\\test_parser.rs", Edition2021) }
+   1.830078800s  INFO prepare_target{force=false package_id=kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser) target="test_parser"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern_parser-274a16f6ee994856\example-test_parser`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -1466,8 +1352,8 @@ Stack backtrace:
   18: git_midx_writer_dump
   19: BaseThreadInitThunk
   20: RtlUserThreadStart
-   0.317627700s  INFO prepare_target{force=false package_id=kern_rule_engine v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-rule-engine) target="kern_rule_engine"}: cargo::core::compiler::fingerprint: fingerprint error for kern_rule_engine v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-rule-engine)/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("kern_rule_engine", ["lib"], "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-rule-engine\\src\\lib.rs", Edition2021) }
-   0.317675300s  INFO prepare_target{force=false package_id=kern_rule_engine v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-rule-engine) target="kern_rule_engine"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern_rule_engine-ccae4ff01201d43d\lib-kern_rule_engine`
+   1.831128700s  INFO prepare_target{force=false package_id=kern_rule_engine v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-rule-engine) target="kern_rule_engine"}: cargo::core::compiler::fingerprint: fingerprint error for kern_rule_engine v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-rule-engine)/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("kern_rule_engine", ["lib"], "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-rule-engine\\src\\lib.rs", Edition2021) }
+   1.831186700s  INFO prepare_target{force=false package_id=kern_rule_engine v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-rule-engine) target="kern_rule_engine"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern_rule_engine-ccae4ff01201d43d\lib-kern_rule_engine`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -1494,8 +1380,8 @@ Stack backtrace:
   18: git_midx_writer_dump
   19: BaseThreadInitThunk
   20: RtlUserThreadStart
-   0.318562500s  INFO prepare_target{force=false package_id=kern_rule_engine v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-rule-engine) target="kern_rule_engine"}: cargo::core::compiler::fingerprint: fingerprint error for kern_rule_engine v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-rule-engine)/Check { test: true }/TargetInner { name_inferred: true, ..: lib_target("kern_rule_engine", ["lib"], "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-rule-engine\\src\\lib.rs", Edition2021) }
-   0.318603700s  INFO prepare_target{force=false package_id=kern_rule_engine v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-rule-engine) target="kern_rule_engine"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern_rule_engine-96bada1cb64d30e2\test-lib-kern_rule_engine`
+   1.831945800s  INFO prepare_target{force=false package_id=kern_rule_engine v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-rule-engine) target="kern_rule_engine"}: cargo::core::compiler::fingerprint: fingerprint error for kern_rule_engine v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-rule-engine)/Check { test: true }/TargetInner { name_inferred: true, ..: lib_target("kern_rule_engine", ["lib"], "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-rule-engine\\src\\lib.rs", Edition2021) }
+   1.831984000s  INFO prepare_target{force=false package_id=kern_rule_engine v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-rule-engine) target="kern_rule_engine"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern_rule_engine-96bada1cb64d30e2\test-lib-kern_rule_engine`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -1522,8 +1408,8 @@ Stack backtrace:
   18: git_midx_writer_dump
   19: BaseThreadInitThunk
   20: RtlUserThreadStart
-   0.319448900s  INFO prepare_target{force=false package_id=kern_vm v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-vm) target="kern_vm"}: cargo::core::compiler::fingerprint: fingerprint error for kern_vm v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-vm)/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("kern_vm", ["lib"], "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-vm\\src\\lib.rs", Edition2021) }
-   0.319487500s  INFO prepare_target{force=false package_id=kern_vm v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-vm) target="kern_vm"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern_vm-b4d01c5a936dc380\lib-kern_vm`
+   1.832878700s  INFO prepare_target{force=false package_id=kern_vm v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-vm) target="kern_vm"}: cargo::core::compiler::fingerprint: fingerprint error for kern_vm v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-vm)/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("kern_vm", ["lib"], "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-vm\\src\\lib.rs", Edition2021) }
+   1.832916400s  INFO prepare_target{force=false package_id=kern_vm v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-vm) target="kern_vm"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern_vm-b4d01c5a936dc380\lib-kern_vm`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -1550,8 +1436,8 @@ Stack backtrace:
   18: git_midx_writer_dump
   19: BaseThreadInitThunk
   20: RtlUserThreadStart
-   0.320381000s  INFO prepare_target{force=false package_id=kern_vm v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-vm) target="kern_vm"}: cargo::core::compiler::fingerprint: fingerprint error for kern_vm v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-vm)/Check { test: true }/TargetInner { name_inferred: true, ..: lib_target("kern_vm", ["lib"], "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-vm\\src\\lib.rs", Edition2021) }
-   0.320423300s  INFO prepare_target{force=false package_id=kern_vm v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-vm) target="kern_vm"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern_vm-fcf274cd89d53b64\test-lib-kern_vm`
+   1.834027900s  INFO prepare_target{force=false package_id=kern_vm v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-vm) target="kern_vm"}: cargo::core::compiler::fingerprint: fingerprint error for kern_vm v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-vm)/Check { test: true }/TargetInner { name_inferred: true, ..: lib_target("kern_vm", ["lib"], "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-vm\\src\\lib.rs", Edition2021) }
+   1.834068600s  INFO prepare_target{force=false package_id=kern_vm v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-vm) target="kern_vm"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern_vm-fcf274cd89d53b64\test-lib-kern_vm`
 
 Caused by:
     The system cannot find the file specified. (os error 2)
@@ -1580,29 +1466,32 @@ Stack backtrace:
   20: RtlUserThreadStart
    Compiling proc-macro2 v1.0.104
    Compiling quote v1.0.42
-    Checking kern_parser v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-parser)
    Compiling parking_lot_core v0.9.12
+   Compiling rstest_macros v0.18.2
 error: could not compile `quote` (build script) due to 1 previous error
 warning: build failed, waiting for other jobs to finish...
-   Compiling rstest_macros v0.18.2
-error: could not compile `parking_lot_core` (build script) due to 1 previous error
-    Checking kern-ast v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-ast)
-error: could not compile `proc-macro2` (build script) due to 1 previous error
-    Checking kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)
-error: could not compile `kern_parser` (lib) due to 4 previous errors; 4 warnings emitted
-error: could not compile `kern-compiler` (test "ast_tests") due to 2 previous errors
+    Checking kern_graph_builder v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-graph-builder)
 error: could not compile `rstest_macros` (build script) due to 1 previous error
-error: could not compile `kern-compiler` (test "flow_pipeline_tests") due to 3 previous errors
-error: could not compile `kern-compiler` (test "assertions") due to 1 previous error; 1 warning emitted
-error: could not compile `kern-ast` (lib) due to 24 previous errors; 4 warnings emitted
-error: could not compile `kern-compiler` (test "main_test_runner") due to 86 previous errors; 12 warnings emitted
-error: could not compile `kern-compiler` (test "edge_case_tests") due to 4 previous errors
-error: could not compile `kern-compiler` (test "semantic_tests") due to 3 previous errors
+error: could not compile `parking_lot_core` (build script) due to 1 previous error
+    Checking kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)
+error: could not compile `proc-macro2` (build script) due to 1 previous error
 error: could not compile `kern-compiler` (test "rule_engine_tests") due to 3 previous errors
-error: could not compile `kern-compiler` (test "error_recovery_tests") due to 4 previous errors
+error: could not compile `kern-compiler` (test "ast_tests") due to 2 previous errors
 error: could not compile `kern-compiler` (test "test_runner") due to 1 previous error; 1 warning emitted
-    Checking kern_flow_pipeline v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-flow-pipeline)
+    Checking kern_bytecode v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-bytecode)
 error: could not compile `kern-compiler` (test "lexer_tests") due to 4 previous errors
+    Checking kern_rule_engine v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-rule-engine)
+error: could not compile `kern-compiler` (test "edge_case_tests") due to 4 previous errors
+error: could not compile `kern-compiler` (test "assertions") due to 1 previous error; 1 warning emitted
+    Checking kern-semantic v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-semantic)
+error: could not compile `kern_bytecode` (lib) due to 1 previous error; 1 warning emitted
+error: could not compile `kern-semantic` (lib test) due to 1 previous error
+error: could not compile `kern-semantic` (lib) due to 1 previous error
+error: could not compile `kern_bytecode` (lib test) due to 1 previous error; 2 warnings emitted
+error: could not compile `kern-compiler` (test "flow_pipeline_tests") due to 3 previous errors
+error: could not compile `kern-compiler` (test "error_recovery_tests") due to 4 previous errors
+error: could not compile `kern_rule_engine` (lib) due to 54 previous errors; 21 warnings emitted
 error: could not compile `kern-compiler` (test "parser_tests") due to 4 previous errors
-error: could not compile `kern_flow_pipeline` (lib test) due to 1 previous error; 10 warnings emitted
-error: could not compile `kern-ast` (lib test) due to 24 previous errors; 5 warnings emitted
+error: could not compile `kern-compiler` (test "semantic_tests") due to 3 previous errors
+error: could not compile `kern_rule_engine` (lib test) due to 96 previous errors; 24 warnings emitted
+error: could not compile `kern-compiler` (test "main_test_runner") due to 86 previous errors; 12 warnings emitted

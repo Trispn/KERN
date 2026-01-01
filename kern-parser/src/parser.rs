@@ -25,12 +25,22 @@ pub enum ParseErrorType {
 
 impl std::fmt::Display for ParseError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Parse error at {}:{}: {}", self.line, self.column, self.message)
+        write!(
+            f,
+            "Parse error at {}:{}: {}",
+            self.line, self.column, self.message
+        )
     }
 }
 
 impl ParseError {
-    pub fn unexpected_token(expected: &str, actual: &str, line: usize, column: usize, position: usize) -> Self {
+    pub fn unexpected_token(
+        expected: &str,
+        actual: &str,
+        line: usize,
+        column: usize,
+        position: usize,
+    ) -> Self {
         ParseError {
             message: format!("Expected {}, got {}", expected, actual),
             line,
@@ -57,9 +67,18 @@ impl ParseError {
         }
     }
 
-    pub fn mismatched_delimiters(opening: &str, closing: &str, line: usize, column: usize, position: usize) -> Self {
+    pub fn mismatched_delimiters(
+        opening: &str,
+        closing: &str,
+        line: usize,
+        column: usize,
+        position: usize,
+    ) -> Self {
         ParseError {
-            message: format!("Mismatched delimiters: expected '{}' to close '{}'", closing, opening),
+            message: format!(
+                "Mismatched delimiters: expected '{}' to close '{}'",
+                closing, opening
+            ),
             line,
             column,
             position,
@@ -79,7 +98,7 @@ pub struct Parser {
     lexer: Lexer,
     current_token: Token,
     errors: Vec<ParseError>,
-    recovery_enabled: bool,  // Flag to enable/disable error recovery
+    recovery_enabled: bool, // Flag to enable/disable error recovery
 }
 
 impl Parser {
@@ -156,7 +175,12 @@ impl Parser {
                 definitions.push(definition);
             } else if self.recovery_enabled {
                 // If we couldn't parse a definition, skip tokens until we find the start of another definition
-                self.skip_until(&[TokenType::Entity, TokenType::Rule, TokenType::Flow, TokenType::Constraint]);
+                self.skip_until(&[
+                    TokenType::Entity,
+                    TokenType::Rule,
+                    TokenType::Flow,
+                    TokenType::Constraint,
+                ]);
             } else {
                 // If recovery is disabled, return with errors
                 break;
@@ -175,24 +199,27 @@ impl Parser {
             TokenType::Entity => {
                 let entity = self.parse_entity_def()?;
                 Ok(Some(Definition::Entity(entity)))
-            },
+            }
             TokenType::Rule => {
                 let rule = self.parse_rule_def()?;
                 Ok(Some(Definition::Rule(rule)))
-            },
+            }
             TokenType::Flow => {
                 let flow = self.parse_flow_def()?;
                 Ok(Some(Definition::Flow(flow)))
-            },
+            }
             TokenType::Constraint => {
                 let constraint = self.parse_constraint_def()?;
                 Ok(Some(Definition::Constraint(constraint)))
-            },
+            }
             TokenType::Eof => Ok(None),
             _ => {
                 // If we encounter an unexpected token, create an error but continue
                 let error = ParseError {
-                    message: format!("Unexpected token {:?}, expected a definition keyword", self.current_token.token_type),
+                    message: format!(
+                        "Unexpected token {:?}, expected a definition keyword",
+                        self.current_token.token_type
+                    ),
                     line: self.current_token.line,
                     column: self.current_token.column,
                     position: self.current_token.position,
@@ -209,12 +236,15 @@ impl Parser {
     fn parse_entity_def(&mut self) -> Result<EntityDef, Vec<ParseError>> {
         self.expect_token(TokenType::Entity)?;
 
-        let name_token = self.current_token.clone();
+        let _name_token = self.current_token.clone();
         let name = if let TokenType::Identifier(name_str) = &self.current_token.token_type {
             name_str.clone()
         } else {
             let error = ParseError {
-                message: format!("Expected identifier for entity name, got {:?}", self.current_token.token_type),
+                message: format!(
+                    "Expected identifier for entity name, got {:?}",
+                    self.current_token.token_type
+                ),
                 line: self.current_token.line,
                 column: self.current_token.column,
                 position: self.current_token.position,
@@ -226,7 +256,10 @@ impl Parser {
 
         if !self.is_current_token(&TokenType::LeftBrace) {
             let error = ParseError {
-                message: format!("Expected '{{' after entity name, got {:?}", self.current_token.token_type),
+                message: format!(
+                    "Expected '{{' after entity name, got {:?}",
+                    self.current_token.token_type
+                ),
                 line: self.current_token.line,
                 column: self.current_token.column,
                 position: self.current_token.position,
@@ -243,7 +276,10 @@ impl Parser {
             } else {
                 // If we can't parse a field, report an error and try to continue
                 let error = ParseError {
-                    message: format!("Expected field identifier, got {:?}", self.current_token.token_type),
+                    message: format!(
+                        "Expected field identifier, got {:?}",
+                        self.current_token.token_type
+                    ),
                     line: self.current_token.line,
                     column: self.current_token.column,
                     position: self.current_token.position,
@@ -260,7 +296,10 @@ impl Parser {
 
         if !self.is_current_token(&TokenType::RightBrace) {
             let error = ParseError {
-                message: format!("Expected '}}' to close entity definition, got {:?}", self.current_token.token_type),
+                message: format!(
+                    "Expected '}}' to close entity definition, got {:?}",
+                    self.current_token.token_type
+                ),
                 line: self.current_token.line,
                 column: self.current_token.column,
                 position: self.current_token.position,
@@ -286,12 +325,15 @@ impl Parser {
     fn parse_rule_def(&mut self) -> Result<RuleDef, Vec<ParseError>> {
         self.expect_token(TokenType::Rule)?;
 
-        let name_token = self.current_token.clone();
+        let _name_token = self.current_token.clone();
         let name = if let TokenType::Identifier(name_str) = &self.current_token.token_type {
             name_str.clone()
         } else {
             let error = ParseError {
-                message: format!("Expected identifier for rule name, got {:?}", self.current_token.token_type),
+                message: format!(
+                    "Expected identifier for rule name, got {:?}",
+                    self.current_token.token_type
+                ),
                 line: self.current_token.line,
                 column: self.current_token.column,
                 position: self.current_token.position,
@@ -303,7 +345,10 @@ impl Parser {
 
         if !self.is_current_token(&TokenType::Colon) {
             let error = ParseError {
-                message: format!("Expected ':' after rule name, got {:?}", self.current_token.token_type),
+                message: format!(
+                    "Expected ':' after rule name, got {:?}",
+                    self.current_token.token_type
+                ),
                 line: self.current_token.line,
                 column: self.current_token.column,
                 position: self.current_token.position,
@@ -315,7 +360,10 @@ impl Parser {
 
         if !self.is_current_token(&TokenType::If) {
             let error = ParseError {
-                message: format!("Expected 'if' keyword after rule colon, got {:?}", self.current_token.token_type),
+                message: format!(
+                    "Expected 'if' keyword after rule colon, got {:?}",
+                    self.current_token.token_type
+                ),
                 line: self.current_token.line,
                 column: self.current_token.column,
                 position: self.current_token.position,
@@ -329,7 +377,10 @@ impl Parser {
 
         if !self.is_current_token(&TokenType::Then) {
             let error = ParseError {
-                message: format!("Expected 'then' keyword after rule condition, got {:?}", self.current_token.token_type),
+                message: format!(
+                    "Expected 'then' keyword after rule condition, got {:?}",
+                    self.current_token.token_type
+                ),
                 line: self.current_token.line,
                 column: self.current_token.column,
                 position: self.current_token.position,
@@ -341,7 +392,11 @@ impl Parser {
 
         let actions = self.parse_action_list()?;
 
-        Ok(RuleDef { name, condition, actions })
+        Ok(RuleDef {
+            name,
+            condition,
+            actions,
+        })
     }
 
     fn parse_condition(&mut self) -> Result<Condition, Vec<ParseError>> {
@@ -379,7 +434,7 @@ impl Parser {
 
     fn parse_expression(&mut self) -> Result<Expression, Vec<ParseError>> {
         let left = self.parse_term()?;
-        
+
         if self.is_comparison_operator() {
             let op = self.parse_comparator()?;
             let right = self.parse_term()?;
@@ -403,8 +458,12 @@ impl Parser {
     fn is_comparison_operator(&self) -> bool {
         matches!(
             self.current_token.token_type,
-            TokenType::Equal | TokenType::NotEqual | TokenType::Greater | 
-            TokenType::Less | TokenType::GreaterEqual | TokenType::LessEqual
+            TokenType::Equal
+                | TokenType::NotEqual
+                | TokenType::Greater
+                | TokenType::Less
+                | TokenType::GreaterEqual
+                | TokenType::LessEqual
         )
     }
 
@@ -413,35 +472,36 @@ impl Parser {
             TokenType::Equal => {
                 self.next_token();
                 Ok(Comparator::Equal)
-            },
+            }
             TokenType::NotEqual => {
                 self.next_token();
                 Ok(Comparator::NotEqual)
-            },
+            }
             TokenType::Greater => {
                 self.next_token();
                 Ok(Comparator::Greater)
-            },
+            }
             TokenType::Less => {
                 self.next_token();
                 Ok(Comparator::Less)
-            },
+            }
             TokenType::GreaterEqual => {
                 self.next_token();
                 Ok(Comparator::GreaterEqual)
-            },
+            }
             TokenType::LessEqual => {
                 self.next_token();
                 Ok(Comparator::LessEqual)
-            },
-            _ => {
-                Err(vec![ParseError {
-                    message: format!("Expected comparator, got {:?}", self.current_token.token_type),
-                    line: self.current_token.line,
-                    column: self.current_token.column,
-                    position: self.current_token.position,
-                }])
             }
+            _ => Err(vec![ParseError {
+                message: format!(
+                    "Expected comparator, got {:?}",
+                    self.current_token.token_type
+                ),
+                line: self.current_token.line,
+                column: self.current_token.column,
+                position: self.current_token.position,
+            }]),
         }
     }
 
@@ -461,7 +521,10 @@ impl Parser {
                         Ok(Term::QualifiedRef(identifier, field))
                     } else {
                         Err(vec![ParseError {
-                            message: format!("Expected identifier after dot, got {:?}", self.current_token.token_type),
+                            message: format!(
+                                "Expected identifier after dot, got {:?}",
+                                self.current_token.token_type
+                            ),
                             line: self.current_token.line,
                             column: self.current_token.column,
                             position: self.current_token.position,
@@ -470,42 +533,40 @@ impl Parser {
                 } else {
                     Ok(Term::Identifier(identifier))
                 }
-            },
+            }
             TokenType::Number(value) => {
-                let value = *value;  // Copy the value before advancing
+                let value = *value; // Copy the value before advancing
                 self.next_token();
                 Ok(Term::Number(value))
-            },
-            _ => {
-                Err(vec![ParseError {
-                    message: format!("Expected term, got {:?}", self.current_token.token_type),
-                    line: self.current_token.line,
-                    column: self.current_token.column,
-                    position: self.current_token.position,
-                }])
             }
+            _ => Err(vec![ParseError {
+                message: format!("Expected term, got {:?}", self.current_token.token_type),
+                line: self.current_token.line,
+                column: self.current_token.column,
+                position: self.current_token.position,
+            }]),
         }
     }
 
     fn parse_action_list(&mut self) -> Result<Vec<Action>, Vec<ParseError>> {
         let mut actions = Vec::new();
-        
+
         // Parse first action
         if let Some(action) = self.parse_action()? {
             actions.push(action);
         }
-        
+
         // Parse additional actions separated by commas
         while self.is_current_token(&TokenType::Comma) {
             self.next_token(); // consume comma
-            
+
             if let Some(action) = self.parse_action()? {
                 actions.push(action);
             } else {
                 break; // Can't parse more actions
             }
         }
-        
+
         Ok(actions)
     }
 
@@ -543,19 +604,19 @@ impl Parser {
                     let predicate = self.parse_predicate()?;
                     Ok(Some(Action::Predicate(predicate)))
                 }
-            },
+            }
             TokenType::If => {
                 let if_action = self.parse_if_action()?;
                 Ok(Some(Action::Control(ControlAction::If(if_action))))
-            },
+            }
             TokenType::Loop => {
                 let loop_action = self.parse_loop_action()?;
                 Ok(Some(Action::Control(ControlAction::Loop(loop_action))))
-            },
+            }
             TokenType::Halt => {
                 self.next_token();
                 Ok(Some(Action::Control(ControlAction::Halt(HaltAction))))
-            },
+            }
             _ => Ok(None), // Not an action we can parse at this position
         }
     }
@@ -565,58 +626,67 @@ impl Parser {
             name.clone()
         } else {
             return Err(vec![ParseError {
-                message: format!("Expected identifier for predicate name, got {:?}", self.current_token.token_type),
+                message: format!(
+                    "Expected identifier for predicate name, got {:?}",
+                    self.current_token.token_type
+                ),
                 line: self.current_token.line,
                 column: self.current_token.column,
                 position: self.current_token.position,
             }]);
         };
         self.next_token(); // consume identifier
-        
+
         self.expect_token(TokenType::LeftParen)?;
-        
+
         let mut arguments = Vec::new();
         if !self.is_current_token(&TokenType::RightParen) {
             arguments.push(self.parse_term()?);
-            
+
             while self.is_current_token(&TokenType::Comma) {
                 self.next_token(); // consume comma
                 arguments.push(self.parse_term()?);
             }
         }
-        
+
         self.expect_token(TokenType::RightParen)?;
-        
+
         Ok(Predicate { name, arguments })
     }
 
-    fn parse_predicate_as_expression(&mut self, name: String) -> Result<Expression, Vec<ParseError>> {
+    fn parse_predicate_as_expression(
+        &mut self,
+        name: String,
+    ) -> Result<Expression, Vec<ParseError>> {
         self.expect_token(TokenType::LeftParen)?;
-        
+
         let mut arguments = Vec::new();
         if !self.is_current_token(&TokenType::RightParen) {
             arguments.push(self.parse_term()?);
-            
+
             while self.is_current_token(&TokenType::Comma) {
                 self.next_token(); // consume comma
                 arguments.push(self.parse_term()?);
             }
         }
-        
+
         self.expect_token(TokenType::RightParen)?;
-        
+
         Ok(Expression::Predicate(Predicate { name, arguments }))
     }
 
     fn term_to_predicate(&mut self, term: Term) -> Result<Predicate, Vec<ParseError>> {
         match term {
-            Term::Identifier(name) => Ok(Predicate { name, arguments: vec![] }),
+            Term::Identifier(name) => Ok(Predicate {
+                name,
+                arguments: vec![],
+            }),
             _ => Err(vec![ParseError {
                 message: format!("Cannot convert term to predicate: {:?}", term),
                 line: self.current_token.line,
                 column: self.current_token.column,
                 position: self.current_token.position,
-            }])
+            }]),
         }
     }
 
@@ -625,14 +695,14 @@ impl Parser {
         let condition = self.parse_condition()?;
         self.expect_token(TokenType::Then)?;
         let then_actions = self.parse_action_list()?;
-        
+
         let else_actions = if self.is_current_token(&TokenType::Else) {
             self.next_token(); // consume else
             Some(self.parse_action_list()?)
         } else {
             None
         };
-        
+
         Ok(IfAction {
             condition,
             then_actions,
@@ -643,11 +713,11 @@ impl Parser {
     fn parse_loop_action(&mut self) -> Result<LoopAction, Vec<ParseError>> {
         self.expect_token(TokenType::Loop)?;
         self.expect_token(TokenType::LeftBrace)?;
-        
+
         let actions = self.parse_action_list()?;
-        
+
         self.expect_token(TokenType::RightBrace)?;
-        
+
         Ok(LoopAction { actions })
     }
 
@@ -658,7 +728,10 @@ impl Parser {
             name_str.clone()
         } else {
             return Err(vec![ParseError {
-                message: format!("Expected identifier for flow name, got {:?}", self.current_token.token_type),
+                message: format!(
+                    "Expected identifier for flow name, got {:?}",
+                    self.current_token.token_type
+                ),
                 line: self.current_token.line,
                 column: self.current_token.column,
                 position: self.current_token.position,
@@ -668,7 +741,10 @@ impl Parser {
 
         if !self.is_current_token(&TokenType::LeftBrace) {
             return Err(vec![ParseError {
-                message: format!("Expected '{{' after flow name, got {:?}", self.current_token.token_type),
+                message: format!(
+                    "Expected '{{' after flow name, got {:?}",
+                    self.current_token.token_type
+                ),
                 line: self.current_token.line,
                 column: self.current_token.column,
                 position: self.current_token.position,
@@ -680,7 +756,10 @@ impl Parser {
 
         if !self.is_current_token(&TokenType::RightBrace) {
             return Err(vec![ParseError {
-                message: format!("Expected '}}' to close flow definition, got {:?}", self.current_token.token_type),
+                message: format!(
+                    "Expected '}}' to close flow definition, got {:?}",
+                    self.current_token.token_type
+                ),
                 line: self.current_token.line,
                 column: self.current_token.column,
                 position: self.current_token.position,
@@ -698,7 +777,10 @@ impl Parser {
             name_str.clone()
         } else {
             return Err(vec![ParseError {
-                message: format!("Expected identifier for constraint name, got {:?}", self.current_token.token_type),
+                message: format!(
+                    "Expected identifier for constraint name, got {:?}",
+                    self.current_token.token_type
+                ),
                 line: self.current_token.line,
                 column: self.current_token.column,
                 position: self.current_token.position,
@@ -708,7 +790,10 @@ impl Parser {
 
         if !self.is_current_token(&TokenType::Colon) {
             return Err(vec![ParseError {
-                message: format!("Expected ':' after constraint name, got {:?}", self.current_token.token_type),
+                message: format!(
+                    "Expected ':' after constraint name, got {:?}",
+                    self.current_token.token_type
+                ),
                 line: self.current_token.line,
                 column: self.current_token.column,
                 position: self.current_token.position,

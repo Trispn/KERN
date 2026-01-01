@@ -23,7 +23,7 @@ impl FlowEvaluator {
     pub fn evaluate_flow(
         &mut self,
         flow_id: u32,
-        context: &mut FlowExecutionContext,
+        _context: &mut FlowExecutionContext,
     ) -> Result<Value, FlowEvaluationError> {
         // For now, just return a success value
         // In a real implementation, this would evaluate the flow steps
@@ -34,11 +34,13 @@ impl FlowEvaluator {
     pub fn evaluate_step(
         &mut self,
         step_info: FlowStepExecutionInfo,
-        context: &mut FlowExecutionContext,
+        _context: &mut FlowExecutionContext,
     ) -> Result<Value, FlowEvaluationError> {
         // Check if already evaluated
         if step_info.evaluated {
-            return Ok(step_info.cached_result.unwrap_or(Value::Sym("cached".to_string())));
+            return Ok(step_info
+                .cached_result
+                .unwrap_or(Value::Sym("cached".to_string())));
         }
 
         // For now, just return a success value

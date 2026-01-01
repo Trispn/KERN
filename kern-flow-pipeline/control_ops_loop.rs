@@ -1,5 +1,5 @@
+use crate::flow_evaluator::{FlowEvaluationError, FlowEvaluator};
 use crate::flow_execution_context::FlowExecutionContext;
-use crate::flow_evaluator::{FlowEvaluator, FlowEvaluationError};
 use crate::types::Value;
 
 /// Handles loop control operations in the flow pipeline
@@ -15,7 +15,7 @@ impl LoopHandler {
     ) -> Result<Value, FlowEvaluationError> {
         let max_iterations = std::cmp::min(iterations, evaluator.max_iterations);
 
-        for i in 0..max_iterations {
+        for _i in 0..max_iterations {
             // Check if execution should halt
             if context.halted {
                 break;
