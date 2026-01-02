@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use crate::rule_engine::{RuleExecutionInfo, ConflictEntry, ResolutionMode};
+use crate::{RuleExecutionInfo, ConflictEntry, ResolutionMode};
 
 #[derive(Debug, Clone)]
 pub struct ConflictResolver {

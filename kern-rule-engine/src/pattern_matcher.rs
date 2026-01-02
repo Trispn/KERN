@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use crate::rule_engine::{RuleExecutionInfo, RuleMatch};
+use crate::{RuleExecutionInfo, RuleMatch};
 
 // Pattern types for matching
 #[derive(Debug, Clone, PartialEq)]

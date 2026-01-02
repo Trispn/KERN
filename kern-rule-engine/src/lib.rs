@@ -15,21 +15,55 @@ pub use priority_manager::*;
 pub use recursion_guard::*;
 pub use implementation::*;
 
-use kern_graph_builder::{ExecutionGraph, GraphNode, GraphNodeType, EdgeType};
+use kern_graph_builder::{ExecutionGraph, GraphNode, GraphNodeType, EdgeType, SpecializedNode};
 use kern_parser::{Comparator, LogicalOp};
 use std::collections::HashMap;
 
 #[cfg(test)]
 mod tests;
 
+// Define the missing types that are needed by other modules
+#[derive(Debug, Clone)]
+pub struct RuleMatch {
+    pub rule_id: u32,
+    pub bindings: HashMap<String, Value>,
+}
+
+#[derive(Debug, Clone)]
+pub struct ConflictEntry {
+    pub target_symbol_id: u32,
+    pub conflicting_rules: Vec<u32>,
+    pub resolution_mode: ResolutionMode,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum ResolutionMode {
+    Ignore,
+    Override,
+    Merge,
+    Error,
+}
+
 // Define the rule engine execution context
 #[derive(Debug, Clone)]
 pub struct ExecutionContext {
-    pub registers: [Option<Value>; 16],  // R0-R15, using Option for uninitialized values
+    pub registers: Vec<Option<Value>>,  // R0-R15, using Option for uninitialized values
     pub variables: HashMap<String, Value>,
     pub facts: HashMap<String, Value>,
     pub rule_results: HashMap<String, bool>,
     pub current_node_id: Option<u32>,
+}
+
+impl ExecutionContext {
+    pub fn new() -> Self {
+        ExecutionContext {
+            registers: vec![None; 16],  // Initialize with 16 registers (R0-R15)
+            variables: HashMap::new(),
+            facts: HashMap::new(),
+            rule_results: HashMap::new(),
+            current_node_id: None,
+        }
+    }
 }
 
 // Pattern matching structures
@@ -74,7 +108,43 @@ pub struct RulePriority {
     pub conflict_score: u32,  // Score based on conflicts with other rules
 }
 
-#[derive(Debug, Clone, PartialEq)]
+use std::fmt;
+
+// Define a custom trait for cloning boxed functions
+pub trait CloneableFn: Fn(&RulePriority) -> u32 {
+    fn clone_box(&self) -> Box<dyn CloneableFn>;
+}
+
+impl<T> CloneableFn for T
+where
+    T: Fn(&RulePriority) -> u32 + Clone + 'static,
+{
+    fn clone_box(&self) -> Box<dyn CloneableFn> {
+        Box::new(self.clone())
+    }
+}
+
+impl Clone for Box<dyn CloneableFn> {
+    fn clone(&self) -> Self {
+        self.clone_box()
+    }
+}
+
+impl fmt::Debug for Box<dyn CloneableFn> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Custom function")
+    }
+}
+
+impl PartialEq for Box<dyn CloneableFn> {
+    fn eq(&self, _other: &Self) -> bool {
+        // Two function pointers are equal if they point to the same function
+        // For our purposes, we'll consider all custom functions as non-equal
+        std::ptr::eq(self.as_ref(), _other.as_ref())
+    }
+}
+
+#[derive(Clone)]
 pub enum PriorityStrategy {
     /// Standard priority based on explicit settings
     Standard,
@@ -87,7 +157,34 @@ pub enum PriorityStrategy {
     /// Priority based on conflict resolution needs
     ConflictResolution,
     /// Custom priority function
-    Custom(Box<dyn Fn(&RulePriority) -> u32>),
+    Custom(Box<dyn CloneableFn>),
+}
+
+impl fmt::Debug for PriorityStrategy {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            PriorityStrategy::Standard => write!(f, "Standard"),
+            PriorityStrategy::SpecificityFirst => write!(f, "SpecificityFirst"),
+            PriorityStrategy::RecencyBased => write!(f, "RecencyBased"),
+            PriorityStrategy::FrequencyBased => write!(f, "FrequencyBased"),
+            PriorityStrategy::ConflictResolution => write!(f, "ConflictResolution"),
+            PriorityStrategy::Custom(_) => write!(f, "Custom"),
+        }
+    }
+}
+
+impl PartialEq for PriorityStrategy {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (PriorityStrategy::Standard, PriorityStrategy::Standard) => true,
+            (PriorityStrategy::SpecificityFirst, PriorityStrategy::SpecificityFirst) => true,
+            (PriorityStrategy::RecencyBased, PriorityStrategy::RecencyBased) => true,
+            (PriorityStrategy::FrequencyBased, PriorityStrategy::FrequencyBased) => true,
+            (PriorityStrategy::ConflictResolution, PriorityStrategy::ConflictResolution) => true,
+            (PriorityStrategy::Custom(_), PriorityStrategy::Custom(_)) => true, // Consider all custom functions as equal
+            _ => false,
+        }
+    }
 }
 
 // The RuleEngine executes rules based on the execution graph
@@ -107,13 +204,7 @@ pub struct RuleEngine {
 impl RuleEngine {
     pub fn new() -> Self {
         RuleEngine {
-            context: ExecutionContext {
-                registers: [None; 16],
-                variables: HashMap::new(),
-                facts: HashMap::new(),
-                rule_results: HashMap::new(),
-                current_node_id: None,
-            },
+            context: ExecutionContext::new(),
             step_count: 0,
             max_steps: 10000,  // Prevent infinite loops
             priority_queue: Vec::new(),
@@ -213,11 +304,16 @@ impl RuleEngine {
         self.priority_queue.push(node_id);
 
         // Sort the queue based on priority (higher priority first)
-        self.priority_queue.sort_by(|&a, &b| {
-            let priority_a = self.get_rule_priority(a);
-            let priority_b = self.get_rule_priority(b);
-            priority_b.cmp(&priority_a)  // Reverse order for higher priority first
-        });
+        // To avoid borrow checker issues, we'll create a vector of (node_id, priority) pairs
+        let mut priority_pairs: Vec<(u32, u32)> = self.priority_queue
+            .iter()
+            .map(|&node_id| (node_id, self.get_rule_priority(node_id)))
+            .collect();
+
+        priority_pairs.sort_by(|a, b| b.1.cmp(&a.1)); // Sort by priority descending
+
+        // Update the priority queue with the sorted order
+        self.priority_queue = priority_pairs.into_iter().map(|(node_id, _)| node_id).collect();
     }
 
     /// Adds a node to the priority queue using the current strategy
@@ -230,11 +326,16 @@ impl RuleEngine {
         self.priority_queue.push(node_id);
 
         // Sort the queue based on the current priority strategy
-        self.priority_queue.sort_by(|&a, &b| {
-            let priority_a = self.get_rule_priority(a);
-            let priority_b = self.get_rule_priority(b);
-            priority_b.cmp(&priority_a)  // Reverse order for higher priority first
-        });
+        // To avoid borrow checker issues, we'll create a vector of (node_id, priority) pairs
+        let mut priority_pairs: Vec<(u32, u32)> = self.priority_queue
+            .iter()
+            .map(|&node_id| (node_id, self.get_rule_priority(node_id)))
+            .collect();
+
+        priority_pairs.sort_by(|a, b| b.1.cmp(&a.1)); // Sort by priority descending
+
+        // Update the priority queue with the sorted order
+        self.priority_queue = priority_pairs.into_iter().map(|(node_id, _)| node_id).collect();
     }
 
     /// Selects the next node to execute based on priority and scheduling strategy
@@ -244,11 +345,16 @@ impl RuleEngine {
         }
 
         // Sort the priority queue based on the current priority strategy
-        self.priority_queue.sort_by(|&a, &b| {
-            let priority_a = self.get_rule_priority(a);
-            let priority_b = self.get_rule_priority(b);
-            priority_b.cmp(&priority_a)  // Reverse order for higher priority first
-        });
+        // To avoid borrow checker issues, we'll create a vector of (node_id, priority) pairs
+        let mut priority_pairs: Vec<(u32, u32)> = self.priority_queue
+            .iter()
+            .map(|&node_id| (node_id, self.get_rule_priority(node_id)))
+            .collect();
+
+        priority_pairs.sort_by(|a, b| b.1.cmp(&a.1)); // Sort by priority descending
+
+        // Update the priority queue with the sorted order
+        self.priority_queue = priority_pairs.into_iter().map(|(node_id, _)| node_id).collect();
 
         // Return the highest priority node
         self.priority_queue.pop()  // pop from the end since it's sorted in descending order
@@ -268,11 +374,11 @@ impl RuleEngine {
     /// Checks if a rule is eligible for execution
     fn is_rule_eligible(&self, rule_id: u32, graph: &ExecutionGraph) -> bool {
         // Find the rule node in the graph
-        if let Some(node) = graph.nodes.iter().find(|n| n.id == rule_id && n.node_type == GraphNodeType::Rule) {
+        if let Some(specialized_node) = graph.nodes.iter().find(|n| n.get_base().id == rule_id && n.get_base().node_type == kern_graph_builder::GraphNodeType::Rule) {
             // Check if the rule's condition is satisfied
             // For now, we'll just check if it's a valid rule node
             // In a real implementation, we'd evaluate the rule's condition
-            node.node_type == GraphNodeType::Rule
+            specialized_node.get_base().node_type == kern_graph_builder::GraphNodeType::Rule
         } else {
             false
         }
@@ -288,11 +394,16 @@ impl RuleEngine {
             self.resolve_conflicts(&conflicts);
 
             // Re-sort the priority queue based on conflict resolution strategy
-            self.priority_queue.sort_by(|&a, &b| {
-                let priority_a = self.get_rule_priority(a);
-                let priority_b = self.get_rule_priority(b);
-                priority_b.cmp(&priority_a)  // Reverse order for higher priority first
-            });
+            // To avoid borrow checker issues, we'll create a vector of (node_id, priority) pairs
+            let mut priority_pairs: Vec<(u32, u32)> = self.priority_queue
+                .iter()
+                .map(|&node_id| (node_id, self.get_rule_priority(node_id)))
+                .collect();
+
+            priority_pairs.sort_by(|a, b| b.1.cmp(&a.1)); // Sort by priority descending
+
+            // Update the priority queue with the sorted order
+            self.priority_queue = priority_pairs.into_iter().map(|(node_id, _)| node_id).collect();
         }
     }
 
@@ -309,11 +420,11 @@ impl RuleEngine {
                 self.context.current_node_id = Some(node_id);
 
                 // Find the node in the graph
-                if let Some(node) = graph.nodes.iter().find(|n| n.id == node_id) {
+                if let Some(specialized_node) = graph.nodes.iter().find(|n| n.get_base().id == node_id) {
                     // Perform conflict-aware scheduling before execution
                     self.conflict_aware_schedule(graph);
 
-                    self.execute_node(node, graph)?;
+                    self.execute_node_from_specialized(specialized_node, graph)?;
                 }
             } else {
                 // If no node was selected, break the loop
@@ -333,8 +444,8 @@ impl RuleEngine {
     /// Executes a flow pipeline with demand-driven evaluation
     pub fn execute_flow_pipeline(&mut self, graph: &ExecutionGraph, flow_node_id: u32) -> Result<(), RuleEngineError> {
         // Find the flow node in the graph
-        let flow_node = graph.nodes.iter()
-            .find(|n| n.id == flow_node_id)
+        let flow_specialized_node = graph.nodes.iter()
+            .find(|n| n.get_base().id == flow_node_id)
             .ok_or(RuleEngineError::InvalidNodeType)?;
 
         // Get all connected nodes for this flow
@@ -342,10 +453,28 @@ impl RuleEngine {
 
         // Execute nodes in the flow with demand-driven evaluation
         for node_id in connected_nodes {
-            if let Some(node) = graph.nodes.iter().find(|n| n.id == node_id) {
-                self.execute_node_demand_driven(node, graph)?;
+            if let Some(specialized_node) = graph.nodes.iter().find(|n| n.get_base().id == node_id) {
+                self.execute_node_demand_driven_from_specialized(specialized_node, graph)?;
             }
         }
+
+        Ok(())
+    }
+
+    /// Executes a node with demand-driven evaluation
+    fn execute_node_demand_driven_from_specialized(&mut self, node: &SpecializedNode, graph: &ExecutionGraph) -> Result<(), RuleEngineError> {
+        // Check if all required inputs are available
+        let base_node = node.get_base();
+        if !self.are_inputs_available(base_node) {
+            // If inputs are not available, defer execution
+            return Ok(());
+        }
+
+        // Execute the node
+        self.execute_node_from_specialized(node, graph)?;
+
+        // Propagate outputs to dependent nodes
+        self.propagate_outputs(base_node, graph)?;
 
         Ok(())
     }
@@ -430,14 +559,15 @@ impl RuleEngine {
         }
 
         // Execute the node to get the result
-        let node = graph.nodes.iter()
-            .find(|n| n.id == node_id)
+        let specialized_node = graph.nodes.iter()
+            .find(|n| n.get_base().id == node_id)
             .ok_or(RuleEngineError::InvalidNodeType)?;
 
         // Execute the node and get its result
-        self.execute_node(node, graph)?;
+        self.execute_node_from_specialized(specialized_node, graph)?;
 
         // Get the result from the output register
+        let node = specialized_node.get_base();
         let result = if !node.output_regs.is_empty() && node.output_regs[0] != 0 {
             let reg_idx = node.output_regs[0] as usize;
             if reg_idx < self.context.registers.len() {
@@ -477,7 +607,7 @@ impl RuleEngine {
     /// Creates a new execution context
     pub fn create_context(&mut self) -> ExecutionContext {
         ExecutionContext {
-            registers: [None; 16],
+            registers: vec![None; 16],
             variables: HashMap::new(),
             facts: HashMap::new(),
             rule_results: HashMap::new(),
@@ -513,13 +643,24 @@ impl RuleEngine {
         result
     }
 
+    fn execute_node_from_specialized(&mut self, node: &SpecializedNode, graph: &ExecutionGraph) -> Result<(), RuleEngineError> {
+        let base_node = node.get_base();
+        match base_node.node_type {
+            kern_graph_builder::GraphNodeType::Op => self.execute_op_node(base_node),
+            kern_graph_builder::GraphNodeType::Rule => self.execute_rule_node(base_node, graph),
+            kern_graph_builder::GraphNodeType::Control => self.execute_control_node(base_node, graph),
+            kern_graph_builder::GraphNodeType::Graph => self.execute_graph_node(base_node),
+            kern_graph_builder::GraphNodeType::Io => self.execute_io_node(base_node),
+        }
+    }
+
     fn execute_node(&mut self, node: &GraphNode, graph: &ExecutionGraph) -> Result<(), RuleEngineError> {
         match node.node_type {
-            GraphNodeType::Op => self.execute_op_node(node),
-            GraphNodeType::Rule => self.execute_rule_node(node, graph),
-            GraphNodeType::Control => self.execute_control_node(node, graph),
-            GraphNodeType::Graph => self.execute_graph_node(node),
-            GraphNodeType::Io => self.execute_io_node(node),
+            kern_graph_builder::GraphNodeType::Op => self.execute_op_node(node),
+            kern_graph_builder::GraphNodeType::Rule => self.execute_rule_node(node, graph),
+            kern_graph_builder::GraphNodeType::Control => self.execute_control_node(node, graph),
+            kern_graph_builder::GraphNodeType::Graph => self.execute_graph_node(node),
+            kern_graph_builder::GraphNodeType::Io => self.execute_io_node(node),
         }
     }
 
@@ -653,19 +794,20 @@ impl RuleEngine {
         let mut condition_nodes = Vec::new();
 
         for edge in &graph.edges {
-            if edge.from_node == rule_node.id && edge.edge_type == EdgeType::Data {
-                if let Some(node) = graph.nodes.iter().find(|n| n.id == edge.to_node) {
-                    condition_nodes.push(node.clone());
+            if edge.from_node == rule_node.id && edge.edge_type == kern_graph_builder::EdgeType::Data {
+                if let Some(specialized_node) = graph.nodes.iter().find(|n| n.get_base().id == edge.to_node) {
+                    condition_nodes.push(specialized_node.clone());
                 }
             }
         }
 
         // For now, we'll evaluate each condition node and return true if any condition is met
         // In a real implementation, we'd properly evaluate the logical expressions
-        for condition_node in condition_nodes {
-            if condition_node.node_type == GraphNodeType::Op && condition_node.opcode == 0x13 { // COMPARE
+        for condition_specialized_node in condition_nodes {
+            let condition_node = condition_specialized_node.get_base();
+            if condition_node.node_type == kern_graph_builder::GraphNodeType::Op && condition_node.opcode == 0x13 { // COMPARE
                 // Execute the comparison operation
-                self.execute_compare(&condition_node)?;
+                self.execute_compare(condition_node)?;
 
                 // Check if the comparison result is true
                 let result_reg = condition_node.output_regs[0] as usize;
@@ -688,18 +830,19 @@ impl RuleEngine {
         let mut action_nodes = Vec::new();
 
         for edge in &graph.edges {
-            if edge.from_node == rule_node.id && edge.edge_type == EdgeType::Data {
-                if let Some(node) = graph.nodes.iter().find(|n| n.id == edge.to_node) {
-                    if node.node_type != GraphNodeType::Op || node.opcode != 0x13 { // Not a comparison
-                        action_nodes.push(node.clone());
+            if edge.from_node == rule_node.id && edge.edge_type == kern_graph_builder::EdgeType::Data {
+                if let Some(specialized_node) = graph.nodes.iter().find(|n| n.get_base().id == edge.to_node) {
+                    let node = specialized_node.get_base();
+                    if node.node_type != kern_graph_builder::GraphNodeType::Op || node.opcode != 0x13 { // Not a comparison
+                        action_nodes.push(specialized_node.clone());
                     }
                 }
             }
         }
 
         // Execute each action node
-        for action_node in action_nodes {
-            self.execute_node(&action_node, graph)?;
+        for action_specialized_node in action_nodes {
+            self.execute_node_from_specialized(&action_specialized_node, graph)?;
         }
 
         Ok(())
@@ -1062,7 +1205,8 @@ impl RuleEngine {
         let mut matches = Vec::new();
 
         // Iterate through all nodes in the graph to find matches
-        for node in &graph.nodes {
+        for specialized_node in &graph.nodes {
+            let node = specialized_node.get_base();
             // Extract the value represented by this node
             let node_value = self.get_node_value(node);
 
@@ -1203,7 +1347,7 @@ impl RuleEngine {
         // This is a simplified implementation
         // In a real system, this would extract the actual value from the node
         match node.node_type {
-            GraphNodeType::Op => {
+            kern_graph_builder::GraphNodeType::Op => {
                 // Check the output registers for the actual value
                 for (i, &reg_idx) in node.output_regs.iter().enumerate() {
                     if reg_idx != 0 {
@@ -1215,10 +1359,10 @@ impl RuleEngine {
                 // If no output register has a value, return a default
                 Value::Sym(format!("op_{}_{}", node.opcode, node.id))
             },
-            GraphNodeType::Rule => Value::Sym(format!("rule_{}", node.id)),
-            GraphNodeType::Control => Value::Sym(format!("control_{}", node.id)),
-            GraphNodeType::Graph => Value::Sym(format!("graph_{}", node.id)),
-            GraphNodeType::Io => Value::Sym(format!("io_{}", node.id)),
+            kern_graph_builder::GraphNodeType::Rule => Value::Sym(format!("rule_{}", node.id)),
+            kern_graph_builder::GraphNodeType::Control => Value::Sym(format!("control_{}", node.id)),
+            kern_graph_builder::GraphNodeType::Graph => Value::Sym(format!("graph_{}", node.id)),
+            kern_graph_builder::GraphNodeType::Io => Value::Sym(format!("io_{}", node.id)),
         }
     }
 
@@ -1227,8 +1371,8 @@ impl RuleEngine {
         let mut conflicts = Vec::new();
 
         // Get all rule nodes in the graph
-        let rule_nodes: Vec<&GraphNode> = graph.nodes.iter()
-            .filter(|node| node.node_type == GraphNodeType::Rule)
+        let rule_nodes: Vec<&SpecializedNode> = graph.nodes.iter()
+            .filter(|node| node.get_base().node_type == kern_graph_builder::GraphNodeType::Rule)
             .collect();
 
         // Compare each pair of rules for potential conflicts
@@ -1247,23 +1391,23 @@ impl RuleEngine {
     }
 
     /// Checks if two rules conflict with each other
-    fn check_rule_conflict(&self, rule1: &GraphNode, rule2: &GraphNode, graph: &ExecutionGraph) -> Option<RuleConflict> {
+    fn check_rule_conflict(&self, rule1: &SpecializedNode, rule2: &SpecializedNode, graph: &ExecutionGraph) -> Option<RuleConflict> {
         // For now, we'll implement a basic check
         // In a real implementation, this would be more sophisticated
 
         // Check if rules modify the same variables or entities
-        let rule1_actions = self.get_rule_actions(rule1, graph);
-        let rule2_actions = self.get_rule_actions(rule2, graph);
+        let rule1_actions = self.get_rule_actions(rule1.get_base(), graph);
+        let rule2_actions = self.get_rule_actions(rule2.get_base(), graph);
 
         // Check for conflicting assignments
         for action1 in &rule1_actions {
             for action2 in &rule2_actions {
                 if self.actions_conflict(action1, action2) {
                     return Some(RuleConflict {
-                        rule1_id: rule1.id,
-                        rule2_id: rule2.id,
+                        rule1_id: rule1.get_base().id,
+                        rule2_id: rule2.get_base().id,
                         conflict_type: ConflictType::ActionConflict,
-                        description: format!("Rules {} and {} have conflicting actions", rule1.id, rule2.id),
+                        description: format!("Rules {} and {} have conflicting actions", rule1.get_base().id, rule2.get_base().id),
                     });
                 }
             }
@@ -1273,16 +1417,17 @@ impl RuleEngine {
     }
 
     /// Gets the actions associated with a rule node
-    fn get_rule_actions(&self, rule_node: &GraphNode, graph: &ExecutionGraph) -> Vec<GraphNode> {
+    fn get_rule_actions(&self, rule_node: &GraphNode, graph: &ExecutionGraph) -> Vec<SpecializedNode> {
         let mut actions = Vec::new();
 
         // Find all nodes connected to this rule node that represent actions
         for edge in &graph.edges {
-            if edge.from_node == rule_node.id && edge.edge_type == EdgeType::Data {
-                if let Some(node) = graph.nodes.iter().find(|n| n.id == edge.to_node) {
+            if edge.from_node == rule_node.id && edge.edge_type == kern_graph_builder::EdgeType::Data {
+                if let Some(specialized_node) = graph.nodes.iter().find(|n| n.get_base().id == edge.to_node) {
+                    let node = specialized_node.get_base();
                     // Exclude comparison nodes which are part of conditions
-                    if !(node.node_type == GraphNodeType::Op && node.opcode == 0x13) { // COMPARE
-                        actions.push(node.clone());
+                    if !(node.node_type == kern_graph_builder::GraphNodeType::Op && node.opcode == 0x13) { // COMPARE
+                        actions.push(specialized_node.clone());
                     }
                 }
             }
@@ -1292,13 +1437,15 @@ impl RuleEngine {
     }
 
     /// Checks if two actions conflict with each other
-    fn actions_conflict(&self, action1: &GraphNode, action2: &GraphNode) -> bool {
+    fn actions_conflict(&self, action1: &SpecializedNode, action2: &SpecializedNode) -> bool {
         // For now, we'll check if both actions are assignments to the same variable
         // In a real implementation, this would be more sophisticated
 
         // This is a simplified check - in a real system, we'd need to analyze
         // the actual operations and their effects on shared state
-        action1.opcode == 0x12 && action2.opcode == 0x12  // Both are MOVE operations
+        let base1 = action1.get_base();
+        let base2 = action2.get_base();
+        base1.opcode == 0x12 && base2.opcode == 0x12  // Both are MOVE operations
     }
 
     /// Resolves conflicts between rules using the current priority strategy
@@ -1365,6 +1512,24 @@ impl RuleEngine {
     /// Checks if a rule is currently in the execution path (potential recursion)
     fn is_in_execution_path(&self, rule_id: u32) -> bool {
         self.execution_path.contains(&rule_id)
+    }
+
+    /// Executes a rule based on RuleExecutionInfo
+    pub fn execute_rule_from_info(&mut self, rule_info: &RuleExecutionInfo, graph: &ExecutionGraph) -> Result<(), String> {
+        // Check recursion limit
+        if rule_info.execution_count >= rule_info.recursion_limit {
+            return Err(format!("Recursion limit exceeded for rule {}", rule_info.rule_id));
+        }
+
+        // Execute the rule by processing the graph node
+        if let Some(specialized_node) = graph.nodes.iter().find(|n| n.get_base().id == rule_info.rule_id) {
+            match self.execute_node_from_specialized(specialized_node, graph) {
+                Ok(()) => Ok(()),
+                Err(e) => Err(format!("Error executing rule {}: {:?}", rule_info.rule_id, e)),
+            }
+        } else {
+            Err(format!("Rule {} not found in graph", rule_info.rule_id))
+        }
     }
 }
 
