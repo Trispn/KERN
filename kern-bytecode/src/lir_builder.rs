@@ -495,7 +495,7 @@ impl LirBuilder {
     // Special Operations
     pub fn phi(&mut self, dst: Register, values: Vec<Register>) -> &mut Self {
         self.program.add_instruction(LirInstruction {
-            op: LirOp::Phi(dst, values),
+            op: LirOp::Phi(dst, values.clone()),
             dst: Some(dst),
             src1: values.first().copied(),
             src2: values.get(1).copied(),
@@ -539,8 +539,9 @@ mod tests {
         
         builder.jmp_if_not(cond, then_label);
         builder.label(then_label);
-        builder.load_sym("print");
-        builder.call("print", vec![builder.load_sym("large")]);
+        let _print_reg = builder.load_sym("print");
+        let large_sym = builder.load_sym("large");
+        builder.call("print", vec![large_sym]);
         builder.jmp(end_label);
         builder.label(end_label);
         

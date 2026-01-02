@@ -5,8 +5,8 @@ edition = "2021"
 
 [dependencies]
 kern-ast = { path = "../kern-ast" }
-kern-parser = { path = "../kern-parser" }
-kern-lexer = { path = "../kern-lexer" }
-kern-graph-builder = { path = "../kern-graph-builder" }
+kern_parser = { path = "../kern-parser" }
+kern_lexer = { path = "../kern-lexer" }
+kern_graph_builder = { path = "../kern-graph-builder" }
 
 [dev-dependencies]

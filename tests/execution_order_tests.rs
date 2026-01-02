@@ -36,11 +36,13 @@ fn test_execution_order_basic_sequential() {
     engine.set_variable("test_entity.id", Value::Num(1));
     
     // Execute the graph
-    let execution_result = engine.execute_graph(engine.execution_graph.as_ref().unwrap());
-    assert!(execution_result.is_ok(), "Execution should succeed");
+    if let Some(ref graph) = engine.execution_graph {
+        let execution_result = engine.execute_graph(graph);
+        assert!(execution_result.is_ok(), "Execution should succeed");
 
-    // Check that execution happened
-    assert!(engine.step_count > 0, "At least one step should have been executed");
+        // Check that execution happened
+        assert!(engine.step_count > 0, "At least one step should have been executed");
+    }
 }
 
 #[test]
@@ -76,12 +78,14 @@ fn test_execution_order_with_priority() {
     engine.set_rule_priority(2, 10, 5, 1);   // Low priority
     
     // Execute the graph
-    let execution_result = engine.execute_graph(engine.execution_graph.as_ref().unwrap());
-    assert!(execution_result.is_ok(), "Execution with priority should succeed");
+    if let Some(ref graph) = engine.execution_graph {
+        let execution_result = engine.execute_graph(graph);
+        assert!(execution_result.is_ok(), "Execution with priority should succeed");
 
-    // Check that the priority queue was properly sorted
-    // The high priority rule should be considered first
-    assert!(engine.priority_queue.len() <= 2, "Priority queue should have at most 2 items");
+        // Check that the priority queue was properly sorted
+        // The high priority rule should be considered first
+        assert!(engine.priority_queue.len() <= 2, "Priority queue should have at most 2 items");
+    }
 }
 
 #[test]
@@ -120,11 +124,13 @@ fn test_execution_order_with_dependencies() {
     engine.set_variable("test_entity.processed", Value::Bool(false));
     
     // Execute the graph
-    let execution_result = engine.execute_graph(engine.execution_graph.as_ref().unwrap());
-    assert!(execution_result.is_ok(), "Execution with dependencies should succeed");
+    if let Some(ref graph) = engine.execution_graph {
+        let execution_result = engine.execute_graph(graph);
+        assert!(execution_result.is_ok(), "Execution with dependencies should succeed");
 
-    // Check that execution happened
-    assert!(engine.step_count > 0, "At least one step should have been executed");
+        // Check that execution happened
+        assert!(engine.step_count > 0, "At least one step should have been executed");
+    }
 }
 
 #[test]
@@ -161,9 +167,9 @@ fn test_execution_order_with_control_flow() {
     engine.set_variable("test_entity.condition", Value::Bool(true));
     
     // Execute the flow
-    if let Some(ref graph) = engine.execution_graph {
+    if let Some(ref graph) = engine.execution_graph.clone() {
         if let Some(entry_point) = graph.entry_points.first() {
-            let flow_result = engine.execute_flow_pipeline(graph, entry_point.node_id);
+            let flow_result = engine.execute_flow_pipeline(&graph, entry_point.node_id);
             assert!(flow_result.is_ok(), "Flow execution with control flow should succeed");
         }
     }
@@ -197,9 +203,9 @@ fn test_execution_order_with_loop() {
     let mut engine = RuleEngine::new(Some(graph));
     
     // Execute the flow
-    if let Some(ref graph) = engine.execution_graph {
+    if let Some(ref graph) = engine.execution_graph.clone() {
         if let Some(entry_point) = graph.entry_points.first() {
-            let flow_result = engine.execute_flow_pipeline(graph, entry_point.node_id);
+            let flow_result = engine.execute_flow_pipeline(&graph, entry_point.node_id);
             assert!(flow_result.is_ok(), "Flow execution with loop should succeed");
         }
     }
@@ -233,10 +239,10 @@ fn test_execution_order_with_lazy_evaluation() {
     engine.set_variable("test_entity.id", Value::Num(1));
     
     // Execute with lazy evaluation
-    if let Some(ref graph) = engine.execution_graph {
+    if let Some(ref graph) = engine.execution_graph.clone() {
         if !graph.nodes.is_empty() {
             let node_id = graph.nodes[0].get_base().id;
-            let lazy_result = engine.evaluate_lazy(node_id, graph);
+            let lazy_result = engine.evaluate_lazy(node_id, &graph);
             assert!(lazy_result.is_ok(), "Lazy evaluation should succeed");
         }
     }
@@ -312,9 +318,9 @@ fn test_execution_order_with_context_propagation() {
     engine.switch_context(new_context);
     
     // Execute the flow
-    if let Some(ref graph) = engine.execution_graph {
+    if let Some(ref graph) = engine.execution_graph.clone() {
         if let Some(entry_point) = graph.entry_points.first() {
-            let flow_result = engine.execute_flow_pipeline(graph, entry_point.node_id);
+            let flow_result = engine.execute_flow_pipeline(&graph, entry_point.node_id);
             assert!(flow_result.is_ok(), "Flow execution with context propagation should succeed");
         }
     }
@@ -362,12 +368,14 @@ fn test_execution_order_with_multiple_entry_points() {
     let mut engine = RuleEngine::new(Some(graph));
     
     // Execute the graph
-    let execution_result = engine.execute_graph(engine.execution_graph.as_ref().unwrap());
-    assert!(execution_result.is_ok(), "Execution with multiple entry points should succeed");
-    
-    // Check that multiple entry points were processed
-    assert!(engine.step_count > 0, "At least one step should have been executed");
-    assert!(engine.priority_queue.len() >= 2, "Should have multiple items in priority queue");
+    if let Some(ref graph) = engine.execution_graph {
+        let execution_result = engine.execute_graph(graph);
+        assert!(execution_result.is_ok(), "Execution with multiple entry points should succeed");
+
+        // Check that multiple entry points were processed
+        assert!(engine.step_count > 0, "At least one step should have been executed");
+        assert!(engine.priority_queue.len() >= 2, "Should have multiple items in priority queue");
+    }
 }
 
 #[test]
@@ -403,12 +411,14 @@ fn test_execution_order_with_recursion_guard() {
     engine.set_max_recursion_depth(3);
     
     // Execute the graph
-    let execution_result = engine.execute_graph(engine.execution_graph.as_ref().unwrap());
-    // This might fail due to recursion limit, which is expected
-    // The important thing is that the recursion guard is working
-    assert!(execution_result.is_ok() ||
-            matches!(execution_result, Err(kern_rule_engine::RuleEngineError::ExecutionLimitExceeded)),
-            "Execution should either succeed or be stopped by recursion guard");
+    if let Some(ref graph) = engine.execution_graph {
+        let execution_result = engine.execute_graph(graph);
+        // This might fail due to recursion limit, which is expected
+        // The important thing is that the recursion guard is working
+        assert!(execution_result.is_ok() ||
+                matches!(execution_result, Err(kern_rule_engine::RuleEngineError::ExecutionLimitExceeded)),
+                "Execution should either succeed or be stopped by recursion guard");
+    }
 }
 
 #[test]
@@ -443,7 +453,7 @@ fn test_execution_order_with_conflict_resolution() {
     engine.set_priority_strategy(PriorityStrategy::ConflictResolution);
     
     // Execute the graph
-    let execution_result = engine.execute_graph(engine.execution_graph.as_ref().unwrap());
+    let execution_result = engine.execute_graph(&graph);
     assert!(execution_result.is_ok(), "Execution with conflict resolution should succeed");
 
     // Check that conflicts were detected

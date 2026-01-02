@@ -398,8 +398,9 @@ mod tests {
         
         builder.jmp_if_not(cond, then_label);
         builder.label(then_label);
+        let large_sym = builder.load_sym("large");
         builder.load_sym("print");
-        builder.call("print", vec![builder.load_sym("large")]);
+        builder.call("print", vec![large_sym]);
         builder.jmp(end_label);
         builder.label(end_label);
         

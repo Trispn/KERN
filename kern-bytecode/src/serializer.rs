@@ -156,27 +156,27 @@ impl BytecodeSerializer {
         let offsets_start = 12;
         let section_offsets = SectionOffsets {
             instruction_offset: u32::from_le_bytes([
-                bytes[offsets_start], bytes[offsets_start + 1], 
+                bytes[offsets_start], bytes[offsets_start + 1],
                 bytes[offsets_start + 2], bytes[offsets_start + 3]
             ]),
             constant_pool_offset: u32::from_le_bytes([
-                bytes[offsets_start + 4], bytes[offsets_start + 5], 
+                bytes[offsets_start + 4], bytes[offsets_start + 5],
                 bytes[offsets_start + 6], bytes[offsets_start + 7]
             ]),
             symbol_table_offset: u32::from_le_bytes([
-                bytes[offsets_start + 8], bytes[offsets_start + 9], 
+                bytes[offsets_start + 8], bytes[offsets_start + 9],
                 bytes[offsets_start + 10], bytes[offsets_start + 11]
             ]),
             rule_table_offset: u32::from_le_bytes([
-                bytes[offsets_start + 12], bytes[offsets_start + 13], 
+                bytes[offsets_start + 12], bytes[offsets_start + 13],
                 bytes[offsets_start + 14], bytes[offsets_start + 15]
             ]),
             graph_table_offset: u32::from_le_bytes([
-                bytes[offsets_start + 16], bytes[offsets_start + 17], 
+                bytes[offsets_start + 16], bytes[offsets_start + 17],
                 bytes[offsets_start + 18], bytes[offsets_start + 19]
             ]),
             metadata_offset: u32::from_le_bytes([
-                bytes[offsets_start + 20], bytes[offsets_start + 21], 
+                bytes[offsets_start + 20], bytes[offsets_start + 21],
                 bytes[offsets_start + 22], bytes[offsets_start + 23]
             ]),
         };
@@ -298,6 +298,8 @@ mod tests {
 
         let serializer = BytecodeSerializer::new();
         let bytes = serializer.serialize_header(&header);
+        // The header is 32 bytes, so we need to make sure we're reading the right amount
+        assert_eq!(bytes.len(), 32);
         let deserialized = serializer.deserialize_header(&bytes).unwrap();
 
         assert_eq!(header.magic, deserialized.magic);

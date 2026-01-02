@@ -155,6 +155,7 @@ dependencies = [
 name = "kern_bytecode"
 version = "0.1.0"
 dependencies = [
+ "kern-ast",
  "kern_graph_builder",
  "kern_lexer",
  "kern_parser",
