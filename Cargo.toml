@@ -25,6 +25,8 @@ name = "kern_compiler"
 path = "src/main.rs"
 
 [dependencies]
+kern_vm = { path = "./kern-vm" }
+kern_bytecode = { path = "./kern-bytecode" }
 kern_flow_pipeline = { path = "./kern-flow-pipeline" }
 
 [dev-dependencies]
@@ -33,6 +35,4 @@ kern_lexer = { path = "./kern-lexer" }
 kern_rule_engine = { path = "./kern-rule-engine" }
 kern_graph_builder = { path = "./kern-graph-builder" }
 kern-semantic = { path = "./kern-semantic" }
-kern_vm = { path = "./kern-vm" }
-kern_bytecode = { path = "./kern-bytecode" }
 kern-ast = { path = "./kern-ast" }
