@@ -1,11 +1,15 @@
 //! KERN Rule Conflict Detector
-//! 
+//!
 //! Detects conflicts between rules in the KERN language.
 
-use std::collections::{HashMap, HashSet};
 use crate::resolver::Resolver;
 use crate::symbol::{Symbol, SymbolKind};
-use kern_parser::{AstNode, Program, Definition, EntityDef, RuleDef, FlowDef, ConstraintDef, Condition, Expression, Term, Predicate, Action, IfAction, LoopAction, HaltAction, Assignment, ControlAction, Comparator};
+use kern_parser::{
+    Action, Assignment, AstNode, Comparator, Condition, ConstraintDef, ControlAction, Definition,
+    EntityDef, Expression, FlowDef, HaltAction, IfAction, LoopAction, Predicate, Program, RuleDef,
+    Term,
+};
+use std::collections::{HashMap, HashSet};
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum ConflictType {
@@ -15,7 +19,7 @@ pub enum ConflictType {
     OrderDependentSideEffects,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Conflict {
     pub rule_a: String,
     pub rule_b: String,
@@ -129,29 +133,37 @@ impl ConflictDetector {
         entities
     }
 
-    fn extract_entities_from_condition_recursive(&self, condition: &Condition, entities: &mut HashSet<String>) {
+    fn extract_entities_from_condition_recursive(
+        &self,
+        condition: &Condition,
+        entities: &mut HashSet<String>,
+    ) {
         match condition {
             Condition::Expression(expr) => {
                 self.extract_entities_from_expression(expr, entities);
-            },
-            Condition::LogicalOp(left, _op, right) => {
+            }
+            Condition::LogicalOp(left, op, right) => {
                 self.extract_entities_from_condition_recursive(left, entities);
                 self.extract_entities_from_condition_recursive(right, entities);
-            },
+            }
         }
     }
 
-    fn extract_entities_from_expression(&self, expression: &Expression, entities: &mut HashSet<String>) {
+    fn extract_entities_from_expression(
+        &self,
+        expression: &Expression,
+        entities: &mut HashSet<String>,
+    ) {
         match expression {
-            Expression::Comparison { left, _op, right } => {
+            Expression::Comparison { left, op, right } => {
                 self.extract_entities_from_term(left, entities);
                 self.extract_entities_from_term(right, entities);
-            },
+            }
             Expression::Predicate(predicate) => {
                 for arg in &predicate.arguments {
                     self.extract_entities_from_term(arg, entities);
                 }
-            },
+            }
         }
     }
 
@@ -164,14 +176,14 @@ impl ConflictDetector {
                         entities.insert(name.clone());
                     }
                 }
-            },
+            }
             Term::Number(_value) => {
                 // Numbers don't refer to entities
-            },
+            }
             Term::QualifiedRef(entity, _field) => {
                 // The first part of a qualified ref is typically an entity
                 entities.insert(entity.clone());
-            },
+            }
         }
     }
 
@@ -179,7 +191,7 @@ impl ConflictDetector {
     fn conditions_overlap(&self, condition_a: &Condition, condition_b: &Condition) -> bool {
         // This is a simplified check - in a real implementation, we'd need more sophisticated
         // logic to determine if conditions can both be true for the same facts
-        
+
         // For now, we'll just check if both conditions reference the same entity
         let entities_a = self.extract_entities_from_condition(condition_a);
         let entities_b = self.extract_entities_from_condition(condition_b);
@@ -218,8 +230,8 @@ impl ConflictDetector {
         for action in actions {
             match action {
                 Action::Assignment(assignment) => {
-                    attributes.insert(assignment.target.clone());
-                },
+                    attributes.insert(assignment.variable.clone());
+                }
                 Action::Predicate(predicate) => {
                     // In a real implementation, we'd analyze the predicate to see
                     // if it modifies any attributes
@@ -228,10 +240,10 @@ impl ConflictDetector {
                         // This predicate likely modifies attributes
                         // We'd need more sophisticated analysis to determine which attributes
                     }
-                },
+                }
                 Action::Control(_control_action) => {
                     // Control actions don't directly modify attributes
-                },
+                }
             }
         }
 
@@ -243,10 +255,14 @@ impl ConflictDetector {
         // This is a simplified check - in a real implementation, we'd need
         // sophisticated logic to determine if a condition is always true
         match condition {
-            Condition::Expression(Expression::Comparison { left: _, op: Comparator::NotEqual, right: _ }) => {
+            Condition::Expression(Expression::Comparison {
+                left: _,
+                op: Comparator::NotEqual,
+                right: _,
+            }) => {
                 // Check if comparing something with itself (like x != x) - this is always false
                 false
-            },
+            }
             _ => false,
         }
     }
@@ -256,10 +272,14 @@ impl ConflictDetector {
         // This is a simplified check - in a real implementation, we'd need
         // sophisticated logic to determine if a condition is always false
         match condition {
-            Condition::Expression(Expression::Comparison { left: _, op: Comparator::Equal, right: _ }) => {
+            Condition::Expression(Expression::Comparison {
+                left: _,
+                op: Comparator::Equal,
+                right: _,
+            }) => {
                 // Check if comparing something with itself (like x == x) - this is always true
                 false
-            },
+            }
             _ => false,
         }
     }
@@ -321,14 +341,20 @@ mod tests {
         let program = parser.parse_program().expect("Failed to parse program");
 
         let mut resolver = Resolver::new();
-        resolver.resolve_program(&program).expect("Failed to resolve program");
+        resolver
+            .resolve_program(&program)
+            .expect("Failed to resolve program");
 
         let mut conflict_detector = ConflictDetector::new(resolver);
         let conflicts = conflict_detector.detect_conflicts(&program);
-        
+
         // The conflict detection should pass without errors for this valid program
-        assert!(conflicts.is_ok(), "Conflict detection failed with errors: {:?}", conflicts.err());
-        
+        assert!(
+            conflicts.is_ok(),
+            "Conflict detection failed with errors: {:?}",
+            conflicts.err()
+        );
+
         // There should be no conflicts in this program
         let conflict_list = conflicts.unwrap();
         assert_eq!(conflict_list.len(), 0);
@@ -362,14 +388,20 @@ mod tests {
         let program = parser.parse_program().expect("Failed to parse program");
 
         let mut resolver = Resolver::new();
-        resolver.resolve_program(&program).expect("Failed to resolve program");
+        resolver
+            .resolve_program(&program)
+            .expect("Failed to resolve program");
 
         let mut conflict_detector = ConflictDetector::new(resolver);
         let conflicts = conflict_detector.detect_conflicts(&program);
-        
+
         // The conflict detection should pass without errors for this valid program
-        assert!(conflicts.is_ok(), "Conflict detection failed with errors: {:?}", conflicts.err());
-        
+        assert!(
+            conflicts.is_ok(),
+            "Conflict detection failed with errors: {:?}",
+            conflicts.err()
+        );
+
         // There should be no conflicts in this program since the conditions are mutually exclusive
         let conflict_list = conflicts.unwrap();
         assert_eq!(conflict_list.len(), 0);

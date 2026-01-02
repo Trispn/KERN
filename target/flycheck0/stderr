@@ -1,5 +1,117 @@
-error: no matching package found
-searched package name: `kern_semantic`
-perhaps you meant:      kern-semantic
-location searched: C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-semantic
-required by package `kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)`
+   0.090092100s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="assertions"}: cargo::core::compiler::fingerprint: fingerprint error for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "assertions", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\assertions.rs", Edition2021) }
+   0.090173200s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="assertions"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-compiler-6c5d0ef563784b31\test-integration-test-assertions`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_libgit2_prerelease
+  12: <unknown>
+  13: <unknown>
+  14: <unknown>
+  15: <unknown>
+  16: git_midx_writer_dump
+  17: git_filter_source_repo
+  18: git_midx_writer_dump
+  19: BaseThreadInitThunk
+  20: RtlUserThreadStart
+   0.114642300s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="lexer_tests"}: cargo::core::compiler::fingerprint: fingerprint error for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "lexer_tests", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\lexer_tests.rs", Edition2021) }
+   0.114676700s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="lexer_tests"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-compiler-85747498c7ea1a37\test-integration-test-lexer_tests`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_libgit2_prerelease
+  12: <unknown>
+  13: <unknown>
+  14: <unknown>
+  15: <unknown>
+  16: git_midx_writer_dump
+  17: git_filter_source_repo
+  18: git_midx_writer_dump
+  19: BaseThreadInitThunk
+  20: RtlUserThreadStart
+   0.116107500s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="main_test_runner"}: cargo::core::compiler::fingerprint: fingerprint error for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "main_test_runner", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\main_test_runner.rs", Edition2021) }
+   0.116160400s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="main_test_runner"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-compiler-5732fd6a6d0051f0\test-integration-test-main_test_runner`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_libgit2_prerelease
+  12: <unknown>
+  13: <unknown>
+  14: <unknown>
+  15: <unknown>
+  16: git_midx_writer_dump
+  17: git_filter_source_repo
+  18: git_midx_writer_dump
+  19: BaseThreadInitThunk
+  20: RtlUserThreadStart
+   0.117860900s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="parser_tests"}: cargo::core::compiler::fingerprint: fingerprint error for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "parser_tests", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\parser_tests.rs", Edition2021) }
+   0.117944000s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="parser_tests"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-compiler-3e7780984e38c7b4\test-integration-test-parser_tests`
+
+Caused by:
+    The system cannot find the file specified. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_repo
+   6: git_filter_source_repo
+   7: git_filter_source_repo
+   8: git_filter_source_repo
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_libgit2_prerelease
+  12: <unknown>
+  13: <unknown>
+  14: <unknown>
+  15: <unknown>
+  16: git_midx_writer_dump
+  17: git_filter_source_repo
+  18: git_midx_writer_dump
+  19: BaseThreadInitThunk
+  20: RtlUserThreadStart
+    Checking kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)
+error: could not compile `kern-compiler` (test "assertions") due to 1 previous error; 1 warning emitted
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `kern-compiler` (test "lexer_tests") due to 3 previous errors; 2 warnings emitted
+error: could not compile `kern-compiler` (test "main_test_runner") due to 1 previous error; 12 warnings emitted

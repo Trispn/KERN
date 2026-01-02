@@ -5,7 +5,7 @@ edition = "2021"
 
 [lib]
 name = "kern_semantic"
-path = "src/lib.rs"
+path = "lib.rs"
 
 [dependencies]
 kern_parser = { path = "../kern-parser" }

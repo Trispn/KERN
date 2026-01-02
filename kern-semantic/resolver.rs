@@ -1,13 +1,16 @@
 //! KERN Symbol Resolver
-//! 
+//!
 //! Resolves symbol references in the KERN AST against the symbol table.
 
 use crate::scope::ScopeManager;
-use crate::symbol::{Symbol, SymbolKind, SourceLocation};
+use crate::symbol::{SourceLocation, Symbol, SymbolKind};
 use crate::types::{TypeDescriptor, TypeKind};
-use kern_parser::{AstNode, Program, Definition, EntityDef, RuleDef, FlowDef, ConstraintDef, Condition, Expression, Term, Predicate, Action, IfAction, LoopAction, HaltAction, Assignment, ControlAction};
+use kern_parser::{
+    Action, Assignment, AstNode, Condition, ConstraintDef, ControlAction, Definition, EntityDef,
+    Expression, FlowDef, HaltAction, IfAction, LoopAction, Predicate, Program, RuleDef, Term,
+};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Resolver {
     scope_manager: ScopeManager,
     errors: Vec<String>,
@@ -26,16 +29,22 @@ impl ResolutionError {
         match self {
             ResolutionError::UndeclaredSymbol(name, loc) => {
                 format!("Undeclared symbol '{}' at {}:{}", name, loc.file, loc.line)
-            },
+            }
             ResolutionError::DuplicateDeclaration(name, loc) => {
-                format!("Duplicate declaration of symbol '{}' at {}:{}", name, loc.file, loc.line)
-            },
+                format!(
+                    "Duplicate declaration of symbol '{}' at {}:{}",
+                    name, loc.file, loc.line
+                )
+            }
             ResolutionError::IllegalShadowing(name, loc) => {
-                format!("Illegal shadowing of symbol '{}' at {}:{}", name, loc.file, loc.line)
-            },
+                format!(
+                    "Illegal shadowing of symbol '{}' at {}:{}",
+                    name, loc.file, loc.line
+                )
+            }
             ResolutionError::TypeMismatch(msg, loc) => {
                 format!("Type mismatch: {} at {}:{}", msg, loc.file, loc.line)
-            },
+            }
         }
     }
 }
@@ -71,29 +80,32 @@ impl Resolver {
         match definition {
             Definition::Entity(entity_def) => {
                 self.register_entity(entity_def);
-            },
+            }
             Definition::Rule(rule_def) => {
                 self.register_rule(rule_def);
-            },
+            }
             Definition::Flow(flow_def) => {
                 self.register_flow(flow_def);
-            },
+            }
             Definition::Constraint(constraint_def) => {
                 self.register_constraint(constraint_def);
-            },
+            }
         }
     }
 
     fn register_entity(&mut self, entity_def: &EntityDef) {
         let location = SourceLocation::new("unknown".to_string(), 0, 0); // In real implementation, get from AST
-        let entity_type = TypeDescriptor::new_named(TypeKind::Entity(entity_def.name.clone()), entity_def.name.clone());
+        let entity_type = TypeDescriptor::new_named(
+            TypeKind::Entity(entity_def.name.clone()),
+            entity_def.name.clone(),
+        );
 
         let entity_symbol = Symbol::new(
             entity_def.name.clone(),
             SymbolKind::Entity,
             entity_type,
             self.scope_manager.current_scope().unwrap().id,
-            location,
+            location.clone(),
         );
 
         if let Err(e) = self.scope_manager.declare_symbol(entity_symbol) {
@@ -105,11 +117,11 @@ impl Resolver {
         for field in &entity_def.fields {
             let field_type = TypeDescriptor::new(TypeKind::Sym); // Default to Sym type for fields
             let field_symbol = Symbol::new(
-                field.clone(),
+                field.name.clone(),
                 SymbolKind::Attribute,
                 field_type,
                 self.scope_manager.current_scope().unwrap().id,
-                location,
+                location.clone(),
             );
 
             if let Err(e) = self.scope_manager.declare_symbol(field_symbol) {
@@ -174,16 +186,16 @@ impl Resolver {
         match definition {
             Definition::Entity(entity_def) => {
                 self.resolve_entity(entity_def);
-            },
+            }
             Definition::Rule(rule_def) => {
                 self.resolve_rule(rule_def);
-            },
+            }
             Definition::Flow(flow_def) => {
                 self.resolve_flow(flow_def);
-            },
+            }
             Definition::Constraint(constraint_def) => {
                 self.resolve_constraint(constraint_def);
-            },
+            }
         }
     }
 
@@ -194,27 +206,27 @@ impl Resolver {
     fn resolve_rule(&mut self, rule_def: &RuleDef) {
         // Enter rule scope for parameters
         self.scope_manager.enter_scope();
-        
+
         // Resolve the condition
         self.resolve_condition(&rule_def.condition);
-        
+
         // Resolve actions
         for action in &rule_def.actions {
             self.resolve_action(action);
         }
-        
+
         self.scope_manager.exit_scope().unwrap();
     }
 
     fn resolve_flow(&mut self, flow_def: &FlowDef) {
         // Enter flow scope
         self.scope_manager.enter_scope();
-        
+
         // Resolve each action in the flow
         for action in &flow_def.actions {
             self.resolve_action(action);
         }
-        
+
         self.scope_manager.exit_scope().unwrap();
     }
 
@@ -227,23 +239,23 @@ impl Resolver {
         match condition {
             Condition::Expression(expr) => {
                 self.resolve_expression(expr);
-            },
-            Condition::LogicalOp(left, _op, right) => {
+            }
+            Condition::LogicalOp(left, op, right) => {
                 self.resolve_condition(left);
                 self.resolve_condition(right);
-            },
+            }
         }
     }
 
     fn resolve_expression(&mut self, expression: &Expression) {
         match expression {
-            Expression::Comparison { left, _op, right } => {
+            Expression::Comparison { left, op, right } => {
                 self.resolve_term(left);
                 self.resolve_term(right);
-            },
+            }
             Expression::Predicate(predicate) => {
                 self.resolve_predicate(predicate);
-            },
+            }
         }
     }
 
@@ -253,21 +265,24 @@ impl Resolver {
                 // Try to resolve the identifier
                 if self.scope_manager.resolve_symbol(name).is_none() {
                     let location = SourceLocation::new("unknown".to_string(), 0, 0); // In real implementation, get from AST
-                    self.errors.push(ResolutionError::UndeclaredSymbol(name.clone(), location).message());
+                    self.errors
+                        .push(ResolutionError::UndeclaredSymbol(name.clone(), location).message());
                 }
-            },
+            }
             Term::Number(_value) => {
                 // Numbers are self-resolved
-            },
+            }
             Term::QualifiedRef(entity, field) => {
                 // Resolve the entity
                 if self.scope_manager.resolve_symbol(entity).is_none() {
                     let location = SourceLocation::new("unknown".to_string(), 0, 0); // In real implementation, get from AST
-                    self.errors.push(ResolutionError::UndeclaredSymbol(entity.clone(), location).message());
+                    self.errors.push(
+                        ResolutionError::UndeclaredSymbol(entity.clone(), location).message(),
+                    );
                 }
-                
+
                 // In a real implementation, we'd also verify that the field exists on the entity
-            },
+            }
         }
     }
 
@@ -275,9 +290,11 @@ impl Resolver {
         // Check if the predicate name is a known rule or builtin
         if self.scope_manager.resolve_symbol(&predicate.name).is_none() {
             let location = SourceLocation::new("unknown".to_string(), 0, 0); // In real implementation, get from AST
-            self.errors.push(ResolutionError::UndeclaredSymbol(predicate.name.clone(), location).message());
+            self.errors.push(
+                ResolutionError::UndeclaredSymbol(predicate.name.clone(), location).message(),
+            );
         }
-        
+
         // Resolve arguments
         for arg in &predicate.arguments {
             self.resolve_term(arg);
@@ -288,24 +305,30 @@ impl Resolver {
         match action {
             Action::Predicate(predicate) => {
                 self.resolve_predicate(predicate);
-            },
+            }
             Action::Assignment(assignment) => {
                 self.resolve_assignment(assignment);
-            },
+            }
             Action::Control(control_action) => {
                 self.resolve_control_action(control_action);
-            },
+            }
         }
     }
 
     fn resolve_assignment(&mut self, assignment: &Assignment) {
         // Resolve the value being assigned
         self.resolve_term(&assignment.value);
-        
+
         // Check if the target variable exists
-        if self.scope_manager.resolve_symbol(&assignment.target).is_none() {
+        if self
+            .scope_manager
+            .resolve_symbol(&assignment.variable)
+            .is_none()
+        {
             let location = SourceLocation::new("unknown".to_string(), 0, 0); // In real implementation, get from AST
-            self.errors.push(ResolutionError::UndeclaredSymbol(assignment.target.clone(), location).message());
+            self.errors.push(
+                ResolutionError::UndeclaredSymbol(assignment.variable.clone(), location).message(),
+            );
         }
     }
 
@@ -313,25 +336,25 @@ impl Resolver {
         match control_action {
             ControlAction::If(if_action) => {
                 self.resolve_if_action(if_action);
-            },
+            }
             ControlAction::Loop(loop_action) => {
                 self.resolve_loop_action(loop_action);
-            },
+            }
             ControlAction::Halt(_halt_action) => {
                 // Halt action has no symbols to resolve
-            },
+            }
         }
     }
 
     fn resolve_if_action(&mut self, if_action: &IfAction) {
         // Resolve the condition
         self.resolve_condition(&if_action.condition);
-        
+
         // Resolve then actions
         for action in &if_action.then_actions {
             self.resolve_action(action);
         }
-        
+
         // Resolve else actions if they exist
         if let Some(else_actions) = &if_action.else_actions {
             for action in else_actions {
@@ -395,8 +418,12 @@ mod tests {
 
         let mut resolver = Resolver::new();
         let result = resolver.resolve_program(&program);
-        
+
         // The resolution should pass without errors for this valid program
-        assert!(result.is_ok(), "Resolution failed with errors: {:?}", result.err());
+        assert!(
+            result.is_ok(),
+            "Resolution failed with errors: {:?}",
+            result.err()
+        );
     }
 }

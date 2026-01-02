@@ -1,0 +1,1 @@
+Result<kern_parser::Program, std::vec::Vec<ParseError>>

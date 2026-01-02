@@ -1,7 +1,6 @@
 mod common;
 use common::assertions::{assert_equal, assert_false, assert_true, AssertionResult};
-use kern_parser::ast_nodes::{Declaration, Program};
-use kern_rule_engine::{RuleEngine, RuleExecutionInfo, RuleMatch, RulePriority, Value};
+use kern_rule_engine::{RuleEngine, RuleExecutionInfo, RulePriority, Value};
 use std::collections::HashMap;
 
 #[test]
@@ -16,20 +15,19 @@ fn test_rule_execution_info_creation() {
 fn test_rule_engine_initialization() {
     let engine = RuleEngine::new(None);
 
-    assert_eq!(engine.rules.len(), 0);
     assert_eq!(engine.rule_registry.len(), 0);
+    assert_eq!(engine.step_count, 0);
+    assert_eq!(engine.max_steps, 10000);
 }
 
 #[test]
-fn test_adding_rules_to_engine() {
+fn test_adding_rules_to_registry() {
     let mut engine = RuleEngine::new(None);
 
     let rule_info = RuleExecutionInfo::new(1);
-
-    engine.rules.push(1);
     engine.rule_registry.insert(1, rule_info);
 
-    assert_eq!(engine.rules.len(), 1);
+    assert_eq!(engine.rule_registry.len(), 1);
     assert!(engine.rule_registry.contains_key(&1));
 }
 
@@ -54,8 +52,8 @@ fn test_rule_engine_execution_limit() {
     engine.step_count = 1000;
     engine.max_steps = 1000;
 
-    // Create a mock call to something that checks limits
-    // In RuleEngine, execute_graph checks max_steps
+    // Engine should track step count and max_steps
+    assert_eq!(engine.step_count, engine.max_steps);
 }
 
 #[test]
@@ -68,4 +66,26 @@ fn test_value_enum() {
         Value::Num(n) => assert_eq!(n, 42),
         _ => panic!("Expected Num"),
     }
+
+    match val_sym {
+        Value::Sym(s) => assert_eq!(s, "test"),
+        _ => panic!("Expected Sym"),
+    }
+
+    match val_bool {
+        Value::Bool(b) => assert!(b),
+        _ => panic!("Expected Bool"),
+    }
+}
+
+#[test]
+fn test_rule_engine_empty_execution_path() {
+    let engine = RuleEngine::new(None);
+    assert!(engine.execution_path.is_empty());
+}
+
+#[test]
+fn test_rule_engine_priority_queue_empty() {
+    let engine = RuleEngine::new(None);
+    assert!(engine.priority_queue.is_empty());
 }

@@ -1,11 +1,15 @@
 //! KERN Bytecode Validator
-//! 
+//!
 //! Validates that KERN programs can be safely compiled to bytecode.
 
-use crate::types::{TypeDescriptor, TypeKind};
 use crate::resolver::Resolver;
 use crate::type_checker::TypeChecker;
-use kern_parser::{AstNode, Program, Definition, EntityDef, RuleDef, FlowDef, ConstraintDef, Condition, Expression, Term, Predicate, Action, IfAction, LoopAction, HaltAction, Assignment, ControlAction, Comparator};
+use crate::types::{TypeDescriptor, TypeKind};
+use kern_parser::{
+    Action, Assignment, AstNode, Comparator, Condition, ConstraintDef, ControlAction, Definition,
+    EntityDef, Expression, FlowDef, HaltAction, IfAction, LoopAction, Predicate, Program, RuleDef,
+    Term,
+};
 
 #[derive(Debug)]
 pub struct BytecodeValidator {
@@ -39,28 +43,34 @@ impl BytecodeValidationError {
         match self {
             BytecodeValidationError::UnsupportedType { ty, location } => {
                 format!(
-                    "Unsupported type {:?} for bytecode generation at {}:{}", 
+                    "Unsupported type {:?} for bytecode generation at {}:{}",
                     ty, location.file, location.line
                 )
-            },
-            BytecodeValidationError::DynamicTypeRequired { description, location } => {
+            }
+            BytecodeValidationError::DynamicTypeRequired {
+                description,
+                location,
+            } => {
                 format!(
-                    "Dynamic type required: {} at {}:{}", 
+                    "Dynamic type required: {} at {}:{}",
                     description, location.file, location.line
                 )
-            },
-            BytecodeValidationError::StackUnderflowRisk { operation, location } => {
+            }
+            BytecodeValidationError::StackUnderflowRisk {
+                operation,
+                location,
+            } => {
                 format!(
-                    "Stack underflow risk in operation '{}' at {}:{}", 
+                    "Stack underflow risk in operation '{}' at {}:{}",
                     operation, location.file, location.line
                 )
-            },
+            }
             BytecodeValidationError::InvalidOpcode { opcode, location } => {
                 format!(
-                    "Invalid opcode '{}' at {}:{}", 
+                    "Invalid opcode '{}' at {}:{}",
                     opcode, location.file, location.line
                 )
-            },
+            }
         }
     }
 }
@@ -98,16 +108,16 @@ impl BytecodeValidator {
         match definition {
             Definition::Entity(entity_def) => {
                 self.validate_entity(entity_def);
-            },
+            }
             Definition::Rule(rule_def) => {
                 self.validate_rule(rule_def);
-            },
+            }
             Definition::Flow(flow_def) => {
                 self.validate_flow(flow_def);
-            },
+            }
             Definition::Constraint(constraint_def) => {
                 self.validate_constraint(constraint_def);
-            },
+            }
         }
     }
 
@@ -116,12 +126,18 @@ impl BytecodeValidator {
         for field in &entity_def.fields {
             // In a real implementation, we'd validate the type of each field
             // For now, we'll just ensure all fields have valid names
-            if field.is_empty() {
+            if field.name.is_empty() {
                 let location = crate::symbol::SourceLocation::new("unknown".to_string(), 0, 0); // In real implementation, get from AST
-                self.errors.push(BytecodeValidationError::DynamicTypeRequired {
-                    description: format!("Entity '{}' has a field with an empty name", entity_def.name),
-                    location,
-                }.message());
+                self.errors.push(
+                    BytecodeValidationError::DynamicTypeRequired {
+                        description: format!(
+                            "Entity '{}' has a field with an empty name",
+                            entity_def.name
+                        ),
+                        location,
+                    }
+                    .message(),
+                );
             }
         }
     }
@@ -129,7 +145,7 @@ impl BytecodeValidator {
     fn validate_rule(&mut self, rule_def: &RuleDef) {
         // Validate the condition expression
         self.validate_condition(&rule_def.condition);
-        
+
         // Validate all actions
         for action in &rule_def.actions {
             self.validate_action(action);
@@ -152,11 +168,11 @@ impl BytecodeValidator {
         match condition {
             Condition::Expression(expr) => {
                 self.validate_expression(expr);
-            },
-            Condition::LogicalOp(left, _op, right) => {
+            }
+            Condition::LogicalOp(left, op, right) => {
                 self.validate_condition(left);
                 self.validate_condition(right);
-            },
+            }
         }
     }
 
@@ -166,19 +182,22 @@ impl BytecodeValidator {
                 // Validate both operands
                 self.validate_term(left);
                 self.validate_term(right);
-                
+
                 // Validate that the operator is supported in bytecode
                 match op {
-                    Comparator::Equal | Comparator::NotEqual | 
-                    Comparator::Greater | Comparator::Less | 
-                    Comparator::GreaterEqual | Comparator::LessEqual => {
+                    Comparator::Equal
+                    | Comparator::NotEqual
+                    | Comparator::Greater
+                    | Comparator::Less
+                    | Comparator::GreaterEqual
+                    | Comparator::LessEqual => {
                         // These are all supported in bytecode
-                    },
+                    }
                 }
-            },
+            }
             Expression::Predicate(predicate) => {
                 self.validate_predicate(predicate);
-            },
+            }
         }
     }
 
@@ -188,31 +207,43 @@ impl BytecodeValidator {
                 // Validate that the identifier refers to a valid symbol
                 if self.resolver.scope_manager().resolve_symbol(name).is_none() {
                     let location = crate::symbol::SourceLocation::new("unknown".to_string(), 0, 0); // In real implementation, get from AST
-                    self.errors.push(format!("Undeclared identifier '{}'", name));
+                    self.errors
+                        .push(format!("Undeclared identifier '{}'", name));
                 }
-            },
+            }
             Term::Number(_value) => {
                 // Numbers are always valid in bytecode
-            },
+            }
             Term::QualifiedRef(entity, field) => {
                 // Validate that both entity and field exist
-                if self.resolver.scope_manager().resolve_symbol(entity).is_none() {
+                if self
+                    .resolver
+                    .scope_manager()
+                    .resolve_symbol(entity)
+                    .is_none()
+                {
                     let location = crate::symbol::SourceLocation::new("unknown".to_string(), 0, 0); // In real implementation, get from AST
                     self.errors.push(format!("Undeclared entity '{}'", entity));
                 }
-                
+
                 // In a real implementation, we'd also validate that the field exists on the entity
-            },
+            }
         }
     }
 
     fn validate_predicate(&mut self, predicate: &Predicate) {
         // Validate that the predicate name is a known function/rule
-        if self.resolver.scope_manager().resolve_symbol(&predicate.name).is_none() {
+        if self
+            .resolver
+            .scope_manager()
+            .resolve_symbol(&predicate.name)
+            .is_none()
+        {
             let location = crate::symbol::SourceLocation::new("unknown".to_string(), 0, 0); // In real implementation, get from AST
-            self.errors.push(format!("Unknown predicate '{}'", predicate.name));
+            self.errors
+                .push(format!("Unknown predicate '{}'", predicate.name));
         }
-        
+
         // Validate all arguments
         for arg in &predicate.arguments {
             self.validate_term(arg);
@@ -223,20 +254,28 @@ impl BytecodeValidator {
         match action {
             Action::Predicate(predicate) => {
                 self.validate_predicate(predicate);
-            },
+            }
             Action::Assignment(assignment) => {
                 // Validate the value being assigned
                 self.validate_term(&assignment.value);
-                
+
                 // Validate that the target exists
-                if self.resolver.scope_manager().resolve_symbol(&assignment.target).is_none() {
+                if self
+                    .resolver
+                    .scope_manager()
+                    .resolve_symbol(&assignment.variable)
+                    .is_none()
+                {
                     let location = crate::symbol::SourceLocation::new("unknown".to_string(), 0, 0); // In real implementation, get from AST
-                    self.errors.push(format!("Cannot assign to undeclared variable '{}'", assignment.target));
+                    self.errors.push(format!(
+                        "Cannot assign to undeclared variable '{}'",
+                        assignment.variable
+                    ));
                 }
-            },
+            }
             Action::Control(control_action) => {
                 self.validate_control_action(control_action);
-            },
+            }
         }
     }
 
@@ -245,38 +284,45 @@ impl BytecodeValidator {
             ControlAction::If(if_action) => {
                 // Validate the condition
                 self.validate_condition(&if_action.condition);
-                
+
                 // Validate then actions
                 for action in &if_action.then_actions {
                     self.validate_action(action);
                 }
-                
+
                 // Validate else actions if they exist
                 if let Some(else_actions) = &if_action.else_actions {
                     for action in else_actions {
                         self.validate_action(action);
                     }
                 }
-            },
+            }
             ControlAction::Loop(loop_action) => {
                 // Validate all actions in the loop body
                 for action in &loop_action.actions {
                     self.validate_action(action);
                 }
-            },
+            }
             ControlAction::Halt(_halt_action) => {
                 // Halt action is always valid in bytecode
-            },
+            }
         }
     }
 
     /// Validates that a type can be represented in bytecode
     pub fn validate_type_for_bytecode(&self, ty: &TypeDescriptor) -> bool {
         match &ty.kind {
-            TypeKind::Int | TypeKind::Float | TypeKind::Bool | TypeKind::String | 
-            TypeKind::Void | TypeKind::Sym | TypeKind::Num | TypeKind::Ref | 
-            TypeKind::Vec | TypeKind::Ctx => true,
-            TypeKind::Entity(_) => true,  // Entities are supported
+            TypeKind::Int
+            | TypeKind::Float
+            | TypeKind::Bool
+            | TypeKind::String
+            | TypeKind::Void
+            | TypeKind::Sym
+            | TypeKind::Num
+            | TypeKind::Ref
+            | TypeKind::Vec
+            | TypeKind::Ctx => true,
+            TypeKind::Entity(_) => true, // Entities are supported
             TypeKind::List(inner) => self.validate_type_for_bytecode(inner),
             TypeKind::Optional(inner) => self.validate_type_for_bytecode(inner),
         }
@@ -361,16 +407,22 @@ mod tests {
         let program = parser.parse_program().expect("Failed to parse program");
 
         let mut resolver = Resolver::new();
-        resolver.resolve_program(&program).expect("Failed to resolve program");
+        resolver
+            .resolve_program(&program)
+            .expect("Failed to resolve program");
 
         let type_checker = TypeChecker::new(resolver);
         let resolver = type_checker.resolver().clone(); // Get resolver back
         let mut bytecode_validator = BytecodeValidator::new(resolver, type_checker);
 
         let result = bytecode_validator.validate_program(&program);
-        
+
         // The bytecode validation should pass without errors for this valid program
-        assert!(result.is_ok(), "Bytecode validation failed with errors: {:?}", result.err());
+        assert!(
+            result.is_ok(),
+            "Bytecode validation failed with errors: {:?}",
+            result.err()
+        );
     }
 
     #[test]
@@ -381,12 +433,21 @@ mod tests {
         let bytecode_validator = BytecodeValidator::new(resolver, type_checker);
 
         let int_type = TypeDescriptor::new(TypeKind::Int);
-        assert_eq!(bytecode_validator.map_type_to_bytecode(&int_type), Some("I32"));
+        assert_eq!(
+            bytecode_validator.map_type_to_bytecode(&int_type),
+            Some("I32")
+        );
 
         let bool_type = TypeDescriptor::new(TypeKind::Bool);
-        assert_eq!(bytecode_validator.map_type_to_bytecode(&bool_type), Some("BOOL"));
+        assert_eq!(
+            bytecode_validator.map_type_to_bytecode(&bool_type),
+            Some("BOOL")
+        );
 
         let string_type = TypeDescriptor::new(TypeKind::String);
-        assert_eq!(bytecode_validator.map_type_to_bytecode(&string_type), Some("STR"));
+        assert_eq!(
+            bytecode_validator.map_type_to_bytecode(&string_type),
+            Some("STR")
+        );
     }
 }

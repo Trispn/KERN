@@ -80,12 +80,12 @@ impl TypeDescriptor {
     }
 
     /// Checks if this is an optional type
-    pub fn is_optional(&self) -> bool {
+    pub fn isoptional(&self) -> bool {
         matches!(self.kind, TypeKind::Optional(_))
     }
 
     /// Gets the inner type of an optional type
-    pub fn unwrap_optional(&self) -> Option<&TypeDescriptor> {
+    pub fn unwrapoptional(&self) -> Option<&TypeDescriptor> {
         match &self.kind {
             TypeKind::Optional(inner) => Some(inner),
             _ => None,
@@ -118,8 +118,8 @@ impl TypeChecker {
     }
 
     /// Validates that a type is optional
-    pub fn validate_optional(ty: &TypeDescriptor) -> bool {
-        ty.is_optional()
+    pub fn validateoptional(ty: &TypeDescriptor) -> bool {
+        ty.isoptional()
     }
 }
 

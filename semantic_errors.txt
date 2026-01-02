@@ -1,0 +1,1263 @@
+﻿cargo : warning: unused import: `std::collections::HashMap`
+At line:1 char:1
++ cargo check --test semantic_tests 2>&1 | Out-File -FilePath semantic_ 
+...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (warning: unused...tions::H 
+   ashMap`:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ --> kern-lexer\src\lexer.rs:1:5
+  |
+1 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by 
+default
+
+warning: unused variable: `start_pos`
+   --> kern-lexer\src\lexer.rs:222:21
+    |
+222 |                 let start_pos = self.position;
+    |                     ^^^^^^^^^ help: if this is intentional, 
+prefix it with an underscore: `_start_pos`
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on 
+by default
+
+warning: method `skip_string` is never used
+  --> kern-lexer\src\lexer.rs:74:8
+   |
+14 | impl Lexer {
+   | ---------- method in this implementation
+...
+74 |     fn skip_string(&mut self) {
+   |        ^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by 
+default
+
+warning: `kern_lexer` (lib) generated 3 warnings (run `cargo fix --lib 
+-p kern_lexer` to apply 2 suggestions)
+warning: methods `peek_token` and `is_peek_token` are never used
+   --> kern-parser\src\parser.rs:121:8
+    |
+104 | impl Parser {
+    | ----------- methods in this implementation
+...
+121 |     fn peek_token(&mut self) -> Token {
+    |        ^^^^^^^^^^
+...
+152 |     fn is_peek_token(&mut self, token_type: &TokenType) -> bool {
+    |        ^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by 
+default
+
+warning: field `predicate_signatures` is never read
+  --> kern-parser\src\type_checker.rs:69:5
+   |
+61 | pub struct TypeChecker {
+   |            ----------- field in this struct
+...
+69 |     predicate_signatures: HashMap<String, Type>,
+   |     ^^^^^^^^^^^^^^^^^^^^
+
+warning: field `instruction_operands` is never read
+  --> kern-parser\src\bytecode_validation.rs:36:5
+   |
+34 | pub struct BytecodeCompatibilityValidator {
+   |            ------------------------------ field in this struct
+35 |     // Map from instruction names to their expected operand types
+36 |     instruction_operands: HashMap<String, Vec<String>>,
+   |     ^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `BytecodeCompatibilityValidator` has a derived impl for the 
+trait `Debug`, but this is intentionally ignored during dead code 
+analysis
+
+warning: error copying object file `C:\Users\LENOVO\OneDrive\Desktop\KER
+N\target\debug\deps\libkern_parser-91524a0b66bd3696.rmeta` to 
+incremental directory as `\\?\C:\Users\LENOVO\OneDrive\Desktop\KERN\targ
+et\debug\incremental\kern_parser-0vl3b6n3u54nd\s-hegvll2ytq-1d110ue-work
+ing\metadata.rmeta`: The process cannot access the file because it is 
+being used by another process. (os error 32)
+
+warning: unused variable: `node`
+   --> kern-ast\src\visitor.rs:158:36
+    |
+158 |     fn visit_identifier(&mut self, node: &IdentifierNode) {
+    |                                    ^^^^ help: if this is 
+intentional, prefix it with an underscore: `_node`
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on 
+by default
+
+warning: unused variable: `node`
+   --> kern-ast\src\visitor.rs:313:36
+    |
+313 |     fn visit_identifier(&mut self, node: &mut IdentifierNode) {
+    |                                    ^^^^ help: if this is 
+intentional, prefix it with an underscore: `_node`
+
+warning: variant `Int` is never constructed
+  --> kern-ast\src\serializer.rs:21:5
+   |
+17 | enum FieldKind {
+   |      --------- variant in this enum
+...
+21 |     Int = 3,
+   |     ^^^
+   |
+   = note: `FieldKind` has derived impls for the traits `Clone` and 
+`Debug`, but these are intentionally ignored during dead code analysis
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by 
+default
+
+warning: `kern_parser` (lib) generated 4 warnings
+warning: `kern-ast` (lib) generated 3 warnings (run `cargo fix --lib -p 
+kern-ast` to apply 2 suggestions)
+warning: unused import: `AstNode`
+ --> kern-graph-builder\src\graph_builder.rs:2:25
+  |
+2 |     Action, Assignment, AstNode, Condition, ConstraintDef, 
+ControlAction, Definition, EntityDef,
+  |                         ^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by 
+default
+
+warning: variable does not need to be mutable
+   --> kern-graph-builder\src\graph_builder.rs:856:21
+    |
+856 |                 let mut path: Vec<u32> = Vec::new();
+    |                     ----^^^^
+    |                     |
+    |                     help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by 
+default
+
+warning: unused variable: `path`
+   --> kern-graph-builder\src\graph_builder.rs:856:21
+    |
+856 |                 let mut path: Vec<u32> = Vec::new();
+    |                     ^^^^^^^^ help: if this is intentional, prefix 
+it with an underscore: `_path`
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on 
+by default
+
+warning: variable does not need to be mutable
+    --> kern-graph-builder\src\graph_builder.rs:1054:13
+     |
+1054 |         let mut combined = false;
+     |             ----^^^^^^^^
+     |             |
+     |             help: remove this `mut`
+
+warning: field `source_map` is never read
+   --> kern-graph-builder\src\graph_builder.rs:236:5
+    |
+228 | pub struct GraphBuilder {
+    |            ------------ field in this struct
+...
+236 |     source_map: HashMap<u32, String>, // Maps node IDs to source 
+locations for debugging
+    |     ^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by 
+default
+
+warning: `kern_graph_builder` (lib) generated 5 warnings (run `cargo 
+fix --lib -p kern_graph_builder` to apply 4 suggestions)
+warning: unused import: `super::Instruction`
+   --> kern-bytecode\src\lib.rs:562:9
+    |
+562 |     use super::Instruction;
+    |         ^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by 
+default
+
+warning: method `compile_context_op` is never used
+   --> kern-bytecode\src\lib.rs:516:8
+    |
+146 | impl BytecodeCompiler {
+    | --------------------- method in this implementation
+...
+516 |     fn compile_context_op(&mut self, opcode: u8, flags: u8, 
+operand: u64) -> Instruction {
+    |        ^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by 
+default
+
+warning: unused import: `GraphNodeType`
+ --> kern-rule-engine\src\lib.rs:4:63
+  |
+4 | use kern_graph_builder::{EdgeType, ExecutionGraph, GraphNode, 
+GraphNodeType, SpecializedNode};
+  |                                                               
+^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by 
+default
+
+warning: unused import: `LogicalOp`
+ --> kern-rule-engine\src\lib.rs:5:31
+  |
+5 | use kern_parser::{Comparator, LogicalOp};
+  |                               ^^^^^^^^^
+
+warning: unused imports: `ConflictEntry`, `ExecutionContext`, 
+`PriorityStrategy`, `ResolutionMode`, `RuleEngineError`, 
+`RuleExecutionInfo`, `RuleMatch`, `RulePriority`, and `Value`
+ --> kern-rule-engine\src\rule_engine.rs:2:5
+  |
+2 |     ConflictEntry, ExecutionContext, PriorityStrategy, 
+ResolutionMode, RuleEngineError,
+  |     ^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^  
+^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^
+3 |     RuleExecutionInfo, RuleMatch, RulePriority, Value,
+  |     ^^^^^^^^^^^^^^^^^  ^^^^^^^^^  ^^^^^^^^^^^^  ^^^^^
+
+warning: unused imports: `ExecutionGraph`, `GraphNodeType`, 
+`GraphNode`, and `SpecializedNode`
+ --> kern-rule-engine\src\rule_engine.rs:5:26
+  |
+5 | use kern_graph_builder::{ExecutionGraph, GraphNode, GraphNodeType, 
+SpecializedNode};
+  |                          ^^^^^^^^^^^^^^  ^^^^^^^^^  ^^^^^^^^^^^^^  
+^^^^^^^^^^^^^^^
+
+warning: unused import: `std::collections::HashMap`
+ --> kern-rule-engine\src\rule_engine.rs:6:5
+  |
+6 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `ExecutionContext` and `Value`
+ --> kern-rule-engine\src\implementation.rs:6:20
+  |
+6 | use crate::types::{ExecutionContext, RuleExecutionInfo, Value};
+  |                    ^^^^^^^^^^^^^^^^                     ^^^^^
+
+warning: unused imports: `GraphNodeType`, `GraphNode`, and 
+`SpecializedNode`
+  --> kern-rule-engine\src\implementation.rs:10:42
+   |
+10 | use kern_graph_builder::{ExecutionGraph, GraphNode, GraphNodeType, 
+SpecializedNode};
+   |                                          ^^^^^^^^^  ^^^^^^^^^^^^^  
+^^^^^^^^^^^^^^^
+
+warning: unused import: `std::collections::HashMap`
+  --> kern-rule-engine\src\implementation.rs:11:5
+   |
+11 | use std::collections::HashMap;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `LogicalOp`
+ --> kern-rule-engine\src\types.rs:1:31
+  |
+1 | use kern_parser::{Comparator, LogicalOp};
+  |                               ^^^^^^^^^
+
+warning: unused import: `implementation::*`
+  --> kern-rule-engine\src\lib.rs:19:9
+   |
+19 | pub use implementation::*;
+   |         ^^^^^^^^^^^^^^^^^
+
+warning: unused import: `rule_engine::*`
+  --> kern-rule-engine\src\lib.rs:23:9
+   |
+23 | pub use rule_engine::*;
+   |         ^^^^^^^^^^^^^^
+
+warning: unused variable: `rule1`
+  --> kern-rule-engine\src\conflict_resolver.rs:54:30
+   |
+54 |     fn rules_conflict(&self, rule1: &RuleExecutionInfo, rule2: 
+&RuleExecutionInfo) -> bool {
+   |                              ^^^^^ help: if this is intentional, 
+prefix it with an underscore: `_rule1`
+   |
+   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on 
+by default
+
+warning: unused variable: `rule2`
+  --> kern-rule-engine\src\conflict_resolver.rs:54:57
+   |
+54 |     fn rules_conflict(&self, rule1: &RuleExecutionInfo, rule2: 
+&RuleExecutionInfo) -> bool {
+   |                                                         ^^^^^ 
+help: if this is intentional, prefix it with an underscore: `_rule2`
+
+warning: unused variable: `rules`
+   --> kern-rule-engine\src\conflict_resolver.rs:126:9
+    |
+126 |         rules: &mut [RuleExecutionInfo],
+    |         ^^^^^ help: if this is intentional, prefix it with an 
+underscore: `_rules`
+
+warning: variable does not need to be mutable
+  --> kern-rule-engine\src\implementation.rs:33:13
+   |
+33 |         let mut pattern_matcher = PatternMatcher::new();
+   |             ----^^^^^^^^^^^^^^^
+   |             |
+   |             help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by 
+default
+
+warning: variable does not need to be mutable
+  --> kern-rule-engine\src\implementation.rs:34:13
+   |
+34 |         let mut scheduler = RuleScheduler::new();
+   |             ----^^^^^^^^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> kern-rule-engine\src\implementation.rs:35:13
+   |
+35 |         let mut conflict_resolver = ConflictResolver::new();
+   |             ----^^^^^^^^^^^^^^^^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> kern-rule-engine\src\implementation.rs:36:13
+   |
+36 |         let mut priority_manager = PriorityManager::new();
+   |             ----^^^^^^^^^^^^^^^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> kern-rule-engine\src\implementation.rs:37:13
+   |
+37 |         let mut recursion_guard = RecursionGuard::new();
+   |             ----^^^^^^^^^^^^^^^
+   |             |
+   |             help: remove this `mut`
+
+warning: unused variable: `pattern_matcher`
+  --> kern-rule-engine\src\implementation.rs:33:13
+   |
+33 |         let mut pattern_matcher = PatternMatcher::new();
+   |             ^^^^^^^^^^^^^^^^^^^ help: if this is intentional, 
+prefix it with an underscore: `_pattern_matcher`
+
+warning: unused variable: `scheduler`
+  --> kern-rule-engine\src\implementation.rs:34:13
+   |
+34 |         let mut scheduler = RuleScheduler::new();
+   |             ^^^^^^^^^^^^^ help: if this is intentional, prefix it 
+with an underscore: `_scheduler`
+
+warning: unused variable: `conflict_resolver`
+  --> kern-rule-engine\src\implementation.rs:35:13
+   |
+35 |         let mut conflict_resolver = ConflictResolver::new();
+   |             ^^^^^^^^^^^^^^^^^^^^^ help: if this is intentional, 
+prefix it with an underscore: `_conflict_resolver`
+
+warning: unused variable: `priority_manager`
+  --> kern-rule-engine\src\implementation.rs:36:13
+   |
+36 |         let mut priority_manager = PriorityManager::new();
+   |             ^^^^^^^^^^^^^^^^^^^^ help: if this is intentional, 
+prefix it with an underscore: `_priority_manager`
+
+warning: unused variable: `recursion_guard`
+  --> kern-rule-engine\src\implementation.rs:37:13
+   |
+37 |         let mut recursion_guard = RecursionGuard::new();
+   |             ^^^^^^^^^^^^^^^^^^^ help: if this is intentional, 
+prefix it with an underscore: `_recursion_guard`
+
+warning: variable does not need to be mutable
+  --> kern-rule-engine\src\implementation.rs:49:13
+   |
+49 |         let mut scheduler = RuleScheduler::new();
+   |             ----^^^^^^^^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> kern-rule-engine\src\implementation.rs:50:13
+   |
+50 |         let mut conflict_resolver = ConflictResolver::new();
+   |             ----^^^^^^^^^^^^^^^^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> kern-rule-engine\src\implementation.rs:51:13
+   |
+51 |         let mut priority_manager = PriorityManager::new();
+   |             ----^^^^^^^^^^^^^^^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> kern-rule-engine\src\implementation.rs:52:13
+   |
+52 |         let mut recursion_guard = RecursionGuard::new();
+   |             ----^^^^^^^^^^^^^^^
+   |             |
+   |             help: remove this `mut`
+
+warning: unused variable: `scheduler`
+  --> kern-rule-engine\src\implementation.rs:49:13
+   |
+49 |         let mut scheduler = RuleScheduler::new();
+   |             ^^^^^^^^^^^^^ help: if this is intentional, prefix it 
+with an underscore: `_scheduler`
+
+warning: unused variable: `conflict_resolver`
+  --> kern-rule-engine\src\implementation.rs:50:13
+   |
+50 |         let mut conflict_resolver = ConflictResolver::new();
+   |             ^^^^^^^^^^^^^^^^^^^^^ help: if this is intentional, 
+prefix it with an underscore: `_conflict_resolver`
+
+warning: unused variable: `recursion_guard`
+  --> kern-rule-engine\src\implementation.rs:52:13
+   |
+52 |         let mut recursion_guard = RecursionGuard::new();
+   |             ^^^^^^^^^^^^^^^^^^^ help: if this is intentional, 
+prefix it with an underscore: `_recursion_guard`
+
+warning: variable does not need to be mutable
+   --> kern-rule-engine\src\implementation.rs:102:21
+    |
+102 |                 let mut rule_info = RuleExecutionInfo {
+    |                     ----^^^^^^^^^
+    |                     |
+    |                     help: remove this `mut`
+
+warning: unused variable: `rule_info`
+   --> kern-rule-engine\src\implementation.rs:128:34
+    |
+128 |     fn evaluate_condition(&self, rule_info: &RuleExecutionInfo) 
+-> Result<bool, String> {
+    |                                  ^^^^^^^^^ help: if this is 
+intentional, prefix it with an underscore: `_rule_info`
+
+warning: unused variable: `graph`
+   --> kern-rule-engine\src\implementation.rs:145:9
+    |
+145 |         graph: &ExecutionGraph,
+    |         ^^^^^ help: if this is intentional, prefix it with an 
+underscore: `_graph`
+
+warning: unused variable: `flow_specialized_node`
+   --> kern-rule-engine\src\lib.rs:318:13
+    |
+318 |         let flow_specialized_node = graph
+    |             ^^^^^^^^^^^^^^^^^^^^^ help: if this is intentional, 
+prefix it with an underscore: `_flow_specialized_node`
+
+warning: unused variable: `condition`
+   --> kern-rule-engine\src\lib.rs:888:53
+    |
+888 | ...                   if let Some(Value::Bool(condition)) =
+    |                                               ^^^^^^^^^ help: if 
+this is intentional, prefix it with an underscore: `_condition`
+
+warning: unused variable: `graph`
+   --> kern-rule-engine\src\lib.rs:982:9
+    |
+982 |         graph: &ExecutionGraph,
+    |         ^^^^^ help: if this is intentional, prefix it with an 
+underscore: `_graph`
+
+warning: unused variable: `i`
+    --> kern-rule-engine\src\lib.rs:1390:22
+     |
+1390 |                 for (i, &reg_idx) in 
+node.output_regs.iter().enumerate() {
+     |                      ^ help: if this is intentional, prefix it 
+with an underscore: `_i`
+
+warning: methods `add_to_priority_queue`, `execute_node_demand_driven`, 
+`execute_node`, `execute_loop_node`, `process_node_dependencies`, and 
+`is_in_execution_path` are never used
+    --> kern-rule-engine\src\lib.rs:151:8
+     |
+  48 | impl RuleEngine {
+     | --------------- methods in this implementation
+...
+ 151 |     fn add_to_priority_queue(&mut self, node_id: u32) {
+     |        ^^^^^^^^^^^^^^^^^^^^^
+...
+ 361 |     fn execute_node_demand_driven(
+     |        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+ 564 |     fn execute_node(
+     |        ^^^^^^^^^^^^
+...
+ 916 |     fn execute_loop_node(
+     |        ^^^^^^^^^^^^^^^^^
+...
+ 979 |     fn process_node_dependencies(
+     |        ^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+1579 |     fn is_in_execution_path(&self, rule_id: u32) -> bool {
+     |        ^^^^^^^^^^^^^^^^^^^^
+     |
+     = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by 
+default
+
+warning: methods `evaluate_condition`, `check_dependencies`, and 
+`execute_action_subgraph` are never used
+   --> kern-rule-engine\src\implementation.rs:128:8
+    |
+ 13 | impl RuleEngine {
+    | --------------- methods in this implementation
+...
+128 |     fn evaluate_condition(&self, rule_info: &RuleExecutionInfo) 
+-> Result<bool, String> {
+    |        ^^^^^^^^^^^^^^^^^^
+...
+136 |     fn check_dependencies(&self, _rule_info: &RuleExecutionInfo) 
+-> Result<bool, String> {
+    |        ^^^^^^^^^^^^^^^^^^
+...
+142 |     fn execute_action_subgraph(
+    |        ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `Assignment`, `AstNode`, `HaltAction`, 
+`IfAction`, and `LoopAction`
+  --> kern-semantic\bytecode_validator.rs:9:13
+   |
+ 9 |     Action, Assignment, AstNode, Comparator, Condition, 
+ConstraintDef, ControlAction, Definition,
+   |             ^^^^^^^^^^  ^^^^^^^
+10 |     EntityDef, Expression, FlowDef, HaltAction, IfAction, 
+LoopAction, Predicate, Program, RuleDef,
+   |                                     ^^^^^^^^^^  ^^^^^^^^  
+^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by 
+default
+
+warning: unused import: `Symbol`
+ --> kern-semantic\conflict_detector.rs:6:21
+  |
+6 | use crate::symbol::{Symbol, SymbolKind};
+  |                     ^^^^^^
+
+warning: unused imports: `Assignment`, `AstNode`, `ConstraintDef`, 
+`ControlAction`, `EntityDef`, `FlowDef`, `HaltAction`, `IfAction`, 
+`LoopAction`, and `Predicate`
+ --> kern-semantic\conflict_detector.rs:8:13
+  |
+8 |     Action, Assignment, AstNode, Comparator, Condition, 
+ConstraintDef, ControlAction, Definition,
+  |             ^^^^^^^^^^  ^^^^^^^                         
+^^^^^^^^^^^^^  ^^^^^^^^^^^^^
+9 |     EntityDef, Expression, FlowDef, HaltAction, IfAction, 
+LoopAction, Predicate, Program, RuleDef,
+  |     ^^^^^^^^^              ^^^^^^^  ^^^^^^^^^^  ^^^^^^^^  
+^^^^^^^^^^  ^^^^^^^^^
+
+warning: unused import: `HashMap`
+  --> kern-semantic\conflict_detector.rs:12:24
+   |
+12 | use std::collections::{HashMap, HashSet};
+   |                        ^^^^^^^
+
+warning: unused import: `Symbol`
+ --> kern-semantic\dependency_graph.rs:6:21
+  |
+6 | use crate::symbol::{Symbol, SymbolKind};
+  |                     ^^^^^^
+
+warning: unused imports: `Assignment`, `AstNode`, `HaltAction`, 
+`IfAction`, `LoopAction`, and `Predicate`
+ --> kern-semantic\dependency_graph.rs:8:13
+  |
+8 |     Action, Assignment, AstNode, Condition, ConstraintDef, 
+ControlAction, Definition, EntityDef,
+  |             ^^^^^^^^^^  ^^^^^^^
+9 |     Expression, FlowDef, HaltAction, IfAction, LoopAction, 
+Predicate, Program, RuleDef, Term,
+  |                          ^^^^^^^^^^  ^^^^^^^^  ^^^^^^^^^^  ^^^^^^^^^
+
+warning: unused import: `VecDeque`
+  --> kern-semantic\dependency_graph.rs:11:42
+   |
+11 | use std::collections::{HashMap, HashSet, VecDeque};
+   |                                          ^^^^^^^^
+
+warning: variant `TYPE_MISMATCH` should have an upper camel case name
+  --> kern-semantic\diagnostics.rs:20:5
+   |
+20 |     TYPE_MISMATCH,
+   |     ^^^^^^^^^^^^^ help: convert the identifier to upper camel 
+case: `TypeMismatch`
+   |
+   = note: `#[warn(non_camel_case_types)]` (part of 
+`#[warn(nonstandard_style)]`) on by default
+
+warning: variant `INVALID_TYPE` should have an upper camel case name
+  --> kern-semantic\diagnostics.rs:21:5
+   |
+21 |     INVALID_TYPE,
+   |     ^^^^^^^^^^^^ help: convert the identifier to upper camel case: 
+`InvalidType`
+
+warning: variant `UNKNOWN_TYPE` should have an upper camel case name
+  --> kern-semantic\diagnostics.rs:22:5
+   |
+22 |     UNKNOWN_TYPE,
+   |     ^^^^^^^^^^^^ help: convert the identifier to upper camel case: 
+`UnknownType`
+
+warning: variant `UNDECLARED_SYMBOL` should have an upper camel case 
+name
+  --> kern-semantic\diagnostics.rs:25:5
+   |
+25 |     UNDECLARED_SYMBOL,
+   |     ^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel 
+case: `UndeclaredSymbol`
+
+warning: variant `DUPLICATE_DECLARATION` should have an upper camel 
+case name
+  --> kern-semantic\diagnostics.rs:26:5
+   |
+26 |     DUPLICATE_DECLARATION,
+   |     ^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper 
+camel case: `DuplicateDeclaration`
+
+warning: variant `ILLEGAL_SHADOWING` should have an upper camel case 
+name
+  --> kern-semantic\diagnostics.rs:27:5
+   |
+27 |     ILLEGAL_SHADOWING,
+   |     ^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel 
+case: `IllegalShadowing`
+
+warning: variant `CYCLIC_DEPENDENCY` should have an upper camel case 
+name
+  --> kern-semantic\diagnostics.rs:30:5
+   |
+30 |     CYCLIC_DEPENDENCY,
+   |     ^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel 
+case: `CyclicDependency`
+
+warning: variant `SELF_DEPENDENCY` should have an upper camel case name
+  --> kern-semantic\diagnostics.rs:31:5
+   |
+31 |     SELF_DEPENDENCY,
+   |     ^^^^^^^^^^^^^^^ help: convert the identifier to upper camel 
+case: `SelfDependency`
+
+warning: variant `RULE_CONFLICT` should have an upper camel case name
+  --> kern-semantic\diagnostics.rs:34:5
+   |
+34 |     RULE_CONFLICT,
+   |     ^^^^^^^^^^^^^ help: convert the identifier to upper camel 
+case: `RuleConflict`
+
+warning: variant `OVERLAPPING_CONDITIONS` should have an upper camel 
+case name
+  --> kern-semantic\diagnostics.rs:35:5
+   |
+35 |     OVERLAPPING_CONDITIONS,
+   |     ^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper 
+camel case: `OverlappingConditions`
+
+warning: variant `MUTUALLY_EXCLUSIVE_ACTIONS` should have an upper 
+camel case name
+  --> kern-semantic\diagnostics.rs:36:5
+   |
+36 |     MUTUALLY_EXCLUSIVE_ACTIONS,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to 
+upper camel case: `MutuallyExclusiveActions`
+
+warning: variant `UNSUPPORTED_TYPE_FOR_BYTECODE` should have an upper 
+camel case name
+  --> kern-semantic\diagnostics.rs:39:5
+   |
+39 |     UNSUPPORTED_TYPE_FOR_BYTECODE,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to 
+upper camel case: `UnsupportedTypeForBytecode`
+
+warning: variant `DYNAMIC_TYPE_REQUIRED` should have an upper camel 
+case name
+  --> kern-semantic\diagnostics.rs:40:5
+   |
+40 |     DYNAMIC_TYPE_REQUIRED,
+   |     ^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper 
+camel case: `DynamicTypeRequired`
+
+warning: variant `STACK_UNDERFLOW_RISK` should have an upper camel case 
+name
+  --> kern-semantic\diagnostics.rs:41:5
+   |
+41 |     STACK_UNDERFLOW_RISK,
+   |     ^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper 
+camel case: `StackUnderflowRisk`
+
+warning: variant `SYNTAX_ERROR` should have an upper camel case name
+  --> kern-semantic\diagnostics.rs:45:5
+   |
+45 |     SYNTAX_ERROR,
+   |     ^^^^^^^^^^^^ help: convert the identifier to upper camel case: 
+`SyntaxError`
+
+warning: variant `SEMANTIC_ERROR` should have an upper camel case name
+  --> kern-semantic\diagnostics.rs:46:5
+   |
+46 |     SEMANTIC_ERROR,
+   |     ^^^^^^^^^^^^^^ help: convert the identifier to upper camel 
+case: `SemanticError`
+
+warning: unused imports: `AstNode` and `HaltAction`
+  --> kern-semantic\resolver.rs:9:25
+   |
+ 9 |     Action, Assignment, AstNode, Condition, ConstraintDef, 
+ControlAction, Definition, EntityDef,
+   |                         ^^^^^^^
+10 |     Expression, FlowDef, HaltAction, IfAction, LoopAction, 
+Predicate, Program, RuleDef, Term,
+   |                          ^^^^^^^^^^
+
+warning: unused import: `VecDeque`
+ --> kern-semantic\scope.rs:6:33
+  |
+6 | use std::collections::{HashMap, VecDeque};
+  |                                 ^^^^^^^^
+
+warning: unused import: `TypeKind`
+ --> kern-semantic\symbol.rs:5:36
+  |
+5 | use crate::types::{TypeDescriptor, TypeKind};
+  |                                    ^^^^^^^^
+
+warning: unused imports: `SymbolKind` and `Symbol`
+ --> kern-semantic\type_checker.rs:6:21
+  |
+6 | use crate::symbol::{Symbol, SymbolKind};
+  |                     ^^^^^^  ^^^^^^^^^^
+
+warning: unused imports: `AstNode`, `HaltAction`, and `LogicalOp`
+  --> kern-semantic\type_checker.rs:9:25
+   |
+ 9 |     Action, Assignment, AstNode, Comparator, Condition, 
+ConstraintDef, ControlAction, Definition,
+   |                         ^^^^^^^
+10 |     EntityDef, Expression, FlowDef, HaltAction, IfAction, 
+LogicalOp, LoopAction, Predicate,
+   |                                     ^^^^^^^^^^            ^^^^^^^^^
+
+warning: unused import: `std::collections::HashMap`
+ --> kern-semantic\types.rs:5:5
+  |
+5 | use std::collections::HashMap;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused variable: `op`
+   --> kern-semantic\bytecode_validator.rs:172:40
+    |
+172 |             Condition::LogicalOp(left, op, right) => {
+    |                                        ^^ help: if this is 
+intentional, prefix it with an underscore: `_op`
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on 
+by default
+
+warning: unused variable: `location`
+   --> kern-semantic\bytecode_validator.rs:209:25
+    |
+209 |                     let location = 
+crate::symbol::SourceLocation::new("unknown".to_string(), 0, 0); // In 
+real implementation, get from AST
+    |                         ^^^^^^^^ help: if this is intentional, 
+prefix it with an underscore: `_location`
+
+warning: unused variable: `field`
+   --> kern-semantic\bytecode_validator.rs:217:40
+    |
+217 |             Term::QualifiedRef(entity, field) => {
+    |                                        ^^^^^ help: if this is 
+intentional, prefix it with an underscore: `_field`
+
+warning: unused variable: `location`
+   --> kern-semantic\bytecode_validator.rs:225:25
+    |
+225 |                     let location = 
+crate::symbol::SourceLocation::new("unknown".to_string(), 0, 0); // In 
+real implementation, get from AST
+    |                         ^^^^^^^^ help: if this is intentional, 
+prefix it with an underscore: `_location`
+
+warning: unused variable: `location`
+   --> kern-semantic\bytecode_validator.rs:242:17
+    |
+242 |             let location = 
+crate::symbol::SourceLocation::new("unknown".to_string(), 0, 0); // In 
+real implementation, get from AST
+    |                 ^^^^^^^^ help: if this is intentional, prefix it 
+with an underscore: `_location`
+
+warning: unused variable: `location`
+   --> kern-semantic\bytecode_validator.rs:269:25
+    |
+269 |                     let location = 
+crate::symbol::SourceLocation::new("unknown".to_string(), 0, 0); // In 
+real implementation, get from AST
+    |                         ^^^^^^^^ help: if this is intentional, 
+prefix it with an underscore: `_location`
+
+warning: unused variable: `op`
+   --> kern-semantic\conflict_detector.rs:145:40
+    |
+145 |             Condition::LogicalOp(left, op, right) => {
+    |                                        ^^ help: if this is 
+intentional, prefix it with an underscore: `_op`
+
+warning: unused variable: `op`
+   --> kern-semantic\conflict_detector.rs:158:44
+    |
+158 |             Expression::Comparison { left, op, right } => {
+    |                                            ^^ help: try ignoring 
+the field: `op: _`
+
+warning: unused variable: `op`
+   --> kern-semantic\dependency_graph.rs:177:40
+    |
+177 |             Condition::LogicalOp(left, op, right) => {
+    |                                        ^^ help: if this is 
+intentional, prefix it with an underscore: `_op`
+
+warning: unused variable: `op`
+   --> kern-semantic\dependency_graph.rs:190:44
+    |
+190 |             Expression::Comparison { left, op, right } => {
+    |                                            ^^ help: try ignoring 
+the field: `op: _`
+
+warning: unused variable: `op`
+   --> kern-semantic\resolver.rs:243:40
+    |
+243 |             Condition::LogicalOp(left, op, right) => {
+    |                                        ^^ help: if this is 
+intentional, prefix it with an underscore: `_op`
+
+warning: unused variable: `op`
+   --> kern-semantic\resolver.rs:252:44
+    |
+252 |             Expression::Comparison { left, op, right } => {
+    |                                            ^^ help: try ignoring 
+the field: `op: _`
+
+warning: unused variable: `field`
+   --> kern-semantic\resolver.rs:275:40
+    |
+275 |             Term::QualifiedRef(entity, field) => {
+    |                                        ^^^^^ help: if this is 
+intentional, prefix it with an underscore: `_field`
+
+warning: variable does not need to be mutable
+  --> kern-semantic\scope.rs:87:38
+   |
+87 |     pub fn declare_symbol(&mut self, mut symbol: Symbol) -> 
+Result<u32, String> {
+   |                                      ----^^^^^^
+   |                                      |
+   |                                      help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by 
+default
+
+warning: unused variable: `id`
+   --> kern-semantic\scope.rs:175:39
+    |
+175 |     pub fn lookup_symbol_by_id(&self, id: u32) -> Option<&Symbol> 
+{
+    |                                       ^^ help: if this is 
+intentional, prefix it with an underscore: `_id`
+
+warning: unused variable: `symbol`
+   --> kern-semantic\scope.rs:178:13
+    |
+178 |         for symbol in self.symbols.values() {
+    |             ^^^^^^ help: if this is intentional, prefix it with 
+an underscore: `_symbol`
+
+warning: unused variable: `op`
+   --> kern-semantic\type_checker.rs:203:40
+    |
+203 |             Condition::LogicalOp(left, op, right) => {
+    |                                        ^^ help: if this is 
+intentional, prefix it with an underscore: `_op`
+
+warning: unused variable: `location`
+   --> kern-semantic\type_checker.rs:313:25
+    |
+313 |                     let location = 
+crate::symbol::SourceLocation::new("unknown".to_string(), 0, 0); // In 
+real implementation, get from AST
+    |                         ^^^^^^^^ help: if this is intentional, 
+prefix it with an underscore: `_location`
+
+warning: unused variable: `field`
+   --> kern-semantic\type_checker.rs:324:40
+    |
+324 |             Term::QualifiedRef(entity, field) => {
+    |                                        ^^^^^ help: if this is 
+intentional, prefix it with an underscore: `_field`
+
+warning: unused variable: `entity_symbol`
+   --> kern-semantic\type_checker.rs:326:29
+    |
+326 |                 if let Some(entity_symbol) = 
+self.resolver.scope_manager().resolve_symbol(entity) {
+    |                             ^^^^^^^^^^^^^ help: if this is 
+intentional, prefix it with an underscore: `_entity_symbol`
+
+warning: unused variable: `location`
+   --> kern-semantic\type_checker.rs:332:25
+    |
+332 |                     let location = 
+crate::symbol::SourceLocation::new("unknown".to_string(), 0, 0); // In 
+real implementation, get from AST
+    |                         ^^^^^^^^ help: if this is intentional, 
+prefix it with an underscore: `_location`
+
+warning: unused variable: `location`
+   --> kern-semantic\type_checker.rs:403:17
+    |
+403 |             let location = 
+crate::symbol::SourceLocation::new("unknown".to_string(), 0, 0); // In 
+real implementation, get from AST
+    |                 ^^^^^^^^ help: if this is intentional, prefix it 
+with an underscore: `_location`
+
+warning: methods `is_tautology` and `is_contradiction` are never used
+   --> kern-semantic\conflict_detector.rs:254:8
+    |
+ 45 | impl ConflictDetector {
+    | --------------------- methods in this implementation
+...
+254 |     fn is_tautology(&self, condition: &Condition) -> bool {
+    |        ^^^^^^^^^^^^
+...
+271 |     fn is_contradiction(&self, condition: &Condition) -> bool {
+    |        ^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by 
+default
+
+warning: `kern_bytecode` (lib) generated 2 warnings (run `cargo fix 
+--lib -p kern_bytecode` to apply 1 suggestion)
+warning: `kern_rule_engine` (lib) generated 40 warnings (run `cargo fix 
+--lib -p kern_rule_engine` to apply 38 suggestions)
+warning: `kern-semantic` (lib) generated 52 warnings (run `cargo fix 
+--lib -p kern-semantic` to apply 35 suggestions)
+warning: unused imports: `BytecodeCompiler` and `Opcode`
+ --> kern-vm\src\lib.rs:1:21
+  |
+1 | use kern_bytecode::{BytecodeCompiler, Instruction, Opcode};
+  |                     ^^^^^^^^^^^^^^^^               ^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by 
+default
+
+warning: `kern_vm` (lib) generated 1 warning (run `cargo fix --lib -p 
+kern_vm` to apply 1 suggestion)
+    Checking kern-compiler v0.1.0 
+(C:\Users\LENOVO\OneDrive\Desktop\KERN)
+error[E0432]: unresolved import `kern_semantic::SymbolTable`
+ --> tests\semantic_tests.rs:7:56
+  |
+7 | use kern_semantic::{ConflictDetector, DependencyGraph, SymbolTable, 
+TypeChecker};
+  |                                                        ^^^^^^^^^^^ 
+no `SymbolTable` in the root
+  |
+  = help: consider importing one of these structs instead:
+          kern_compiler::flow_pipeline::SymbolTable
+          kern_flow_pipeline::SymbolTable
+          kern_parser::SymbolTable
+          kern_semantic::symbol::SymbolTable
+
+warning: unused imports: `AssertionResult`, `assert_equal`, 
+`assert_false`, and `assert_true`
+ --> tests\semantic_tests.rs:2:26
+  |
+2 | use common::assertions::{assert_equal, assert_false, assert_true, 
+AssertionResult};
+  |                          ^^^^^^^^^^^^  ^^^^^^^^^^^^  ^^^^^^^^^^^  
+^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by 
+default
+
+warning: unused imports: `Action`, `ConstraintDef`, and `FlowDef`
+ --> tests\semantic_tests.rs:4:5
+  |
+4 |     Action, Comparator, Condition, ConstraintDef, Definition, 
+EntityDef, Expression, FieldDef,
+  |     ^^^^^^                         ^^^^^^^^^^^^^
+5 |     FlowDef, Program, RuleDef, Term,
+  |     ^^^^^^^
+
+warning: unused import: `ConflictDetector`
+ --> tests\semantic_tests.rs:7:21
+  |
+7 | use kern_semantic::{ConflictDetector, DependencyGraph, SymbolTable, 
+TypeChecker};
+  |                     ^^^^^^^^^^^^^^^^
+
+error[E0061]: this function takes 1 argument but 0 arguments were 
+supplied
+   --> tests\semantic_tests.rs:64:24
+    |
+ 64 |     let type_checker = TypeChecker::new();
+    |                        ^^^^^^^^^^^^^^^^-- argument #1 of type 
+`Resolver` is missing
+    |
+note: associated function defined here
+   --> C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-semantic\type_checker.
+rs:104:12
+    |
+104 |     pub fn new(resolver: Resolver) -> Self {
+    |            ^^^
+help: provide the argument
+    |
+ 64 |     let type_checker = TypeChecker::new(/* Resolver */);
+    |                                         ++++++++++++++
+
+error[E0599]: no method named `validate_program` found for struct 
+`kern_semantic::TypeChecker` in the current scope
+  --> tests\semantic_tests.rs:84:31
+   |
+84 |     let result = type_checker.validate_program(&program);
+   |                               ^^^^^^^^^^^^^^^^ method not found in 
+`kern_semantic::TypeChecker`
+
+error[E0061]: this function takes 1 argument but 0 arguments were 
+supplied
+   --> tests\semantic_tests.rs:92:24
+    |
+ 92 |     let type_checker = TypeChecker::new();
+    |                        ^^^^^^^^^^^^^^^^-- argument #1 of type 
+`Resolver` is missing
+    |
+note: associated function defined here
+   --> C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-semantic\type_checker.
+rs:104:12
+    |
+104 |     pub fn new(resolver: Resolver) -> Self {
+    |            ^^^
+help: provide the argument
+    |
+ 92 |     let type_checker = TypeChecker::new(/* Resolver */);
+    |                                         ++++++++++++++
+
+error[E0599]: no method named `validate_program` found for struct 
+`kern_semantic::TypeChecker` in the current scope
+   --> tests\semantic_tests.rs:110:31
+    |
+110 |     let result = type_checker.validate_program(&program);
+    |                               ^^^^^^^^^^^^^^^^ method not found 
+in `kern_semantic::TypeChecker`
+
+error[E0061]: this function takes 1 argument but 0 arguments were 
+supplied
+   --> tests\semantic_tests.rs:118:25
+    |
+118 |     let mut dep_graph = DependencyGraph::new();
+    |                         ^^^^^^^^^^^^^^^^^^^^-- argument #1 of 
+type `Resolver` is missing
+    |
+note: associated function defined here
+   --> C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-semantic\dependency_gr
+aph.rs:60:12
+    |
+ 60 |     pub fn new(resolver: Resolver) -> Self {
+    |            ^^^
+help: provide the argument
+    |
+118 |     let mut dep_graph = DependencyGraph::new(/* Resolver */);
+    |                                              ++++++++++++++
+
+error[E0599]: no method named `add_node` found for struct 
+`kern_semantic::DependencyGraph` in the current scope
+   --> tests\semantic_tests.rs:121:15
+    |
+121 |     dep_graph.add_node("entity1");
+    |               ^^^^^^^^ method not found in 
+`kern_semantic::DependencyGraph`
+
+error[E0599]: no method named `add_node` found for struct 
+`kern_semantic::DependencyGraph` in the current scope
+   --> tests\semantic_tests.rs:122:15
+    |
+122 |     dep_graph.add_node("rule1");
+    |               ^^^^^^^^ method not found in 
+`kern_semantic::DependencyGraph`
+
+error[E0599]: no method named `add_node` found for struct 
+`kern_semantic::DependencyGraph` in the current scope
+   --> tests\semantic_tests.rs:123:15
+    |
+123 |     dep_graph.add_node("flow1");
+    |               ^^^^^^^^ method not found in 
+`kern_semantic::DependencyGraph`
+
+error[E0599]: no method named `add_dependency` found for struct 
+`kern_semantic::DependencyGraph` in the current scope
+   --> tests\semantic_tests.rs:126:15
+    |
+126 |     dep_graph.add_dependency("rule1", "entity1");
+    |               ^^^^^^^^^^^^^^ method not found in 
+`kern_semantic::DependencyGraph`
+
+error[E0599]: no method named `add_dependency` found for struct 
+`kern_semantic::DependencyGraph` in the current scope
+   --> tests\semantic_tests.rs:127:15
+    |
+127 |     dep_graph.add_dependency("flow1", "rule1");
+    |               ^^^^^^^^^^^^^^ method not found in 
+`kern_semantic::DependencyGraph`
+
+error[E0599]: no method named `get_dependents` found for struct 
+`kern_semantic::DependencyGraph` in the current scope
+   --> tests\semantic_tests.rs:130:33
+    |
+130 |     let entity_deps = dep_graph.get_dependents("entity1");
+    |                                 ^^^^^^^^^^^^^^
+    |
+help: there is a method `get_dependencies` with a similar name
+    |
+130 -     let entity_deps = dep_graph.get_dependents("entity1");
+130 +     let entity_deps = dep_graph.get_dependencies("entity1");
+    |
+
+error[E0061]: this function takes 1 argument but 0 arguments were 
+supplied
+   --> tests\semantic_tests.rs:136:25
+    |
+136 |     let mut dep_graph = DependencyGraph::new();
+    |                         ^^^^^^^^^^^^^^^^^^^^-- argument #1 of 
+type `Resolver` is missing
+    |
+note: associated function defined here
+   --> C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-semantic\dependency_gr
+aph.rs:60:12
+    |
+ 60 |     pub fn new(resolver: Resolver) -> Self {
+    |            ^^^
+help: provide the argument
+    |
+136 |     let mut dep_graph = DependencyGraph::new(/* Resolver */);
+    |                                              ++++++++++++++
+
+error[E0599]: no method named `add_node` found for struct 
+`kern_semantic::DependencyGraph` in the current scope
+   --> tests\semantic_tests.rs:139:15
+    |
+139 |     dep_graph.add_node("A");
+    |               ^^^^^^^^ method not found in 
+`kern_semantic::DependencyGraph`
+
+error[E0599]: no method named `add_node` found for struct 
+`kern_semantic::DependencyGraph` in the current scope
+   --> tests\semantic_tests.rs:140:15
+    |
+140 |     dep_graph.add_node("B");
+    |               ^^^^^^^^ method not found in 
+`kern_semantic::DependencyGraph`
+
+error[E0599]: no method named `add_node` found for struct 
+`kern_semantic::DependencyGraph` in the current scope
+   --> tests\semantic_tests.rs:141:15
+    |
+141 |     dep_graph.add_node("C");
+    |               ^^^^^^^^ method not found in 
+`kern_semantic::DependencyGraph`
+
+error[E0599]: no method named `add_dependency` found for struct 
+`kern_semantic::DependencyGraph` in the current scope
+   --> tests\semantic_tests.rs:143:15
+    |
+143 |     dep_graph.add_dependency("A", "B");
+    |               ^^^^^^^^^^^^^^ method not found in 
+`kern_semantic::DependencyGraph`
+
+error[E0599]: no method named `add_dependency` found for struct 
+`kern_semantic::DependencyGraph` in the current scope
+   --> tests\semantic_tests.rs:144:15
+    |
+144 |     dep_graph.add_dependency("B", "C");
+    |               ^^^^^^^^^^^^^^ method not found in 
+`kern_semantic::DependencyGraph`
+
+error[E0599]: no method named `add_dependency` found for struct 
+`kern_semantic::DependencyGraph` in the current scope
+   --> tests\semantic_tests.rs:145:15
+    |
+145 |     dep_graph.add_dependency("C", "A");
+    |               ^^^^^^^^^^^^^^ method not found in 
+`kern_semantic::DependencyGraph`
+
+error[E0599]: no method named `has_circular_dependency` found for 
+struct `kern_semantic::DependencyGraph` in the current scope
+   --> tests\semantic_tests.rs:148:31
+    |
+148 |     let has_cycle = dep_graph.has_circular_dependency();
+    |                               ^^^^^^^^^^^^^^^^^^^^^^^ method not 
+found in `kern_semantic::DependencyGraph`
+
+error[E0061]: this function takes 1 argument but 0 arguments were 
+supplied
+   --> tests\semantic_tests.rs:154:24
+    |
+154 |     let type_checker = TypeChecker::new();
+    |                        ^^^^^^^^^^^^^^^^-- argument #1 of type 
+`Resolver` is missing
+    |
+note: associated function defined here
+   --> C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-semantic\type_checker.
+rs:104:12
+    |
+104 |     pub fn new(resolver: Resolver) -> Self {
+    |            ^^^
+help: provide the argument
+    |
+154 |     let type_checker = TypeChecker::new(/* Resolver */);
+    |                                         ++++++++++++++
+
+error[E0599]: no method named `check_type_compatibility` found for 
+struct `kern_semantic::TypeChecker` in the current scope
+   --> tests\semantic_tests.rs:157:31
+    |
+157 |     let result = type_checker.check_type_compatibility("num", 
+"num");
+    |                               ^^^^^^^^^^^^^^^^^^^^^^^^ method not 
+found in `kern_semantic::TypeChecker`
+
+error[E0599]: no method named `check_type_compatibility` found for 
+struct `kern_semantic::TypeChecker` in the current scope
+   --> tests\semantic_tests.rs:161:31
+    |
+161 |     let result = type_checker.check_type_compatibility("num", 
+"sym");
+    |                               ^^^^^^^^^^^^^^^^^^^^^^^^ method not 
+found in `kern_semantic::TypeChecker`
+
+Some errors have detailed explanations: E0061, E0432, E0599.
+For more information about an error, try `rustc --explain E0061`.
+warning: `kern-compiler` (test "semantic_tests") generated 3 warnings
+error: could not compile `kern-compiler` (test "semantic_tests") due to 
+23 previous errors; 3 warnings emitted

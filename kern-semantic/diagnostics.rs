@@ -39,7 +39,7 @@ pub enum DiagnosticCode {
     UNSUPPORTED_TYPE_FOR_BYTECODE,
     DYNAMIC_TYPE_REQUIRED,
     STACK_UNDERFLOW_RISK,
-    INVALID_OPCODE,
+    INVALIDopCODE,
     
     // General diagnostics
     SYNTAX_ERROR,
@@ -63,7 +63,7 @@ impl fmt::Display for DiagnosticCode {
             DiagnosticCode::UNSUPPORTED_TYPE_FOR_BYTECODE => write!(f, "UNSUPPORTED_TYPE_FOR_BYTECODE"),
             DiagnosticCode::DYNAMIC_TYPE_REQUIRED => write!(f, "DYNAMIC_TYPE_REQUIRED"),
             DiagnosticCode::STACK_UNDERFLOW_RISK => write!(f, "STACK_UNDERFLOW_RISK"),
-            DiagnosticCode::INVALID_OPCODE => write!(f, "INVALID_OPCODE"),
+            DiagnosticCode::INVALIDopCODE => write!(f, "INVALIDopCODE"),
             DiagnosticCode::SYNTAX_ERROR => write!(f, "SYNTAX_ERROR"),
             DiagnosticCode::SEMANTIC_ERROR => write!(f, "SEMANTIC_ERROR"),
         }

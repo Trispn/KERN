@@ -1,15 +1,18 @@
 //! KERN Dependency Graph
-//! 
+//!
 //! Analyzes dependencies between symbols in the KERN language.
 
-use std::collections::{HashMap, HashSet, VecDeque};
-use crate::symbol::{Symbol, SymbolKind};
 use crate::resolver::Resolver;
-use kern_parser::{AstNode, Program, Definition, EntityDef, RuleDef, FlowDef, ConstraintDef, Condition, Expression, Term, Predicate, Action, IfAction, LoopAction, HaltAction, Assignment, ControlAction};
+use crate::symbol::{Symbol, SymbolKind};
+use kern_parser::{
+    Action, Assignment, AstNode, Condition, ConstraintDef, ControlAction, Definition, EntityDef,
+    Expression, FlowDef, HaltAction, IfAction, LoopAction, Predicate, Program, RuleDef, Term,
+};
+use std::collections::{HashMap, HashSet, VecDeque};
 
 #[derive(Debug, Clone)]
 pub struct DependencyNode {
-    pub symbol_id: String,  // Using symbol name as ID for simplicity
+    pub symbol_id: String, // Using symbol name as ID for simplicity
     pub depends_on: Vec<String>,
 }
 
@@ -42,13 +45,13 @@ impl DependencyError {
                     location.file,
                     location.line
                 )
-            },
+            }
             DependencyError::SelfDependency { symbol, location } => {
                 format!(
-                    "Symbol '{}' depends on itself at {}:{}", 
+                    "Symbol '{}' depends on itself at {}:{}",
                     symbol, location.file, location.line
                 )
-            },
+            }
         }
     }
 }
@@ -90,7 +93,8 @@ impl DependencyGraph {
             Definition::Rule(rule_def) => &rule_def.name,
             Definition::Flow(flow_def) => &flow_def.name,
             Definition::Constraint(constraint_def) => &constraint_def.name,
-        }.clone();
+        }
+        .clone();
 
         let node = DependencyNode {
             symbol_id: name,
@@ -104,16 +108,16 @@ impl DependencyGraph {
         match definition {
             Definition::Entity(entity_def) => {
                 self.analyze_entity_dependencies(entity_def);
-            },
+            }
             Definition::Rule(rule_def) => {
                 self.analyze_rule_dependencies(rule_def);
-            },
+            }
             Definition::Flow(flow_def) => {
                 self.analyze_flow_dependencies(flow_def);
-            },
+            }
             Definition::Constraint(constraint_def) => {
                 self.analyze_constraint_dependencies(constraint_def);
-            },
+            }
         }
     }
 
@@ -124,15 +128,15 @@ impl DependencyGraph {
 
     fn analyze_rule_dependencies(&mut self, rule_def: &RuleDef) {
         let mut dependencies = Vec::new();
-        
+
         // Analyze condition dependencies
         self.collect_term_dependencies(&rule_def.condition, &mut dependencies);
-        
+
         // Analyze action dependencies
         for action in &rule_def.actions {
             self.collect_action_dependencies(action, &mut dependencies);
         }
-        
+
         // Update the node with dependencies
         if let Some(node) = self.nodes.get_mut(&rule_def.name) {
             node.depends_on.extend(dependencies);
@@ -141,12 +145,12 @@ impl DependencyGraph {
 
     fn analyze_flow_dependencies(&mut self, flow_def: &FlowDef) {
         let mut dependencies = Vec::new();
-        
+
         // Analyze all actions in the flow
         for action in &flow_def.actions {
             self.collect_action_dependencies(action, &mut dependencies);
         }
-        
+
         // Update the node with dependencies
         if let Some(node) = self.nodes.get_mut(&flow_def.name) {
             node.depends_on.extend(dependencies);
@@ -155,10 +159,10 @@ impl DependencyGraph {
 
     fn analyze_constraint_dependencies(&mut self, constraint_def: &ConstraintDef) {
         let mut dependencies = Vec::new();
-        
+
         // Analyze condition dependencies
         self.collect_term_dependencies(&constraint_def.condition, &mut dependencies);
-        
+
         // Update the node with dependencies
         if let Some(node) = self.nodes.get_mut(&constraint_def.name) {
             node.depends_on.extend(dependencies);
@@ -169,31 +173,40 @@ impl DependencyGraph {
         match condition {
             Condition::Expression(expr) => {
                 self.collect_expression_dependencies(expr, dependencies);
-            },
-            Condition::LogicalOp(left, _op, right) => {
+            }
+            Condition::LogicalOp(left, op, right) => {
                 self.collect_term_dependencies(left, dependencies);
                 self.collect_term_dependencies(right, dependencies);
-            },
+            }
         }
     }
 
-    fn collect_expression_dependencies(&mut self, expression: &Expression, dependencies: &mut Vec<String>) {
+    fn collect_expression_dependencies(
+        &mut self,
+        expression: &Expression,
+        dependencies: &mut Vec<String>,
+    ) {
         match expression {
-            Expression::Comparison { left, _op, right } => {
+            Expression::Comparison { left, op, right } => {
                 self.collect_term_dependencies_single(left, dependencies);
                 self.collect_term_dependencies_single(right, dependencies);
-            },
+            }
             Expression::Predicate(predicate) => {
                 // Add predicate as a dependency if it's a rule or function
-                if self.resolver.scope_manager().resolve_symbol(&predicate.name).is_some() {
+                if self
+                    .resolver
+                    .scope_manager()
+                    .resolve_symbol(&predicate.name)
+                    .is_some()
+                {
                     dependencies.push(predicate.name.clone());
                 }
-                
+
                 // Add dependencies for arguments
                 for arg in &predicate.arguments {
                     self.collect_term_dependencies_single(arg, dependencies);
                 }
-            },
+            }
         }
     }
 
@@ -203,24 +216,32 @@ impl DependencyGraph {
                 // Check if this identifier refers to a symbol that should be a dependency
                 if let Some(symbol) = self.resolver.scope_manager().resolve_symbol(name) {
                     match symbol.kind {
-                        SymbolKind::Rule | SymbolKind::Flow | SymbolKind::Entity | SymbolKind::Constraint => {
+                        SymbolKind::Rule
+                        | SymbolKind::Flow
+                        | SymbolKind::Entity
+                        | SymbolKind::Constraint => {
                             dependencies.push(name.clone());
-                        },
+                        }
                         _ => {
                             // Other symbol kinds (like variables) are not dependencies at the top level
                         }
                     }
                 }
-            },
+            }
             Term::Number(_value) => {
                 // Numbers don't create dependencies
-            },
+            }
             Term::QualifiedRef(entity, _field) => {
                 // The entity part might be a dependency
-                if self.resolver.scope_manager().resolve_symbol(entity).is_some() {
+                if self
+                    .resolver
+                    .scope_manager()
+                    .resolve_symbol(entity)
+                    .is_some()
+                {
                     dependencies.push(entity.clone());
                 }
-            },
+            }
         }
     }
 
@@ -228,51 +249,60 @@ impl DependencyGraph {
         match action {
             Action::Predicate(predicate) => {
                 // Add predicate as a dependency if it's a rule or function
-                if self.resolver.scope_manager().resolve_symbol(&predicate.name).is_some() {
+                if self
+                    .resolver
+                    .scope_manager()
+                    .resolve_symbol(&predicate.name)
+                    .is_some()
+                {
                     dependencies.push(predicate.name.clone());
                 }
-                
+
                 // Add dependencies for arguments
                 for arg in &predicate.arguments {
                     self.collect_term_dependencies_single(arg, dependencies);
                 }
-            },
+            }
             Action::Assignment(assignment) => {
                 // Check if the value being assigned has dependencies
                 self.collect_term_dependencies_single(&assignment.value, dependencies);
-            },
+            }
             Action::Control(control_action) => {
                 self.collect_control_action_dependencies(control_action, dependencies);
-            },
+            }
         }
     }
 
-    fn collect_control_action_dependencies(&mut self, control_action: &ControlAction, dependencies: &mut Vec<String>) {
+    fn collect_control_action_dependencies(
+        &mut self,
+        control_action: &ControlAction,
+        dependencies: &mut Vec<String>,
+    ) {
         match control_action {
             ControlAction::If(if_action) => {
                 // Collect dependencies from condition
                 self.collect_term_dependencies(&if_action.condition, dependencies);
-                
+
                 // Collect dependencies from actions
                 for action in &if_action.then_actions {
                     self.collect_action_dependencies(action, dependencies);
                 }
-                
+
                 if let Some(else_actions) = &if_action.else_actions {
                     for action in else_actions {
                         self.collect_action_dependencies(action, dependencies);
                     }
                 }
-            },
+            }
             ControlAction::Loop(loop_action) => {
                 // Collect dependencies from loop body
                 for action in &loop_action.actions {
                     self.collect_action_dependencies(action, dependencies);
                 }
-            },
+            }
             ControlAction::Halt(_halt_action) => {
                 // Halt action has no dependencies
-            },
+            }
         }
     }
 
@@ -286,10 +316,17 @@ impl DependencyGraph {
             if !visited.contains(node_id) {
                 if self.is_cyclic_dfs(node_id, &mut visited, &mut rec_stack, &mut path) {
                     // A cycle was detected, path contains the cycle
-                    self.errors.push(DependencyError::CyclicDependency {
-                        cycle: path.clone(),
-                        location: crate::symbol::SourceLocation::new("unknown".to_string(), 0, 0), // In real implementation, get from AST
-                    }.message());
+                    self.errors.push(
+                        DependencyError::CyclicDependency {
+                            cycle: path.clone(),
+                            location: crate::symbol::SourceLocation::new(
+                                "unknown".to_string(),
+                                0,
+                                0,
+                            ), // In real implementation, get from AST
+                        }
+                        .message(),
+                    );
                     return Err(self.errors.clone());
                 }
                 path.clear();
@@ -354,7 +391,12 @@ impl DependencyGraph {
     }
 
     /// DFS helper for topological sort
-    fn topological_sort_dfs(&self, node_id: &str, visited: &mut HashSet<String>, stack: &mut Vec<String>) {
+    fn topological_sort_dfs(
+        &self,
+        node_id: &str,
+        visited: &mut HashSet<String>,
+        stack: &mut Vec<String>,
+    ) {
         visited.insert(node_id.to_string());
 
         if let Some(node) = self.nodes.get(node_id) {
@@ -372,14 +414,16 @@ impl DependencyGraph {
     fn is_acyclic(&self) -> bool {
         // For simplicity, we'll just check if there are any cycles
         // In a real implementation, we'd run the cycle detection algorithm
-        // Since we already check for cycles during graph building, 
+        // Since we already check for cycles during graph building,
         // we can assume the graph is acyclic if no errors were reported
         self.errors.is_empty()
     }
 
     /// Gets all dependencies for a symbol
     pub fn get_dependencies(&self, symbol_id: &str) -> Option<&[String]> {
-        self.nodes.get(symbol_id).map(|node| node.depends_on.as_slice())
+        self.nodes
+            .get(symbol_id)
+            .map(|node| node.depends_on.as_slice())
     }
 
     /// Gets the resolver (for access to symbols)
@@ -430,13 +474,19 @@ mod tests {
         let program = parser.parse_program().expect("Failed to parse program");
 
         let mut resolver = Resolver::new();
-        resolver.resolve_program(&program).expect("Failed to resolve program");
+        resolver
+            .resolve_program(&program)
+            .expect("Failed to resolve program");
 
         let mut dep_graph = DependencyGraph::new(resolver);
         let result = dep_graph.build_graph(&program);
-        
+
         // The dependency analysis should pass without errors for this valid program
-        assert!(result.is_ok(), "Dependency analysis failed with errors: {:?}", result.err());
+        assert!(
+            result.is_ok(),
+            "Dependency analysis failed with errors: {:?}",
+            result.err()
+        );
     }
 
     #[test]
@@ -463,12 +513,20 @@ mod tests {
         let program = parser.parse_program().expect("Failed to parse program");
 
         let mut resolver = Resolver::new();
-        resolver.resolve_program(&program).expect("Failed to resolve program");
+        resolver
+            .resolve_program(&program)
+            .expect("Failed to resolve program");
 
         let mut dep_graph = DependencyGraph::new(resolver);
-        dep_graph.build_graph(&program).expect("Failed to build dependency graph");
+        dep_graph
+            .build_graph(&program)
+            .expect("Failed to build dependency graph");
 
         let sorted = dep_graph.topological_sort();
-        assert!(sorted.is_ok(), "Topological sort failed: {:?}", sorted.err());
+        assert!(
+            sorted.is_ok(),
+            "Topological sort failed: {:?}",
+            sorted.err()
+        );
     }
 }

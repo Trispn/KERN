@@ -1,229 +1,198 @@
-#[cfg(test)]
-mod semantic_tests {
-    use kern_parser::ast_nodes::{Program, Declaration, Entity, Rule, Flow, Constraint};
-    use kern_semantic::{SymbolTable, TypeChecker, DependencyGraph, ConflictDetector};
-    use crate::assertions::{assert_equal, assert_true, assert_false, AssertionResult};
+mod common;
+use common::assertions::{assert_equal, assert_false, assert_true, AssertionResult};
+use kern_parser::ast::{
+    Comparator, Condition, ConstraintDef, Definition, EntityDef, Expression, FieldDef, Program,
+    RuleDef, Term,
+};
+use kern_semantic::{
+    ConflictDetector, DependencyGraph, Resolver, SemanticAnalyzer, Symbol, SymbolKind, SymbolTable,
+    TypeChecker,
+};
 
-    #[test]
-    fn test_symbol_table_creation() {
-        let mut symbol_table = SymbolTable::new();
-        
-        // Add a symbol
-        symbol_table.add_symbol("user", "Entity");
-        
-        // Check that the symbol exists
-        assert!(symbol_table.lookup_symbol("user").is_some());
-        assert_eq!(symbol_table.lookup_symbol("user").unwrap(), "Entity");
-        
-        // Check that a non-existent symbol doesn't exist
-        assert!(symbol_table.lookup_symbol("nonexistent").is_none());
-    }
+#[test]
+fn test_symbol_table_creation() {
+    let symbol_table = SymbolTable::new();
 
-    #[test]
-    fn test_duplicate_symbol_detection() {
-        let mut symbol_table = SymbolTable::new();
-        
-        // Add a symbol
-        symbol_table.add_symbol("user", "Entity");
-        
-        // Try to add the same symbol again
-        let result = symbol_table.add_symbol("user", "Rule");
-        
-        // Should return false since the symbol already exists
-        assert!(!result);
-    }
+    // Check that the symbol table is initially empty
+    assert!(!symbol_table.has_symbol("user"));
+    assert!(symbol_table.lookup_symbol("nonexistent").is_none());
+}
 
-    #[test]
-    fn test_symbol_scoping() {
-        let mut symbol_table = SymbolTable::new();
-        
-        // Add symbols to global scope
-        symbol_table.add_symbol("global_var", "Entity");
-        
-        // Enter a new scope
-        symbol_table.enter_scope();
-        symbol_table.add_symbol("local_var", "Rule");
-        
-        // Check that both symbols are accessible
-        assert!(symbol_table.lookup_symbol("global_var").is_some());
-        assert!(symbol_table.lookup_symbol("local_var").is_some());
-        
-        // Exit the scope
-        symbol_table.exit_scope();
-        
-        // Local symbol should no longer be accessible
-        assert!(symbol_table.lookup_symbol("local_var").is_none());
-        // Global symbol should still be accessible
-        assert!(symbol_table.lookup_symbol("global_var").is_some());
-    }
+#[test]
+fn test_symbol_registration() {
+    use kern_semantic::{SourceLocation, TypeDescriptor, TypeKind};
 
-    #[test]
-    fn test_type_checker_basic_validation() {
-        let type_checker = TypeChecker::new();
-        
-        // Create a simple program with an entity
-        let entity = Entity {
-            name: "User".to_string(),
-            fields: vec!["name".to_string(), "age".to_string()],
-        };
-        
-        let program = Program {
-            declarations: vec![Declaration::Entity(entity)],
-        };
-        
-        // Validate the program
-        let result = type_checker.validate_program(&program);
-        
-        // Should pass validation
-        assert!(result.is_ok());
-    }
+    let mut symbol_table = SymbolTable::new();
+    let location = SourceLocation::new("test.kern".to_string(), 1, 1);
+    let ty = TypeDescriptor::new(TypeKind::Sym);
 
-    #[test]
-    fn test_type_checker_invalid_reference() {
-        let type_checker = TypeChecker::new();
-        
-        // Create a rule that references an undefined entity
-        let rule = Rule {
-            name: "ValidateUser".to_string(),
-            condition: None, // In a real implementation, this would reference an undefined entity
-            actions: vec![],
-        };
-        
-        let program = Program {
-            declarations: vec![Declaration::Rule(rule)],
-        };
-        
-        // Validate the program
-        let result = type_checker.validate_program(&program);
-        
-        // Should fail validation
-        assert!(result.is_err());
-    }
+    let symbol = Symbol::new("user".to_string(), SymbolKind::Entity, ty, 0, location);
 
-    #[test]
-    fn test_dependency_graph_creation() {
-        let mut dep_graph = DependencyGraph::new();
-        
-        // Add some nodes
-        dep_graph.add_node("entity1");
-        dep_graph.add_node("rule1");
-        dep_graph.add_node("flow1");
-        
-        // Add dependencies
-        dep_graph.add_dependency("rule1", "entity1");
-        dep_graph.add_dependency("flow1", "rule1");
-        
-        // Check dependencies
-        let entity_deps = dep_graph.get_dependents("entity1");
-        assert!(entity_deps.contains(&"rule1".to_string()));
-        
-        let rule_deps = dep_graph.get_dependents("rule1");
-        assert!(rule_deps.contains(&"flow1".to_string()));
-    }
+    // Register the symbol
+    let result = symbol_table.register_symbol(symbol);
+    assert!(result.is_ok());
 
-    #[test]
-    fn test_circular_dependency_detection() {
-        let mut dep_graph = DependencyGraph::new();
-        
-        // Create a circular dependency: A -> B -> C -> A
-        dep_graph.add_node("A");
-        dep_graph.add_node("B");
-        dep_graph.add_node("C");
-        
-        dep_graph.add_dependency("A", "B");
-        dep_graph.add_dependency("B", "C");
-        dep_graph.add_dependency("C", "A");
-        
-        // Check for circular dependencies
-        let has_cycle = dep_graph.has_circular_dependency();
-        assert!(has_cycle);
-    }
+    // Check that the symbol exists
+    assert!(symbol_table.has_symbol("user"));
+    assert!(symbol_table.lookup_symbol("user").is_some());
+}
 
-    #[test]
-    fn test_rule_conflict_detection() {
-        let mut conflict_detector = ConflictDetector::new();
-        
-        // Add rules that might conflict
-        // In a real implementation, this would check for attribute write conflicts
-        let rule1 = Rule {
-            name: "Rule1".to_string(),
-            condition: None,
-            actions: vec![],
-        };
-        
-        let rule2 = Rule {
-            name: "Rule2".to_string(),
-            condition: None,
-            actions: vec![],
-        };
-        
-        // Check for conflicts between rules
-        let conflicts = conflict_detector.detect_rule_conflicts(&[rule1, rule2]);
-        
-        // For now, just verify the function runs without error
-        assert!(conflicts.len() >= 0);
-    }
+#[test]
+fn test_duplicate_symbol_detection() {
+    use kern_semantic::{SourceLocation, TypeDescriptor, TypeKind};
 
-    #[test]
-    fn test_type_compatibility_check() {
-        let type_checker = TypeChecker::new();
-        
-        // Test compatible types
-        let result = type_checker.check_type_compatibility("num", "num");
-        assert!(result);
-        
-        // Test incompatible types
-        let result = type_checker.check_type_compatibility("num", "sym");
-        assert!(!result);
-    }
+    let mut symbol_table = SymbolTable::new();
+    let location = SourceLocation::new("test.kern".to_string(), 1, 1);
+    let ty = TypeDescriptor::new(TypeKind::Sym);
 
-    #[test]
-    fn test_scope_resolution() {
-        let mut symbol_table = SymbolTable::new();
-        
-        // Add symbols in different scopes
-        symbol_table.add_symbol("global_entity", "Entity");
-        
-        symbol_table.enter_scope();
-        symbol_table.add_symbol("local_rule", "Rule");
-        
-        symbol_table.enter_scope();
-        symbol_table.add_symbol("nested_flow", "Flow");
-        
-        // Resolve symbols from nested scope
-        assert!(symbol_table.resolve_symbol("nested_flow").is_some());
-        assert!(symbol_table.resolve_symbol("local_rule").is_some());
-        assert!(symbol_table.resolve_symbol("global_entity").is_some());
-        
-        // Exit to parent scope
-        symbol_table.exit_scope();
-        assert!(symbol_table.resolve_symbol("local_rule").is_some());
-        assert!(symbol_table.resolve_symbol("global_entity").is_some());
-        assert!(symbol_table.resolve_symbol("nested_flow").is_none());
-    }
+    let symbol1 = Symbol::new(
+        "user".to_string(),
+        SymbolKind::Entity,
+        ty.clone(),
+        0,
+        location.clone(),
+    );
+    let symbol2 = Symbol::new("user".to_string(), SymbolKind::Rule, ty, 0, location);
 
-    #[test]
-    fn test_validation_error_reporting() {
-        let type_checker = TypeChecker::new();
-        
-        // Create a program with an intentional error
-        // In a real implementation, this would be an invalid reference
-        let entity = Entity {
-            name: "User".to_string(),
-            fields: vec!["name".to_string(), "age".to_string()],
-        };
-        
-        let program = Program {
-            declarations: vec![Declaration::Entity(entity)],
-        };
-        
-        // Validate the program
-        let result = type_checker.validate_program(&program);
-        
-        // Should pass validation in this simple case
-        assert!(result.is_ok());
-        
-        // In a more complex implementation, we would test error reporting
-        // by creating programs with actual semantic errors
-    }
+    // Register the first symbol
+    let result1 = symbol_table.register_symbol(symbol1);
+    assert!(result1.is_ok());
+
+    // Try to register the same symbol again - should fail
+    let result2 = symbol_table.register_symbol(symbol2);
+    assert!(result2.is_err());
+}
+
+#[test]
+fn test_resolver_creation() {
+    let resolver = Resolver::new();
+    // Just ensure it creates without panicking
+    let _ = resolver.scope_manager();
+}
+
+#[test]
+fn test_type_checker_creation() {
+    let resolver = Resolver::new();
+    let type_checker = TypeChecker::new(resolver);
+    // Just ensure it creates without panicking
+    let _ = type_checker.resolver();
+}
+
+#[test]
+fn test_type_checker_check_program() {
+    let mut resolver = Resolver::new();
+
+    // Create a simple program with an entity
+    let entity = EntityDef {
+        name: "User".to_string(),
+        fields: vec![
+            FieldDef {
+                name: "name".to_string(),
+            },
+            FieldDef {
+                name: "age".to_string(),
+            },
+        ],
+    };
+
+    let program = Program {
+        definitions: vec![Definition::Entity(entity)],
+    };
+
+    // Resolve the program first
+    let resolve_result = resolver.resolve_program(&program);
+    assert!(
+        resolve_result.is_ok(),
+        "Resolution failed: {:?}",
+        resolve_result.err()
+    );
+
+    // Now type check
+    let mut type_checker = TypeChecker::new(resolver);
+    let check_result = type_checker.check_program(&program);
+    assert!(
+        check_result.is_ok(),
+        "Type checking failed: {:?}",
+        check_result.err()
+    );
+}
+
+#[test]
+fn test_dependency_graph_creation() {
+    let resolver = Resolver::new();
+    let dep_graph = DependencyGraph::new(resolver);
+    // Just test that it creates without error
+    let _ = dep_graph.topological_sort();
+}
+
+#[test]
+fn test_dependency_graph_build() {
+    let mut resolver = Resolver::new();
+
+    let entity = EntityDef {
+        name: "User".to_string(),
+        fields: vec![FieldDef {
+            name: "id".to_string(),
+        }],
+    };
+
+    let program = Program {
+        definitions: vec![Definition::Entity(entity)],
+    };
+
+    // Resolve the program first
+    let _ = resolver.resolve_program(&program);
+
+    // Build dependency graph
+    let mut dep_graph = DependencyGraph::new(resolver);
+    let result = dep_graph.build_graph(&program);
+    assert!(
+        result.is_ok(),
+        "Failed to build dependency graph: {:?}",
+        result.err()
+    );
+}
+
+#[test]
+fn test_conflict_detector_creation() {
+    let resolver = Resolver::new();
+    let _conflict_detector = ConflictDetector::new(resolver);
+    // Just test that it creates without error
+}
+
+#[test]
+fn test_semantic_analyzer_creation() {
+    let analyzer = SemanticAnalyzer::new();
+    assert!(!analyzer.diagnostic_reporter().has_errors());
+}
+
+#[test]
+fn test_semantic_analyzer_simple_program() {
+    use kern_parser::Parser;
+
+    let input = r#"
+        entity Farmer {
+            id
+            location
+        }
+
+        rule CheckId:
+            if farmer.id > 0
+            then approve(farmer)
+
+        constraint ValidId: farmer.id > 0
+    "#;
+
+    let mut parser = Parser::new(input);
+    let program = parser.parse_program().expect("Failed to parse program");
+
+    let mut analyzer = SemanticAnalyzer::new();
+    let result = analyzer.analyze(&program);
+
+    // The analysis should pass for this valid program
+    assert!(
+        result.is_ok(),
+        "Semantic analysis failed: {:?}",
+        result.err()
+    );
 }

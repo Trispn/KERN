@@ -32,5 +32,7 @@ kern_parser = { path = "./kern-parser" }
 kern_lexer = { path = "./kern-lexer" }
 kern_rule_engine = { path = "./kern-rule-engine" }
 kern_graph_builder = { path = "./kern-graph-builder" }
-kern_semantic = { path = "./kern-semantic" }
+kern-semantic = { path = "./kern-semantic" }
 kern_vm = { path = "./kern-vm" }
+kern_bytecode = { path = "./kern-bytecode" }
+kern-ast = { path = "./kern-ast" }

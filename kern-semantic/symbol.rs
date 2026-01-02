@@ -1,5 +1,5 @@
 //! KERN Symbol Table
-//! 
+//!
 //! Manages symbols and their properties in the KERN language.
 
 use crate::types::{TypeDescriptor, TypeKind};
@@ -39,8 +39,8 @@ pub struct Symbol {
     pub ty: TypeDescriptor,
     pub scope_id: u32,
     pub location: SourceLocation,
-    pub is_mutable: bool,  // Whether the symbol can be reassigned
-    pub is_builtin: bool,  // Whether this is a builtin symbol
+    pub is_mutable: bool, // Whether the symbol can be reassigned
+    pub is_builtin: bool, // Whether this is a builtin symbol
 }
 
 impl Symbol {
@@ -57,7 +57,7 @@ impl Symbol {
             ty,
             scope_id,
             location,
-            is_mutable: true,  // By default, symbols are mutable
+            is_mutable: true, // By default, symbols are mutable
             is_builtin: false,
         }
     }
@@ -75,16 +75,16 @@ impl Symbol {
             ty,
             scope_id,
             location,
-            is_mutable: false,  // Builtins are immutable
+            is_mutable: false, // Builtins are immutable
             is_builtin: true,
         }
     }
 }
 
 /// A collection of symbols
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct SymbolTable {
-    symbols: HashMap<String, Symbol>,
+    pub symbols: HashMap<String, Symbol>,
     next_id: u32,
 }
 
@@ -99,15 +99,15 @@ impl SymbolTable {
     /// Registers a new symbol in the table
     pub fn register_symbol(&mut self, symbol: Symbol) -> Result<u32, String> {
         let name = symbol.name_id.clone();
-        
+
         if self.symbols.contains_key(&name) {
             return Err(format!("Symbol '{}' already declared", name));
         }
-        
+
         let id = self.next_id;
         self.symbols.insert(name, symbol);
         self.next_id += 1;
-        
+
         Ok(id)
     }
 
@@ -127,7 +127,11 @@ impl SymbolTable {
     }
 
     /// Updates a symbol's type (for type inference or refinement)
-    pub fn update_symbol_type(&mut self, name: &str, new_type: TypeDescriptor) -> Result<(), String> {
+    pub fn update_symbol_type(
+        &mut self,
+        name: &str,
+        new_type: TypeDescriptor,
+    ) -> Result<(), String> {
         if let Some(symbol) = self.symbols.get_mut(name) {
             symbol.ty = new_type;
             Ok(())
@@ -164,7 +168,7 @@ mod tests {
         let mut table = SymbolTable::new();
         let location = SourceLocation::new("test.kern".to_string(), 1, 1);
         let ty = TypeDescriptor::new(TypeKind::Int);
-        
+
         let symbol = Symbol::new(
             "test_var".to_string(),
             SymbolKind::Variable,
@@ -172,13 +176,13 @@ mod tests {
             0,
             location,
         );
-        
+
         let id = table.register_symbol(symbol).unwrap();
         assert_eq!(id, 0);
-        
+
         assert!(table.has_symbol("test_var"));
         assert!(!table.has_symbol("nonexistent"));
-        
+
         let found_symbol = table.lookup_symbol("test_var").unwrap();
         assert_eq!(found_symbol.name_id, "test_var");
     }
@@ -188,7 +192,7 @@ mod tests {
         let mut table = SymbolTable::new();
         let location = SourceLocation::new("test.kern".to_string(), 1, 1);
         let ty = TypeDescriptor::new(TypeKind::Int);
-        
+
         let symbol1 = Symbol::new(
             "test_var".to_string(),
             SymbolKind::Variable,
@@ -196,7 +200,7 @@ mod tests {
             0,
             location.clone(),
         );
-        
+
         let symbol2 = Symbol::new(
             "test_var".to_string(),
             SymbolKind::Variable,
@@ -204,7 +208,7 @@ mod tests {
             0,
             location,
         );
-        
+
         table.register_symbol(symbol1).unwrap();
         let result = table.register_symbol(symbol2);
         assert!(result.is_err());

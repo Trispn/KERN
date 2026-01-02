@@ -9,6 +9,29 @@ pub struct TestResult {
     pub message: Option<String>,
 }
 
+impl TestResult {
+    /// Create a TestResult from simplified test parameters
+    /// This matches the calling convention used in main_test_runner.rs
+    pub fn new(
+        passed: bool,
+        message: Option<String>,
+        test_name: &str,
+        _line: usize,
+        _column: usize,
+    ) -> Self {
+        Self {
+            name: test_name.to_string(),
+            status: if passed {
+                TestStatus::Pass
+            } else {
+                TestStatus::Fail
+            },
+            duration: std::time::Duration::new(0, 0), // Duration is set later by TestRunner
+            message,
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub enum TestStatus {
     Pass,

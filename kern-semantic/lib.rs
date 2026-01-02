@@ -1,29 +1,32 @@
 //! KERN Semantic Analysis System
-//! 
+//!
 //! This crate provides the complete semantic analysis and type-checking system for the KERN language.
 //! It includes symbol resolution, type checking, dependency analysis, conflict detection,
 //! bytecode validation, and diagnostic reporting.
 
-pub mod types;
-pub mod symbol;
-pub mod scope;
-pub mod resolver;
-pub mod type_checker;
-pub mod dependency_graph;
-pub mod conflict_detector;
 pub mod bytecode_validator;
+pub mod conflict_detector;
+pub mod dependency_graph;
 pub mod diagnostics;
+pub mod resolver;
+pub mod scope;
+pub mod symbol;
+pub mod type_checker;
+pub mod types;
 
 // Re-export important types for easier access
-pub use types::{TypeDescriptor, TypeKind, TypeChecker as TypeCheckerUtil};
-pub use symbol::{Symbol, SymbolKind, SourceLocation};
+pub use bytecode_validator::{BytecodeValidationError, BytecodeValidator};
+pub use conflict_detector::{Conflict, ConflictDetector, ConflictSeverity, ConflictType};
+pub use dependency_graph::{DependencyError, DependencyGraph, DependencyNode};
+pub use diagnostics::{
+    Diagnostic, DiagnosticCode, DiagnosticReporter, Severity,
+    SourceLocation as DiagnosticSourceLocation,
+};
+pub use resolver::{ResolutionError, Resolver};
 pub use scope::ScopeManager;
-pub use resolver::{Resolver, ResolutionError};
+pub use symbol::{SourceLocation, Symbol, SymbolKind, SymbolTable};
 pub use type_checker::{TypeChecker, TypeError};
-pub use dependency_graph::{DependencyGraph, DependencyNode, DependencyError};
-pub use conflict_detector::{ConflictDetector, Conflict, ConflictType, ConflictSeverity};
-pub use bytecode_validator::{BytecodeValidator, BytecodeValidationError};
-pub use diagnostics::{Diagnostic, DiagnosticCode, DiagnosticReporter, Severity, SourceLocation as DiagnosticSourceLocation};
+pub use types::{TypeChecker as TypeCheckerUtil, TypeDescriptor, TypeKind};
 
 /// The main semantic analysis pipeline for KERN programs
 pub struct SemanticAnalyzer {
@@ -55,13 +58,19 @@ impl SemanticAnalyzer {
                         match dep_graph.build_graph(program) {
                             Ok(()) => {
                                 // Step 4: Detect conflicts
-                                let mut conflict_detector = ConflictDetector::new(dep_graph.resolver().clone());
+                                let mut conflict_detector =
+                                    ConflictDetector::new(dep_graph.resolver().clone());
                                 match conflict_detector.detect_conflicts(program) {
                                     Ok(conflicts) => {
                                         // Report conflicts as warnings/errors
                                         for conflict in conflicts {
-                                            let location = DiagnosticSourceLocation::new("unknown".to_string(), 0, 0);
-                                            let message = format!("Rule conflict: {}", conflict.description);
+                                            let location = DiagnosticSourceLocation::new(
+                                                "unknown".to_string(),
+                                                0,
+                                                0,
+                                            );
+                                            let message =
+                                                format!("Rule conflict: {}", conflict.description);
 
                                             match conflict.severity {
                                                 ConflictSeverity::Error => {
@@ -70,21 +79,21 @@ impl SemanticAnalyzer {
                                                         message,
                                                         location,
                                                     );
-                                                },
+                                                }
                                                 ConflictSeverity::Warning => {
                                                     self.diagnostic_reporter.warning(
                                                         DiagnosticCode::RULE_CONFLICT,
                                                         message,
                                                         location,
                                                     );
-                                                },
+                                                }
                                                 ConflictSeverity::Info => {
                                                     self.diagnostic_reporter.info(
                                                         DiagnosticCode::RULE_CONFLICT,
                                                         message,
                                                         location,
                                                     );
-                                                },
+                                                }
                                             }
                                         }
 
@@ -93,25 +102,25 @@ impl SemanticAnalyzer {
                                         let type_checker = TypeChecker::new(resolver);
                                         let mut bytecode_validator = BytecodeValidator::new(
                                             type_checker.resolver().clone(),
-                                            type_checker
+                                            type_checker,
                                         );
                                         match bytecode_validator.validate_program(program) {
                                             Ok(()) => {
                                                 // All checks passed
                                                 Ok(())
-                                            },
+                                            }
                                             Err(errors) => Err(errors),
                                         }
-                                    },
+                                    }
                                     Err(errors) => Err(errors),
                                 }
-                            },
+                            }
                             Err(errors) => Err(errors),
                         }
-                    },
+                    }
                     Err(errors) => Err(errors),
                 }
-            },
+            }
             Err(errors) => Err(errors),
         }
     }
@@ -164,10 +173,14 @@ mod tests {
 
         let mut analyzer = SemanticAnalyzer::new();
         let result = analyzer.analyze(&program);
-        
+
         // The complete semantic analysis should pass without errors for this valid program
-        assert!(result.is_ok(), "Semantic analysis failed with errors: {:?}", result.err());
-        
+        assert!(
+            result.is_ok(),
+            "Semantic analysis failed with errors: {:?}",
+            result.err()
+        );
+
         // There should be no errors reported
         assert!(!analyzer.diagnostic_reporter().has_errors());
     }
