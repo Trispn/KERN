@@ -3,12 +3,11 @@
 //! This module implements the KERN rule engine according to the specification.
 //! It provides deterministic rule evaluation, conflict resolution, and recursion prevention.
 
-use crate::types::{ExecutionContext, RuleExecutionInfo, Value};
+use crate::types::RuleExecutionInfo;
 use crate::{
     ConflictResolver, PatternMatcher, PriorityManager, RecursionGuard, RuleEngine, RuleScheduler,
 };
-use kern_graph_builder::{ExecutionGraph, GraphNode, GraphNodeType, SpecializedNode};
-use std::collections::HashMap;
+use kern_graph_builder::ExecutionGraph;
 
 impl RuleEngine {
     /// Main execution cycle that follows the specification workflow:
@@ -30,11 +29,11 @@ impl RuleEngine {
     /// Program State Update
     pub fn execute_cycle(&mut self) -> Result<(), String> {
         // Initialize components according to the specification
-        let mut pattern_matcher = PatternMatcher::new();
-        let mut scheduler = RuleScheduler::new();
-        let mut conflict_resolver = ConflictResolver::new();
-        let mut priority_manager = PriorityManager::new();
-        let mut recursion_guard = RecursionGuard::new();
+        let _pattern_matcher = PatternMatcher::new();
+        let _scheduler = RuleScheduler::new();
+        let _conflict_resolver = ConflictResolver::new();
+        let _priority_manager = PriorityManager::new();
+        let _recursion_guard = RecursionGuard::new();
 
         // 1. Evaluate rules to find applicable ones (Pattern Matching Engine)
         // We need to pass the execution graph to evaluate_rules
@@ -46,10 +45,10 @@ impl RuleEngine {
     /// Main execution method that executes the graph
     pub fn execute_graph_main(&mut self, graph: &ExecutionGraph) -> Result<(), String> {
         // Initialize components according to the specification
-        let mut scheduler = RuleScheduler::new();
-        let mut conflict_resolver = ConflictResolver::new();
+        let _scheduler = RuleScheduler::new();
+        let _conflict_resolver = ConflictResolver::new();
         let mut priority_manager = PriorityManager::new();
-        let mut recursion_guard = RecursionGuard::new();
+        let _recursion_guard = RecursionGuard::new();
 
         // 1. Evaluate rules to find applicable ones (Pattern Matching Engine)
         let mut matched_rules = self.evaluate_rules(graph)?;
@@ -99,7 +98,7 @@ impl RuleEngine {
                 let rule_id = specialized_node.get_base().id;
 
                 // Create or get rule execution info
-                let mut rule_info = RuleExecutionInfo {
+                let rule_info = RuleExecutionInfo {
                     rule_id,
                     priority: self.get_rule_priority(rule_id) as u16, // Use existing priority system
                     condition_graph_id: None,
@@ -125,7 +124,7 @@ impl RuleEngine {
     }
 
     /// Evaluates a rule's condition against the current program state
-    fn evaluate_condition(&self, rule_info: &RuleExecutionInfo) -> Result<bool, String> {
+    pub fn evaluate_condition(&self, _rule_info: &RuleExecutionInfo) -> Result<bool, String> {
         // In a real implementation, this would evaluate the condition subgraph
         // For now, we'll return true to indicate the condition is satisfied
         // This would involve pattern matching against the execution graph
@@ -133,16 +132,16 @@ impl RuleEngine {
     }
 
     /// Checks if all dependencies for a rule are satisfied
-    fn check_dependencies(&self, _rule_info: &RuleExecutionInfo) -> Result<bool, String> {
+    pub fn check_dependencies(&self, _rule_info: &RuleExecutionInfo) -> Result<bool, String> {
         // For now, we'll assume all dependencies are satisfied
         Ok(true)
     }
 
     /// Executes the action subgraph for a rule
-    fn execute_action_subgraph(
+    pub fn execute_action_subgraph(
         &mut self,
         rule_info: &RuleExecutionInfo,
-        graph: &ExecutionGraph,
+        _graph: &ExecutionGraph,
     ) -> Result<(), String> {
         // In a real implementation, this would execute the action subgraph
         // For now, we'll just update the program state with a dummy value

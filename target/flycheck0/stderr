@@ -1,117 +1,44 @@
-   0.090092100s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="assertions"}: cargo::core::compiler::fingerprint: fingerprint error for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "assertions", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\assertions.rs", Edition2021) }
-   0.090173200s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="assertions"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-compiler-6c5d0ef563784b31\test-integration-test-assertions`
-
-Caused by:
-    The system cannot find the file specified. (os error 2)
-
-Stack backtrace:
-   0: git_midx_writer_dump
-   1: git_midx_writer_dump
-   2: git_midx_writer_dump
-   3: git_midx_writer_dump
-   4: git_filter_source_repo
-   5: git_filter_source_repo
-   6: git_filter_source_repo
-   7: git_filter_source_repo
-   8: git_filter_source_repo
-   9: git_filter_source_repo
-  10: git_filter_source_repo
-  11: git_libgit2_prerelease
-  12: <unknown>
-  13: <unknown>
-  14: <unknown>
-  15: <unknown>
-  16: git_midx_writer_dump
-  17: git_filter_source_repo
-  18: git_midx_writer_dump
-  19: BaseThreadInitThunk
-  20: RtlUserThreadStart
-   0.114642300s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="lexer_tests"}: cargo::core::compiler::fingerprint: fingerprint error for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "lexer_tests", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\lexer_tests.rs", Edition2021) }
-   0.114676700s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="lexer_tests"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-compiler-85747498c7ea1a37\test-integration-test-lexer_tests`
-
-Caused by:
-    The system cannot find the file specified. (os error 2)
-
-Stack backtrace:
-   0: git_midx_writer_dump
-   1: git_midx_writer_dump
-   2: git_midx_writer_dump
-   3: git_midx_writer_dump
-   4: git_filter_source_repo
-   5: git_filter_source_repo
-   6: git_filter_source_repo
-   7: git_filter_source_repo
-   8: git_filter_source_repo
-   9: git_filter_source_repo
-  10: git_filter_source_repo
-  11: git_libgit2_prerelease
-  12: <unknown>
-  13: <unknown>
-  14: <unknown>
-  15: <unknown>
-  16: git_midx_writer_dump
-  17: git_filter_source_repo
-  18: git_midx_writer_dump
-  19: BaseThreadInitThunk
-  20: RtlUserThreadStart
-   0.116107500s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="main_test_runner"}: cargo::core::compiler::fingerprint: fingerprint error for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "main_test_runner", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\main_test_runner.rs", Edition2021) }
-   0.116160400s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="main_test_runner"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-compiler-5732fd6a6d0051f0\test-integration-test-main_test_runner`
-
-Caused by:
-    The system cannot find the file specified. (os error 2)
-
-Stack backtrace:
-   0: git_midx_writer_dump
-   1: git_midx_writer_dump
-   2: git_midx_writer_dump
-   3: git_midx_writer_dump
-   4: git_filter_source_repo
-   5: git_filter_source_repo
-   6: git_filter_source_repo
-   7: git_filter_source_repo
-   8: git_filter_source_repo
-   9: git_filter_source_repo
-  10: git_filter_source_repo
-  11: git_libgit2_prerelease
-  12: <unknown>
-  13: <unknown>
-  14: <unknown>
-  15: <unknown>
-  16: git_midx_writer_dump
-  17: git_filter_source_repo
-  18: git_midx_writer_dump
-  19: BaseThreadInitThunk
-  20: RtlUserThreadStart
-   0.117860900s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="parser_tests"}: cargo::core::compiler::fingerprint: fingerprint error for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "parser_tests", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\parser_tests.rs", Edition2021) }
-   0.117944000s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="parser_tests"}: cargo::core::compiler::fingerprint:     err: failed to read `C:\Users\LENOVO\OneDrive\Desktop\KERN\target\debug\.fingerprint\kern-compiler-3e7780984e38c7b4\test-integration-test-parser_tests`
-
-Caused by:
-    The system cannot find the file specified. (os error 2)
-
-Stack backtrace:
-   0: git_midx_writer_dump
-   1: git_midx_writer_dump
-   2: git_midx_writer_dump
-   3: git_midx_writer_dump
-   4: git_filter_source_repo
-   5: git_filter_source_repo
-   6: git_filter_source_repo
-   7: git_filter_source_repo
-   8: git_filter_source_repo
-   9: git_filter_source_repo
-  10: git_filter_source_repo
-  11: git_libgit2_prerelease
-  12: <unknown>
-  13: <unknown>
-  14: <unknown>
-  15: <unknown>
-  16: git_midx_writer_dump
-  17: git_filter_source_repo
-  18: git_midx_writer_dump
-  19: BaseThreadInitThunk
-  20: RtlUserThreadStart
+   1.264161200s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="kern_compiler"}: cargo::core::compiler::fingerprint: stale: changed "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-rule-engine\\src\\implementation.rs"
+   1.264227500s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="kern_compiler"}: cargo::core::compiler::fingerprint:           (vs) "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\target\\debug\\.fingerprint\\kern_rule_engine-ccae4ff01201d43d\\dep-lib-kern_rule_engine"
+   1.264248400s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="kern_compiler"}: cargo::core::compiler::fingerprint:                FileTime { seconds: 13411811886, nanos: 89134100 } < FileTime { seconds: 13411817832, nanos: 425107000 }
+   1.264973300s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="kern_compiler"}: cargo::core::compiler::fingerprint: fingerprint dirty for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { ..: lib_target("kern_compiler", ["lib"], "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\src\\lib.rs", Edition2021) }
+   1.265042200s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="kern_compiler"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "kern_rule_engine" })
+   1.268209300s  INFO prepare_target{force=false package_id=kern_rule_engine v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-rule-engine) target="kern_rule_engine"}: cargo::core::compiler::fingerprint: fingerprint dirty for kern_rule_engine v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-rule-engine)/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("kern_rule_engine", ["lib"], "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-rule-engine\\src\\lib.rs", Edition2021) }
+   1.268262300s  INFO prepare_target{force=false package_id=kern_rule_engine v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-rule-engine) target="kern_rule_engine"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleItem(ChangedFile { reference: "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\target\\debug\\.fingerprint\\kern_rule_engine-ccae4ff01201d43d\\dep-lib-kern_rule_engine", reference_mtime: FileTime { seconds: 13411811886, nanos: 89134100 }, stale: "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-rule-engine\\src\\implementation.rs", stale_mtime: FileTime { seconds: 13411817832, nanos: 425107000 } }))
+   1.317195200s  INFO prepare_target{force=false package_id=kern_vm v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-vm) target="kern_vm"}: cargo::core::compiler::fingerprint: fingerprint dirty for kern_vm v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-vm)/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("kern_vm", ["lib"], "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-vm\\src\\lib.rs", Edition2021) }
+   1.317315500s  INFO prepare_target{force=false package_id=kern_vm v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-vm) target="kern_vm"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "kern_rule_engine" })
+   1.322966200s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="kern_compiler"}: cargo::core::compiler::fingerprint: fingerprint dirty for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { name: "kern_compiler", doc: true, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\src\\main.rs", Edition2021) }
+   1.323033200s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="kern_compiler"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "kern_rule_engine" })
+   1.325048500s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="assertions"}: cargo::core::compiler::fingerprint: fingerprint dirty for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "assertions", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\assertions.rs", Edition2021) }
+   1.325095600s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="assertions"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "kern_rule_engine" })
+   1.327711000s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="ast_tests"}: cargo::core::compiler::fingerprint: fingerprint dirty for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "ast_tests", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\ast_tests.rs", Edition2021) }
+   1.327754700s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="ast_tests"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "kern_rule_engine" })
+   1.330019600s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="edge_case_tests"}: cargo::core::compiler::fingerprint: fingerprint dirty for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "edge_case_tests", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\edge_case_tests.rs", Edition2021) }
+   1.330072600s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="edge_case_tests"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "kern_rule_engine" })
+   1.332433600s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="error_recovery_tests"}: cargo::core::compiler::fingerprint: fingerprint dirty for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "error_recovery_tests", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\error_recovery_tests.rs", Edition2021) }
+   1.332479300s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="error_recovery_tests"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "kern_rule_engine" })
+   1.334690100s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="flow_pipeline_tests"}: cargo::core::compiler::fingerprint: fingerprint dirty for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "flow_pipeline_tests", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\flow_pipeline_tests.rs", Edition2021) }
+   1.334733300s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="flow_pipeline_tests"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "kern_rule_engine" })
+   1.337469700s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="lexer_tests"}: cargo::core::compiler::fingerprint: fingerprint dirty for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "lexer_tests", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\lexer_tests.rs", Edition2021) }
+   1.337513200s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="lexer_tests"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "kern_rule_engine" })
+   1.339796700s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="main_test_runner"}: cargo::core::compiler::fingerprint: fingerprint dirty for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "main_test_runner", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\main_test_runner.rs", Edition2021) }
+   1.339839100s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="main_test_runner"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "kern_rule_engine" })
+   1.343280100s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="parser_tests"}: cargo::core::compiler::fingerprint: fingerprint dirty for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "parser_tests", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\parser_tests.rs", Edition2021) }
+   1.343341600s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="parser_tests"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "kern_rule_engine" })
+   1.345840900s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="rule_engine_tests"}: cargo::core::compiler::fingerprint: fingerprint dirty for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "rule_engine_tests", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\rule_engine_tests.rs", Edition2021) }
+   1.345896400s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="rule_engine_tests"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "kern_rule_engine" })
+   1.348471100s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="semantic_tests"}: cargo::core::compiler::fingerprint: fingerprint dirty for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "semantic_tests", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\semantic_tests.rs", Edition2021) }
+   1.348518900s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="semantic_tests"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "kern_rule_engine" })
+   1.350980900s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="test_runner"}: cargo::core::compiler::fingerprint: fingerprint dirty for kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)/Check { test: true }/TargetInner { kind: "test", name: "test_runner", benched: false, ..: with_path("C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\tests\\test_runner.rs", Edition2021) }
+   1.351030100s  INFO prepare_target{force=false package_id=kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN) target="test_runner"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "kern_rule_engine" })
+   1.479434900s  INFO prepare_target{force=false package_id=kern_rule_engine v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-rule-engine) target="kern_rule_engine"}: cargo::core::compiler::fingerprint: stale: changed "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-rule-engine\\src\\implementation.rs"
+   1.479466100s  INFO prepare_target{force=false package_id=kern_rule_engine v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-rule-engine) target="kern_rule_engine"}: cargo::core::compiler::fingerprint:           (vs) "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\target\\debug\\.fingerprint\\kern_rule_engine-96bada1cb64d30e2\\dep-test-lib-kern_rule_engine"
+   1.479481700s  INFO prepare_target{force=false package_id=kern_rule_engine v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-rule-engine) target="kern_rule_engine"}: cargo::core::compiler::fingerprint:                FileTime { seconds: 13411812344, nanos: 33573000 } < FileTime { seconds: 13411817832, nanos: 425107000 }
+   1.480108700s  INFO prepare_target{force=false package_id=kern_rule_engine v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-rule-engine) target="kern_rule_engine"}: cargo::core::compiler::fingerprint: fingerprint dirty for kern_rule_engine v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-rule-engine)/Check { test: true }/TargetInner { name_inferred: true, ..: lib_target("kern_rule_engine", ["lib"], "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-rule-engine\\src\\lib.rs", Edition2021) }
+   1.480156000s  INFO prepare_target{force=false package_id=kern_rule_engine v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-rule-engine) target="kern_rule_engine"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleItem(ChangedFile { reference: "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\target\\debug\\.fingerprint\\kern_rule_engine-96bada1cb64d30e2\\dep-test-lib-kern_rule_engine", reference_mtime: FileTime { seconds: 13411812344, nanos: 33573000 }, stale: "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-rule-engine\\src\\implementation.rs", stale_mtime: FileTime { seconds: 13411817832, nanos: 425107000 } }))
+   1.539173000s  INFO prepare_target{force=false package_id=kern_vm v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-vm) target="kern_vm"}: cargo::core::compiler::fingerprint: fingerprint dirty for kern_vm v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-vm)/Check { test: true }/TargetInner { name_inferred: true, ..: lib_target("kern_vm", ["lib"], "C:\\Users\\LENOVO\\OneDrive\\Desktop\\KERN\\kern-vm\\src\\lib.rs", Edition2021) }
+   1.539249400s  INFO prepare_target{force=false package_id=kern_vm v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-vm) target="kern_vm"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "kern_rule_engine" })
+    Checking kern_rule_engine v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-rule-engine)
+    Checking kern_vm v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN\kern-vm)
     Checking kern-compiler v0.1.0 (C:\Users\LENOVO\OneDrive\Desktop\KERN)
-error: could not compile `kern-compiler` (test "assertions") due to 1 previous error; 1 warning emitted
-warning: build failed, waiting for other jobs to finish...
-error: could not compile `kern-compiler` (test "lexer_tests") due to 3 previous errors; 2 warnings emitted
-error: could not compile `kern-compiler` (test "main_test_runner") due to 1 previous error; 12 warnings emitted
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 7.93s

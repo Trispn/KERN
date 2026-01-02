@@ -11,7 +11,13 @@ pub struct AssertionResult {
 }
 
 impl AssertionResult {
-    pub fn new(success: bool, message: Option<String>, file: &'static str, line: u32, column: u32) -> Self {
+    pub fn new(
+        success: bool,
+        message: Option<String>,
+        file: &'static str,
+        line: u32,
+        column: u32,
+    ) -> Self {
         Self {
             success,
             message,
@@ -30,13 +36,21 @@ impl AssertionResult {
     }
 }
 
-pub fn assert_equal<T: PartialEq + Debug>(actual: T, expected: T, message: &str) -> AssertionResult {
+pub fn assert_equal<T: PartialEq + Debug>(
+    actual: T,
+    expected: T,
+    message: &str,
+) -> AssertionResult {
     let location = std::panic::Location::caller();
-    
+
     if actual == expected {
         AssertionResult::new(
             true,
-            Some(format!("Assertion passed: {} == {}", format!("{:?}", actual), format!("{:?}", expected))),
+            Some(format!(
+                "Assertion passed: {} == {}",
+                format!("{:?}", actual),
+                format!("{:?}", expected)
+            )),
             location.file(),
             location.line(),
             location.column(),
@@ -44,7 +58,10 @@ pub fn assert_equal<T: PartialEq + Debug>(actual: T, expected: T, message: &str)
     } else {
         AssertionResult::new(
             false,
-            Some(format!("{} - Expected: {:?}, Actual: {:?}", message, expected, actual)),
+            Some(format!(
+                "{} - Expected: {:?}, Actual: {:?}",
+                message, expected, actual
+            )),
             location.file(),
             location.line(),
             location.column(),
@@ -54,7 +71,7 @@ pub fn assert_equal<T: PartialEq + Debug>(actual: T, expected: T, message: &str)
 
 pub fn assert_true(condition: bool, message: &str) -> AssertionResult {
     let location = std::panic::Location::caller();
-    
+
     if condition {
         AssertionResult::new(
             true,
@@ -76,7 +93,7 @@ pub fn assert_true(condition: bool, message: &str) -> AssertionResult {
 
 pub fn assert_false(condition: bool, message: &str) -> AssertionResult {
     let location = std::panic::Location::caller();
-    
+
     if !condition {
         AssertionResult::new(
             true,
@@ -102,11 +119,14 @@ where
     E: PartialEq + Debug,
 {
     let location = std::panic::Location::caller();
-    
+
     match operation() {
         Ok(_) => AssertionResult::new(
             false,
-            Some(format!("{} - Expected error but operation succeeded", message)),
+            Some(format!(
+                "{} - Expected error but operation succeeded",
+                message
+            )),
             location.file(),
             location.line(),
             location.column(),
@@ -123,7 +143,10 @@ where
             } else {
                 AssertionResult::new(
                     false,
-                    Some(format!("{} - Expected error: {:?}, Actual error: {:?}", message, expected_error, actual_error)),
+                    Some(format!(
+                        "{} - Expected error: {:?}, Actual error: {:?}",
+                        message, expected_error, actual_error
+                    )),
                     location.file(),
                     location.line(),
                     location.column(),
@@ -133,9 +156,13 @@ where
     }
 }
 
-pub fn assert_not_equal<T: PartialEq + Debug>(actual: T, expected: T, message: &str) -> AssertionResult {
+pub fn assert_not_equal<T: PartialEq + Debug>(
+    actual: T,
+    expected: T,
+    message: &str,
+) -> AssertionResult {
     let location = std::panic::Location::caller();
-    
+
     if actual != expected {
         AssertionResult::new(
             true,
@@ -147,7 +174,10 @@ pub fn assert_not_equal<T: PartialEq + Debug>(actual: T, expected: T, message: &
     } else {
         AssertionResult::new(
             false,
-            Some(format!("{} - Expected values to be different, but both are: {:?}", message, expected)),
+            Some(format!(
+                "{} - Expected values to be different, but both are: {:?}",
+                message, expected
+            )),
             location.file(),
             location.line(),
             location.column(),
@@ -155,9 +185,13 @@ pub fn assert_not_equal<T: PartialEq + Debug>(actual: T, expected: T, message: &
     }
 }
 
-pub fn assert_contains<T: PartialEq>(collection: &[T], item: &T, message: &str) -> AssertionResult {
+pub fn assert_contains<T: PartialEq + std::fmt::Debug>(
+    collection: &[T],
+    item: &T,
+    message: &str,
+) -> AssertionResult {
     let location = std::panic::Location::caller();
-    
+
     if collection.contains(item) {
         AssertionResult::new(
             true,
@@ -169,7 +203,10 @@ pub fn assert_contains<T: PartialEq>(collection: &[T], item: &T, message: &str) 
     } else {
         AssertionResult::new(
             false,
-            Some(format!("{} - Item {:?} not found in collection", message, item)),
+            Some(format!(
+                "{} - Item {:?} not found in collection",
+                message, item
+            )),
             location.file(),
             location.line(),
             location.column(),
@@ -179,7 +216,7 @@ pub fn assert_contains<T: PartialEq>(collection: &[T], item: &T, message: &str) 
 
 pub fn assert_none<T>(option: Option<T>, message: &str) -> AssertionResult {
     let location = std::panic::Location::caller();
-    
+
     match option {
         None => AssertionResult::new(
             true,
@@ -200,7 +237,7 @@ pub fn assert_none<T>(option: Option<T>, message: &str) -> AssertionResult {
 
 pub fn assert_some<T: Debug>(option: Option<T>, message: &str) -> AssertionResult {
     let location = std::panic::Location::caller();
-    
+
     match option {
         Some(value) => AssertionResult::new(
             true,
@@ -221,27 +258,30 @@ pub fn assert_some<T: Debug>(option: Option<T>, message: &str) -> AssertionResul
 
 #[macro_export]
 macro_rules! assert_equal_with_tolerance {
-    ($actual:expr, $expected:expr, $tolerance:expr, $message:expr) => {
-        {
-            let diff = ($actual - $expected).abs();
-            if diff <= $tolerance {
-                AssertionResult::new(
-                    true,
-                    Some(format!("Assertion passed: {} is within tolerance", stringify!($actual))),
-                    file!(),
-                    line!(),
-                    column!(),
-                )
-            } else {
-                AssertionResult::new(
-                    false,
-                    Some(format!("{} - Expected: {}, Actual: {}, Tolerance: {}", 
-                        $message, $expected, $actual, $tolerance)),
-                    file!(),
-                    line!(),
-                    column!(),
-                )
-            }
+    ($actual:expr, $expected:expr, $tolerance:expr, $message:expr) => {{
+        let diff = ($actual - $expected).abs();
+        if diff <= $tolerance {
+            AssertionResult::new(
+                true,
+                Some(format!(
+                    "Assertion passed: {} is within tolerance",
+                    stringify!($actual)
+                )),
+                file!(),
+                line!(),
+                column!(),
+            )
+        } else {
+            AssertionResult::new(
+                false,
+                Some(format!(
+                    "{} - Expected: {}, Actual: {}, Tolerance: {}",
+                    $message, $expected, $actual, $tolerance
+                )),
+                file!(),
+                line!(),
+                column!(),
+            )
         }
-    };
+    }};
 }
