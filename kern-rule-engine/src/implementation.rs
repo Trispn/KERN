@@ -1,18 +1,18 @@
 //! KERN Rule Engine Implementation
-//! 
+//!
 //! This module implements the KERN rule engine according to the specification.
 //! It provides deterministic rule evaluation, conflict resolution, and recursion prevention.
 
-use std::collections::HashMap;
-use kern_graph_builder::{ExecutionGraph, GraphNode, GraphNodeType, SpecializedNode};
+use crate::types::{ExecutionContext, RuleExecutionInfo, Value};
 use crate::{
-    RuleEngine, RuleExecutionInfo, PatternMatcher, RuleScheduler,
-    ConflictResolver, PriorityManager, RecursionGuard, ExecutionContext, Value
+    ConflictResolver, PatternMatcher, PriorityManager, RecursionGuard, RuleEngine, RuleScheduler,
 };
+use kern_graph_builder::{ExecutionGraph, GraphNode, GraphNodeType, SpecializedNode};
+use std::collections::HashMap;
 
 impl RuleEngine {
     /// Main execution cycle that follows the specification workflow:
-    /// 
+    ///
     /// Verified AST
     ///    ↓
     /// Execution Graph
@@ -71,8 +71,11 @@ impl RuleEngine {
             match self.execute_rule_from_info(&rule_info, graph) {
                 Ok(()) => {
                     // Update execution count
-                    *self.rule_execution_counts.entry(rule_info.rule_id).or_insert(0) += 1;
-                },
+                    *self
+                        .rule_execution_counts
+                        .entry(rule_info.rule_id)
+                        .or_insert(0) += 1;
+                }
                 Err(e) => {
                     eprintln!("Error executing rule {}: {}", rule_info.rule_id, e);
                 }
@@ -84,7 +87,10 @@ impl RuleEngine {
 
     /// Evaluates all rules in the execution graph and returns applicable ones
     /// This implements the Rule Matching Algorithm from the specification
-    pub fn evaluate_rules(&mut self, graph: &ExecutionGraph) -> Result<Vec<RuleExecutionInfo>, String> {
+    pub fn evaluate_rules(
+        &mut self,
+        graph: &ExecutionGraph,
+    ) -> Result<Vec<RuleExecutionInfo>, String> {
         let mut matched_rules = Vec::new();
 
         // Process each rule in the execution graph in stable order
@@ -110,8 +116,9 @@ impl RuleEngine {
 
         // Sort by priority (descending) and then by rule_id for deterministic tie-break
         matched_rules.sort_by(|a, b| {
-            b.priority.cmp(&a.priority)  // Higher priority first
-                .then_with(|| a.rule_id.cmp(&b.rule_id))  // Then by rule_id for stability
+            b.priority
+                .cmp(&a.priority) // Higher priority first
+                .then_with(|| a.rule_id.cmp(&b.rule_id)) // Then by rule_id for stability
         });
 
         Ok(matched_rules)
@@ -132,7 +139,11 @@ impl RuleEngine {
     }
 
     /// Executes the action subgraph for a rule
-    fn execute_action_subgraph(&mut self, rule_info: &RuleExecutionInfo, graph: &ExecutionGraph) -> Result<(), String> {
+    fn execute_action_subgraph(
+        &mut self,
+        rule_info: &RuleExecutionInfo,
+        graph: &ExecutionGraph,
+    ) -> Result<(), String> {
         // In a real implementation, this would execute the action subgraph
         // For now, we'll just update the program state with a dummy value
         self.context.variables.insert(
@@ -168,8 +179,8 @@ impl RuleEngine {
 #[cfg(test)]
 mod integration_tests {
     use super::*;
-    use kern_parser::Parser;
     use kern_graph_builder::GraphBuilder;
+    use kern_parser::Parser;
 
     #[test]
     fn test_complete_rule_engine_workflow() {
@@ -203,11 +214,14 @@ mod integration_tests {
         let graph = builder.build_execution_graph(&program);
 
         // Create the rule engine
-        let mut engine = RuleEngine::new();
+        let mut engine = RuleEngine::new(Some(graph));
 
         // Execute a complete cycle
-        let result = engine.execute_graph_main(&graph);
-        assert!(result.is_ok());
+        // For now, let's use the graph directly
+        if let Some(graph) = engine.execution_graph.clone() {
+            let result = engine.execute_graph(&graph);
+            assert!(result.is_ok());
+        }
 
         // Verify deterministic execution
         assert!(engine.ensure_deterministic_execution());

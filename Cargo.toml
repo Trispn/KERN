@@ -26,3 +26,11 @@ path = "src/main.rs"
 
 [dependencies]
 kern_flow_pipeline = { path = "./kern-flow-pipeline" }
+
+[dev-dependencies]
+kern_parser = { path = "./kern-parser" }
+kern_lexer = { path = "./kern-lexer" }
+kern_rule_engine = { path = "./kern-rule-engine" }
+kern_graph_builder = { path = "./kern-graph-builder" }
+kern_semantic = { path = "./kern-semantic" }
+kern_vm = { path = "./kern-vm" }

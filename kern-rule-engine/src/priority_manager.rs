@@ -1,5 +1,5 @@
+use crate::types::RuleExecutionInfo;
 use std::collections::HashMap;
-use crate::rule_engine::RuleExecutionInfo;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum PriorityLevel {
@@ -37,7 +37,9 @@ impl PriorityManager {
     /// Sets the priority for a specific rule
     pub fn set_rule_priority(&mut self, rule_id: u32, priority: u16) -> Result<(), String> {
         // Validate priority is within limits
-        if priority < self.priority_limits.min_priority || priority > self.priority_limits.max_priority {
+        if priority < self.priority_limits.min_priority
+            || priority > self.priority_limits.max_priority
+        {
             return Err(format!(
                 "Priority {} is outside allowed range ({}-{})",
                 priority, self.priority_limits.min_priority, self.priority_limits.max_priority
@@ -50,7 +52,10 @@ impl PriorityManager {
 
     /// Gets the priority for a rule, defaulting to default_priority if not set
     pub fn get_rule_priority(&self, rule_id: u32) -> u16 {
-        *self.rule_priorities.get(&rule_id).unwrap_or(&self.default_priority)
+        *self
+            .rule_priorities
+            .get(&rule_id)
+            .unwrap_or(&self.default_priority)
     }
 
     /// Updates multiple rule priorities at once
@@ -62,7 +67,11 @@ impl PriorityManager {
     }
 
     /// Applies a priority level to a rule
-    pub fn set_rule_priority_level(&mut self, rule_id: u32, level: PriorityLevel) -> Result<(), String> {
+    pub fn set_rule_priority_level(
+        &mut self,
+        rule_id: u32,
+        level: PriorityLevel,
+    ) -> Result<(), String> {
         self.set_rule_priority(rule_id, level as u16)
     }
 
@@ -86,19 +95,27 @@ impl PriorityManager {
         if rule_info.dependencies.len() > 5 {
             // Boost priority for rules with many dependencies
             let current_priority = self.get_rule_priority(rule_info.rule_id);
-            let new_priority = std::cmp::min(current_priority + 10, self.priority_limits.max_priority);
+            let new_priority =
+                std::cmp::min(current_priority + 10, self.priority_limits.max_priority);
             self.set_rule_priority(rule_info.rule_id, new_priority)
                 .unwrap_or_default(); // Ignore errors in this helper function
         }
     }
 
     /// Adjusts priority based on rule complexity
-    pub fn adjust_priority_for_complexity(&mut self, rule_info: &mut RuleExecutionInfo, complexity_score: u16) {
+    pub fn adjust_priority_for_complexity(
+        &mut self,
+        rule_info: &mut RuleExecutionInfo,
+        complexity_score: u16,
+    ) {
         // Increase priority for more complex rules
         let current_priority = self.get_rule_priority(rule_info.rule_id);
         let priority_boost = std::cmp::min(complexity_score / 10, 50); // Max 50 point boost
-        let new_priority = std::cmp::min(current_priority + priority_boost, self.priority_limits.max_priority);
-        
+        let new_priority = std::cmp::min(
+            current_priority + priority_boost,
+            self.priority_limits.max_priority,
+        );
+
         self.set_rule_priority(rule_info.rule_id, new_priority)
             .unwrap_or_default(); // Ignore errors in this helper function
     }
@@ -107,13 +124,17 @@ impl PriorityManager {
     pub fn sort_rules_by_priority(&self, rules: &mut [RuleExecutionInfo]) {
         rules.sort_by(|a, b| {
             // Sort by priority descending, then by rule_id ascending for stable sorting
-            b.priority.cmp(&a.priority).then_with(|| a.rule_id.cmp(&b.rule_id))
+            b.priority
+                .cmp(&a.priority)
+                .then_with(|| a.rule_id.cmp(&b.rule_id))
         });
     }
 
     /// Sets the default priority for new rules
     pub fn set_default_priority(&mut self, priority: u16) -> Result<(), String> {
-        if priority < self.priority_limits.min_priority || priority > self.priority_limits.max_priority {
+        if priority < self.priority_limits.min_priority
+            || priority > self.priority_limits.max_priority
+        {
             return Err(format!(
                 "Default priority {} is outside allowed range ({}-{})",
                 priority, self.priority_limits.min_priority, self.priority_limits.max_priority
@@ -154,42 +175,58 @@ impl Default for PriorityManager {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::rule_engine::RuleExecutionInfo;
+    use crate::types::RuleExecutionInfo;
 
     #[test]
     fn test_priority_manager() {
         let mut manager = PriorityManager::new();
-        
+
         // Test default priority
         assert_eq!(manager.get_default_priority(), PriorityLevel::Normal as u16);
-        
+
         // Create a test rule
         let mut rule_info = RuleExecutionInfo::new(1);
-        
+
         // Test getting default priority
         assert_eq!(manager.get_rule_priority(1), PriorityLevel::Normal as u16);
-        
+
         // Set a specific priority
         manager.set_rule_priority(1, 75).unwrap();
         assert_eq!(manager.get_rule_priority(1), 75);
-        
+
         // Test priority level conversion
-        manager.set_rule_priority(1, PriorityLevel::High as u16).unwrap();
+        manager
+            .set_rule_priority(1, PriorityLevel::High as u16)
+            .unwrap();
         assert_eq!(manager.get_rule_priority_level(1), PriorityLevel::High);
-        
+
         // Test setting priority level directly
-        manager.set_rule_priority_level(1, PriorityLevel::Critical).unwrap();
+        manager
+            .set_rule_priority_level(1, PriorityLevel::Critical)
+            .unwrap();
         assert_eq!(manager.get_rule_priority(1), PriorityLevel::Critical as u16);
-        
+
         // Test sorting rules
         let mut rules = vec![
-            RuleExecutionInfo { rule_id: 1, priority: 50, ..RuleExecutionInfo::new(1) },
-            RuleExecutionInfo { rule_id: 2, priority: 100, ..RuleExecutionInfo::new(2) },
-            RuleExecutionInfo { rule_id: 3, priority: 75, ..RuleExecutionInfo::new(3) },
+            RuleExecutionInfo {
+                rule_id: 1,
+                priority: 50,
+                ..RuleExecutionInfo::new(1)
+            },
+            RuleExecutionInfo {
+                rule_id: 2,
+                priority: 100,
+                ..RuleExecutionInfo::new(2)
+            },
+            RuleExecutionInfo {
+                rule_id: 3,
+                priority: 75,
+                ..RuleExecutionInfo::new(3)
+            },
         ];
-        
+
         manager.sort_rules_by_priority(&mut rules);
-        
+
         // Rules should be sorted by priority descending
         assert_eq!(rules[0].rule_id, 2); // priority 100
         assert_eq!(rules[1].rule_id, 3); // priority 75
@@ -200,13 +237,13 @@ mod tests {
     fn test_priority_adjustments() {
         let mut manager = PriorityManager::new();
         let mut rule_info = RuleExecutionInfo::new(1);
-        
+
         // Add dependencies to trigger adjustment
         rule_info.dependencies = vec![2, 3, 4, 5, 6, 7]; // More than 5 dependencies
-        
+
         // Adjust priority for dependencies
         manager.adjust_priority_for_dependencies(&mut rule_info);
-        
+
         // The priority should be increased due to many dependencies
         assert!(manager.get_rule_priority(1) > manager.get_default_priority());
     }
@@ -214,13 +251,13 @@ mod tests {
     #[test]
     fn test_priority_limits() {
         let mut manager = PriorityManager::new();
-        
+
         // Test setting priority within limits
         assert!(manager.set_rule_priority(1, 500).is_ok());
-        
+
         // Test setting priority outside limits
         assert!(manager.set_rule_priority(2, 2000).is_err());
-        
+
         // Test setting default priority outside limits
         assert!(manager.set_default_priority(1500).is_err());
     }

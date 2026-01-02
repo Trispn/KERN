@@ -1,0 +1,328 @@
+cargo :     Checking 
+kern-compiler v0.1.0 
+(C:\Users\LENOVO\OneD
+rive\Desktop\KERN)
+At line:1 char:1
++ cargo check 
+--all-targets 2>&1 | 
+Out-File -Encoding 
+ascii workspace_e ...
++ ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~
+    + CategoryInfo   
+           : NotSpe  
+  cified: (    Che   
+ cking ke...e\Des    
+ktop\KERN):Strin    
+g) [], RemoteExc    
+eption
+    + FullyQualified 
+   ErrorId : Native  
+  CommandError
+ 
+error[E0433]: failed 
+to resolve: use of 
+unresolved module or 
+unlinked crate 
+`kern_parser`
+ --> tests\ast_tests.
+rs:3:9
+  |
+3 |     use kern_pars
+er::ast_nodes::{
+  |         
+^^^^^^^^^^^ use of 
+unresolved module or 
+unlinked crate 
+`kern_parser`
+  |
+  = help: if you 
+wanted to use a 
+crate named 
+`kern_parser`, use 
+`cargo add 
+kern_parser` to add 
+it to your 
+`Cargo.toml`
+
+error[E0432]: 
+unresolved import 
+`crate::assertions`
+ --> tests\ast_tests.
+rs:7:16
+  |
+7 |     use crate::as
+sertions::{assert_equ
+al, assert_true, 
+AssertionResult};
+  |                
+^^^^^^^^^^ could not 
+find `assertions` in 
+the crate root
+
+warning: variable 
+does not need to be 
+mutable
+  --> tests\test_runn
+er.rs:57:13
+   |
+57 |         let mut 
+report = TestReport::
+new(results);
+   |             
+----^^^^^^
+   |             |
+   |             
+help: remove this 
+`mut`
+   |
+   = note: `#[warn(un
+used_mut)]` (part of 
+`#[warn(unused)]`) 
+on by default
+
+Some errors have 
+detailed 
+explanations: E0432, 
+E0433.
+For more information 
+about an error, try 
+`rustc --explain 
+E0432`.
+error[E0433]: failed 
+to resolve: use of 
+unresolved module or 
+unlinked crate 
+`kern_lexer`
+ --> tests\lexer_test
+s.rs:3:9
+  |
+3 |     use kern_lexe
+r::lexer::Lexer;
+  |         
+^^^^^^^^^^ use of 
+unresolved module or 
+unlinked crate 
+`kern_lexer`
+  |
+  = help: if you 
+wanted to use a 
+crate named 
+`kern_lexer`, use 
+`cargo add 
+kern_lexer` to add 
+it to your 
+`Cargo.toml`
+
+error[E0433]: failed 
+to resolve: use of 
+unresolved module or 
+unlinked crate 
+`kern_lexer`
+ --> tests\lexer_test
+s.rs:4:9
+  |
+4 |     use kern_lexe
+r::token::Token;
+  |         
+^^^^^^^^^^ use of 
+unresolved module or 
+unlinked crate 
+`kern_lexer`
+  |
+  = help: if you 
+wanted to use a 
+crate named 
+`kern_lexer`, use 
+`cargo add 
+kern_lexer` to add 
+it to your 
+`Cargo.toml`
+
+error[E0433]: failed 
+to resolve: use of 
+unresolved module or 
+unlinked crate 
+`kern_lexer`
+ --> tests\lexer_test
+s.rs:5:9
+  |
+5 |     use kern_lexe
+r::token_kind::TokenK
+ind;
+  |         
+^^^^^^^^^^ use of 
+unresolved module or 
+unlinked crate 
+`kern_lexer`
+  |
+  = help: if you 
+wanted to use a 
+crate named 
+`kern_lexer`, use 
+`cargo add 
+kern_lexer` to add 
+it to your 
+`Cargo.toml`
+
+error[E0432]: 
+unresolved import 
+`crate::assertions`
+ --> tests\lexer_test
+s.rs:6:16
+  |
+6 |     use crate::as
+sertions::{assert_equ
+al, assert_true, 
+AssertionResult};
+  |                
+^^^^^^^^^^ could not 
+find `assertions` in 
+the crate root
+
+error[E0432]: 
+unresolved import 
+`crate::assertions`
+ --> tests\flow_pipel
+ine_tests.rs:5:16
+  |
+5 |     use crate::as
+sertions::{assert_equ
+al, assert_true, 
+assert_false, 
+AssertionResult};
+  |                
+^^^^^^^^^^ could not 
+find `assertions` in 
+the crate root
+
+error[E0433]: failed 
+to resolve: use of 
+unresolved module or 
+unlinked crate 
+`kern_parser`
+ --> tests\flow_pipel
+ine_tests.rs:4:9
+  |
+4 |     use kern_pars
+er::ast_nodes::{Flow,
+ Program, 
+Declaration};
+  |         
+^^^^^^^^^^^ use of 
+unresolved module or 
+unlinked crate 
+`kern_parser`
+  |
+  = help: if you 
+wanted to use a 
+crate named 
+`kern_parser`, use 
+`cargo add 
+kern_parser` to add 
+it to your 
+`Cargo.toml`
+
+error[E0432]: 
+unresolved import 
+`kern_rule_engine`
+ --> tests\flow_pipel
+ine_tests.rs:3:9
+  |
+3 |     use kern_rule
+_engine::FlowExecutor
+;
+  |         
+^^^^^^^^^^^^^^^^ use 
+of unresolved module 
+or unlinked crate 
+`kern_rule_engine`
+  |
+  = help: if you 
+wanted to use a 
+crate named 
+`kern_rule_engine`, 
+use `cargo add 
+kern_rule_engine` to 
+add it to your 
+`Cargo.toml`
+
+error[E0382]: borrow 
+of moved value: 
+`results`
+  --> tests\test_runn
+er.rs:92:20
+   |
+74 |     pub fn 
+new(results: 
+Vec<TestResult>) -> 
+Self {
+   |                
+------- move occurs 
+because `results` 
+has type 
+`Vec<TestResult>`, 
+which does not 
+implement the `Copy` 
+trait
+...
+91 |             
+results,
+   |             
+------- value moved 
+here
+92 |             
+total: results.len(),
+   |                 
+   ^^^^^^^ value 
+borrowed here after 
+move
+   |
+help: consider 
+cloning the value if 
+the performance cost 
+is acceptable
+   |
+91 |             
+results: 
+results.clone(),
+   |                 
+   +++++++++++++++++
+
+error: could not 
+compile 
+`kern-compiler` 
+(test "ast_tests") 
+due to 2 previous 
+errors
+warning: build 
+failed, waiting for 
+other jobs to 
+finish...
+For more information 
+about this error, 
+try `rustc --explain 
+E0382`.
+warning: 
+`kern-compiler` 
+(test "test_runner") 
+generated 1 warning
+error: could not 
+compile 
+`kern-compiler` 
+(test "test_runner") 
+due to 1 previous 
+error; 1 warning 
+emitted
+error: could not 
+compile 
+`kern-compiler` 
+(test "lexer_tests") 
+due to 4 previous 
+errors
+error: could not 
+compile 
+`kern-compiler` 
+(test "flow_pipeline_
+tests") due to 3 
+previous errors

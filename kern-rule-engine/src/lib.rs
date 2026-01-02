@@ -1,224 +1,77 @@
-mod rule_engine;
-mod pattern_matcher;
-mod scheduler;
-mod conflict_resolver;
-mod priority_manager;
-mod recursion_guard;
+// Re-export common types from the types module
+pub use types::*;
 
-mod implementation;
-
-pub use rule_engine::*;
-pub use pattern_matcher::*;
-pub use scheduler::*;
-pub use conflict_resolver::*;
-pub use priority_manager::*;
-pub use recursion_guard::*;
-pub use implementation::*;
-
-use kern_graph_builder::{ExecutionGraph, GraphNode, GraphNodeType, EdgeType, SpecializedNode};
+use kern_graph_builder::{EdgeType, ExecutionGraph, GraphNode, GraphNodeType, SpecializedNode};
 use kern_parser::{Comparator, LogicalOp};
 use std::collections::HashMap;
 
+mod conflict_resolver;
+mod pattern_matcher;
+mod priority_manager;
+mod recursion_guard;
+mod rule_engine;
+mod scheduler;
+
+mod implementation;
+mod types;
+
+pub use conflict_resolver::*;
+pub use implementation::*;
+pub use pattern_matcher::*;
+pub use priority_manager::*;
+pub use recursion_guard::*;
+pub use rule_engine::*;
+pub use scheduler::*;
+
 #[cfg(test)]
 mod tests;
-
-// Define the missing types that are needed by other modules
-#[derive(Debug, Clone)]
-pub struct RuleMatch {
-    pub rule_id: u32,
-    pub bindings: HashMap<String, Value>,
-}
-
-#[derive(Debug, Clone)]
-pub struct ConflictEntry {
-    pub target_symbol_id: u32,
-    pub conflicting_rules: Vec<u32>,
-    pub resolution_mode: ResolutionMode,
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub enum ResolutionMode {
-    Ignore,
-    Override,
-    Merge,
-    Error,
-}
-
-// Define the rule engine execution context
-#[derive(Debug, Clone)]
-pub struct ExecutionContext {
-    pub registers: Vec<Option<Value>>,  // R0-R15, using Option for uninitialized values
-    pub variables: HashMap<String, Value>,
-    pub facts: HashMap<String, Value>,
-    pub rule_results: HashMap<String, bool>,
-    pub current_node_id: Option<u32>,
-}
-
-impl ExecutionContext {
-    pub fn new() -> Self {
-        ExecutionContext {
-            registers: vec![None; 16],  // Initialize with 16 registers (R0-R15)
-            variables: HashMap::new(),
-            facts: HashMap::new(),
-            rule_results: HashMap::new(),
-            current_node_id: None,
-        }
-    }
-}
-
-// Pattern matching structures
-#[derive(Debug, Clone)]
-pub enum Pattern {
-    Value(Value),
-    Variable(String),  // A variable that can match any value
-    Composite(String, Vec<Pattern>),  // A composite pattern like (entity.field value)
-}
-
-#[derive(Debug, Clone)]
-pub struct PatternMatch {
-    pub bindings: HashMap<String, Value>,  // Variable bindings from the match
-    pub matched_node: u32,  // The node that matched
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub enum Value {
-    Sym(String),
-    Num(i64),
-    Bool(bool),
-    Vec(Vec<Value>),
-    Ref(String),  // External reference
-}
-
-#[derive(Debug)]
-pub enum RuleEngineError {
-    InvalidNodeType,
-    MissingRegisterValue(u16),
-    InvalidComparison(Comparator, Value, Value),
-    InvalidPredicate(String),
-    ExecutionLimitExceeded,
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct RulePriority {
-    pub rule_id: u32,
-    pub priority: u32,  // Higher number means higher priority
-    pub specificity: u32,  // More specific rules have higher priority
-    pub recency: u32,  // More recently added facts might affect priority
-    pub activation_count: u32,  // How many times the rule has been activated
-    pub conflict_score: u32,  // Score based on conflicts with other rules
-}
-
-use std::fmt;
-
-// Define a custom trait for cloning boxed functions
-pub trait CloneableFn: Fn(&RulePriority) -> u32 {
-    fn clone_box(&self) -> Box<dyn CloneableFn>;
-}
-
-impl<T> CloneableFn for T
-where
-    T: Fn(&RulePriority) -> u32 + Clone + 'static,
-{
-    fn clone_box(&self) -> Box<dyn CloneableFn> {
-        Box::new(self.clone())
-    }
-}
-
-impl Clone for Box<dyn CloneableFn> {
-    fn clone(&self) -> Self {
-        self.clone_box()
-    }
-}
-
-impl fmt::Debug for Box<dyn CloneableFn> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Custom function")
-    }
-}
-
-impl PartialEq for Box<dyn CloneableFn> {
-    fn eq(&self, _other: &Self) -> bool {
-        // Two function pointers are equal if they point to the same function
-        // For our purposes, we'll consider all custom functions as non-equal
-        std::ptr::eq(self.as_ref(), _other.as_ref())
-    }
-}
-
-#[derive(Clone)]
-pub enum PriorityStrategy {
-    /// Standard priority based on explicit settings
-    Standard,
-    /// Priority based on rule specificity (more specific rules fire first)
-    SpecificityFirst,
-    /// Priority based on recency (newer facts/rules have higher priority)
-    RecencyBased,
-    /// Priority based on how frequently the rule has been activated
-    FrequencyBased,
-    /// Priority based on conflict resolution needs
-    ConflictResolution,
-    /// Custom priority function
-    Custom(Box<dyn CloneableFn>),
-}
-
-impl fmt::Debug for PriorityStrategy {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            PriorityStrategy::Standard => write!(f, "Standard"),
-            PriorityStrategy::SpecificityFirst => write!(f, "SpecificityFirst"),
-            PriorityStrategy::RecencyBased => write!(f, "RecencyBased"),
-            PriorityStrategy::FrequencyBased => write!(f, "FrequencyBased"),
-            PriorityStrategy::ConflictResolution => write!(f, "ConflictResolution"),
-            PriorityStrategy::Custom(_) => write!(f, "Custom"),
-        }
-    }
-}
-
-impl PartialEq for PriorityStrategy {
-    fn eq(&self, other: &Self) -> bool {
-        match (self, other) {
-            (PriorityStrategy::Standard, PriorityStrategy::Standard) => true,
-            (PriorityStrategy::SpecificityFirst, PriorityStrategy::SpecificityFirst) => true,
-            (PriorityStrategy::RecencyBased, PriorityStrategy::RecencyBased) => true,
-            (PriorityStrategy::FrequencyBased, PriorityStrategy::FrequencyBased) => true,
-            (PriorityStrategy::ConflictResolution, PriorityStrategy::ConflictResolution) => true,
-            (PriorityStrategy::Custom(_), PriorityStrategy::Custom(_)) => true, // Consider all custom functions as equal
-            _ => false,
-        }
-    }
-}
 
 // The RuleEngine executes rules based on the execution graph
 pub struct RuleEngine {
     pub context: ExecutionContext,
     pub step_count: u32,
     pub max_steps: u32,
-    pub priority_queue: Vec<u32>,  // Node IDs sorted by priority
-    pub rule_priorities: HashMap<u32, RulePriority>,  // Map of rule ID to priority
-    pub activation_records: Vec<u32>,  // List of activated rule nodes
-    pub priority_strategy: PriorityStrategy,  // Strategy for determining rule priority
-    pub execution_path: Vec<u32>,  // Track the current execution path to detect recursion
-    pub max_recursion_depth: u32,  // Maximum allowed recursion depth
-    pub rule_execution_counts: HashMap<u32, u32>,  // Track how many times each rule has been executed in the current path
+    pub priority_queue: Vec<u32>, // Node IDs sorted by priority
+    pub rule_priorities: HashMap<u32, RulePriority>, // Map of rule ID to priority
+    pub activation_records: Vec<u32>, // List of activated rule nodes
+    pub priority_strategy: PriorityStrategy, // Strategy for determining rule priority
+    pub execution_path: Vec<u32>, // Track the current execution path to detect recursion
+    pub max_recursion_depth: u32, // Maximum allowed recursion depth
+    pub rule_execution_counts: HashMap<u32, u32>, // Track how many times each rule has been executed in the current path
+
+    // Fields expected by implementation.rs
+    pub rule_registry: HashMap<u32, RuleExecutionInfo>,
+    pub execution_graph: Option<ExecutionGraph>,
+    pub program_state: HashMap<String, Value>,
 }
 
 impl RuleEngine {
-    pub fn new() -> Self {
+    pub fn new(graph: Option<ExecutionGraph>) -> Self {
         RuleEngine {
             context: ExecutionContext::new(),
             step_count: 0,
-            max_steps: 10000,  // Prevent infinite loops
+            max_steps: 10000, // Prevent infinite loops
             priority_queue: Vec::new(),
             rule_priorities: HashMap::new(),
             activation_records: Vec::new(),
             priority_strategy: PriorityStrategy::Standard,
             execution_path: Vec::new(),
-            max_recursion_depth: 100,  // Default maximum recursion depth
+            max_recursion_depth: 100, // Default maximum recursion depth
             rule_execution_counts: HashMap::new(),
+            rule_registry: HashMap::new(),
+            execution_graph: graph,
+            program_state: HashMap::new(),
         }
     }
 
     /// Sets the priority for a specific rule
-    pub fn set_rule_priority(&mut self, rule_id: u32, priority: u32, specificity: u32, recency: u32) {
+    pub fn set_rule_priority(
+        &mut self,
+        rule_id: u32,
+        priority: u32,
+        specificity: u32,
+        recency: u32,
+    ) {
         let rule_priority = RulePriority {
             rule_id,
             priority,
@@ -255,42 +108,42 @@ impl RuleEngine {
             match &self.priority_strategy {
                 PriorityStrategy::Standard => {
                     // Calculate effective priority based on all factors
-                    rule_priority.priority * 1000 +
-                    rule_priority.specificity * 100 +
-                    rule_priority.recency * 10 +
-                    rule_priority.activation_count / 10  // Lower priority for frequently activated rules to avoid loops
-                },
+                    rule_priority.priority * 1000
+                        + rule_priority.specificity * 100
+                        + rule_priority.recency * 10
+                        + rule_priority.activation_count / 10 // Lower priority for frequently activated rules to avoid loops
+                }
                 PriorityStrategy::SpecificityFirst => {
                     // Prioritize more specific rules
-                    rule_priority.specificity * 1000 +
-                    rule_priority.priority * 100 +
-                    rule_priority.recency * 10
-                },
+                    rule_priority.specificity * 1000
+                        + rule_priority.priority * 100
+                        + rule_priority.recency * 10
+                }
                 PriorityStrategy::RecencyBased => {
                     // Prioritize based on recency
-                    rule_priority.recency * 1000 +
-                    rule_priority.priority * 100 +
-                    rule_priority.specificity * 10
-                },
+                    rule_priority.recency * 1000
+                        + rule_priority.priority * 100
+                        + rule_priority.specificity * 10
+                }
                 PriorityStrategy::FrequencyBased => {
                     // Prioritize based on activation frequency (less frequent rules first to avoid loops)
                     rule_priority.priority * 1000 +
                     (u32::MAX - rule_priority.activation_count) * 100 +  // Inverse of activation count
                     rule_priority.specificity * 10
-                },
+                }
                 PriorityStrategy::ConflictResolution => {
                     // Prioritize based on conflict resolution needs
                     rule_priority.priority * 1000 +
                     (u32::MAX - rule_priority.conflict_score) * 100 +  // Lower conflict score = higher priority
                     rule_priority.specificity * 10
-                },
+                }
                 PriorityStrategy::Custom(priority_fn) => {
                     // Use custom priority function
                     priority_fn(rule_priority)
                 }
             }
         } else {
-            0  // Default priority
+            0 // Default priority
         }
     }
 
@@ -304,16 +157,17 @@ impl RuleEngine {
         self.priority_queue.push(node_id);
 
         // Sort the queue based on priority (higher priority first)
-        // To avoid borrow checker issues, we'll create a vector of (node_id, priority) pairs
-        let mut priority_pairs: Vec<(u32, u32)> = self.priority_queue
-            .iter()
-            .map(|&node_id| (node_id, self.get_rule_priority(node_id)))
+        // Clone the queue to avoid simultaneous borrows of self
+        let queue_ids = self.priority_queue.clone();
+        let mut priority_pairs: Vec<(u32, u32)> = queue_ids
+            .into_iter()
+            .map(|id| (id, self.get_rule_priority(id)))
             .collect();
 
         priority_pairs.sort_by(|a, b| b.1.cmp(&a.1)); // Sort by priority descending
 
         // Update the priority queue with the sorted order
-        self.priority_queue = priority_pairs.into_iter().map(|(node_id, _)| node_id).collect();
+        self.priority_queue = priority_pairs.into_iter().map(|(id, _)| id).collect();
     }
 
     /// Adds a node to the priority queue using the current strategy
@@ -326,16 +180,16 @@ impl RuleEngine {
         self.priority_queue.push(node_id);
 
         // Sort the queue based on the current priority strategy
-        // To avoid borrow checker issues, we'll create a vector of (node_id, priority) pairs
-        let mut priority_pairs: Vec<(u32, u32)> = self.priority_queue
-            .iter()
-            .map(|&node_id| (node_id, self.get_rule_priority(node_id)))
+        let queue_ids = self.priority_queue.clone();
+        let mut priority_pairs: Vec<(u32, u32)> = queue_ids
+            .into_iter()
+            .map(|id| (id, self.get_rule_priority(id)))
             .collect();
 
         priority_pairs.sort_by(|a, b| b.1.cmp(&a.1)); // Sort by priority descending
 
         // Update the priority queue with the sorted order
-        self.priority_queue = priority_pairs.into_iter().map(|(node_id, _)| node_id).collect();
+        self.priority_queue = priority_pairs.into_iter().map(|(id, _)| id).collect();
     }
 
     /// Selects the next node to execute based on priority and scheduling strategy
@@ -346,7 +200,8 @@ impl RuleEngine {
 
         // Sort the priority queue based on the current priority strategy
         // To avoid borrow checker issues, we'll create a vector of (node_id, priority) pairs
-        let mut priority_pairs: Vec<(u32, u32)> = self.priority_queue
+        let mut priority_pairs: Vec<(u32, u32)> = self
+            .priority_queue
             .iter()
             .map(|&node_id| (node_id, self.get_rule_priority(node_id)))
             .collect();
@@ -354,10 +209,13 @@ impl RuleEngine {
         priority_pairs.sort_by(|a, b| b.1.cmp(&a.1)); // Sort by priority descending
 
         // Update the priority queue with the sorted order
-        self.priority_queue = priority_pairs.into_iter().map(|(node_id, _)| node_id).collect();
+        self.priority_queue = priority_pairs
+            .into_iter()
+            .map(|(node_id, _)| node_id)
+            .collect();
 
         // Return the highest priority node
-        self.priority_queue.pop()  // pop from the end since it's sorted in descending order
+        self.priority_queue.pop() // pop from the end since it's sorted in descending order
     }
 
     /// Schedules a rule for execution based on its eligibility
@@ -374,7 +232,10 @@ impl RuleEngine {
     /// Checks if a rule is eligible for execution
     fn is_rule_eligible(&self, rule_id: u32, graph: &ExecutionGraph) -> bool {
         // Find the rule node in the graph
-        if let Some(specialized_node) = graph.nodes.iter().find(|n| n.get_base().id == rule_id && n.get_base().node_type == kern_graph_builder::GraphNodeType::Rule) {
+        if let Some(specialized_node) = graph.nodes.iter().find(|n| {
+            n.get_base().id == rule_id
+                && n.get_base().node_type == kern_graph_builder::GraphNodeType::Rule
+        }) {
             // Check if the rule's condition is satisfied
             // For now, we'll just check if it's a valid rule node
             // In a real implementation, we'd evaluate the rule's condition
@@ -395,7 +256,8 @@ impl RuleEngine {
 
             // Re-sort the priority queue based on conflict resolution strategy
             // To avoid borrow checker issues, we'll create a vector of (node_id, priority) pairs
-            let mut priority_pairs: Vec<(u32, u32)> = self.priority_queue
+            let mut priority_pairs: Vec<(u32, u32)> = self
+                .priority_queue
                 .iter()
                 .map(|&node_id| (node_id, self.get_rule_priority(node_id)))
                 .collect();
@@ -403,7 +265,10 @@ impl RuleEngine {
             priority_pairs.sort_by(|a, b| b.1.cmp(&a.1)); // Sort by priority descending
 
             // Update the priority queue with the sorted order
-            self.priority_queue = priority_pairs.into_iter().map(|(node_id, _)| node_id).collect();
+            self.priority_queue = priority_pairs
+                .into_iter()
+                .map(|(node_id, _)| node_id)
+                .collect();
         }
     }
 
@@ -420,7 +285,9 @@ impl RuleEngine {
                 self.context.current_node_id = Some(node_id);
 
                 // Find the node in the graph
-                if let Some(specialized_node) = graph.nodes.iter().find(|n| n.get_base().id == node_id) {
+                if let Some(specialized_node) =
+                    graph.nodes.iter().find(|n| n.get_base().id == node_id)
+                {
                     // Perform conflict-aware scheduling before execution
                     self.conflict_aware_schedule(graph);
 
@@ -442,9 +309,15 @@ impl RuleEngine {
     }
 
     /// Executes a flow pipeline with demand-driven evaluation
-    pub fn execute_flow_pipeline(&mut self, graph: &ExecutionGraph, flow_node_id: u32) -> Result<(), RuleEngineError> {
+    pub fn execute_flow_pipeline(
+        &mut self,
+        graph: &ExecutionGraph,
+        flow_node_id: u32,
+    ) -> Result<(), RuleEngineError> {
         // Find the flow node in the graph
-        let flow_specialized_node = graph.nodes.iter()
+        let flow_specialized_node = graph
+            .nodes
+            .iter()
             .find(|n| n.get_base().id == flow_node_id)
             .ok_or(RuleEngineError::InvalidNodeType)?;
 
@@ -453,7 +326,8 @@ impl RuleEngine {
 
         // Execute nodes in the flow with demand-driven evaluation
         for node_id in connected_nodes {
-            if let Some(specialized_node) = graph.nodes.iter().find(|n| n.get_base().id == node_id) {
+            if let Some(specialized_node) = graph.nodes.iter().find(|n| n.get_base().id == node_id)
+            {
                 self.execute_node_demand_driven_from_specialized(specialized_node, graph)?;
             }
         }
@@ -462,7 +336,11 @@ impl RuleEngine {
     }
 
     /// Executes a node with demand-driven evaluation
-    fn execute_node_demand_driven_from_specialized(&mut self, node: &SpecializedNode, graph: &ExecutionGraph) -> Result<(), RuleEngineError> {
+    fn execute_node_demand_driven_from_specialized(
+        &mut self,
+        node: &SpecializedNode,
+        graph: &ExecutionGraph,
+    ) -> Result<(), RuleEngineError> {
         // Check if all required inputs are available
         let base_node = node.get_base();
         if !self.are_inputs_available(base_node) {
@@ -480,7 +358,11 @@ impl RuleEngine {
     }
 
     /// Executes a node with demand-driven evaluation
-    fn execute_node_demand_driven(&mut self, node: &GraphNode, graph: &ExecutionGraph) -> Result<(), RuleEngineError> {
+    fn execute_node_demand_driven(
+        &mut self,
+        node: &GraphNode,
+        graph: &ExecutionGraph,
+    ) -> Result<(), RuleEngineError> {
         // Check if all required inputs are available
         if !self.are_inputs_available(node) {
             // If inputs are not available, defer execution
@@ -499,14 +381,15 @@ impl RuleEngine {
     /// Checks if all required inputs for a node are available
     fn are_inputs_available(&self, node: &GraphNode) -> bool {
         for &input_reg in &node.input_regs {
-            if input_reg != 0 {  // Non-zero means there's an input register
+            if input_reg != 0 {
+                // Non-zero means there's an input register
                 let reg_idx = input_reg as usize;
                 if reg_idx < self.context.registers.len() {
                     if self.context.registers[reg_idx].is_none() {
-                        return false;  // Required input is not available
+                        return false; // Required input is not available
                     }
                 } else {
-                    return false;  // Invalid register index
+                    return false; // Invalid register index
                 }
             }
         }
@@ -514,7 +397,11 @@ impl RuleEngine {
     }
 
     /// Propagates outputs from a node to dependent nodes
-    fn propagate_outputs(&mut self, node: &GraphNode, graph: &ExecutionGraph) -> Result<(), RuleEngineError> {
+    fn propagate_outputs(
+        &mut self,
+        node: &GraphNode,
+        graph: &ExecutionGraph,
+    ) -> Result<(), RuleEngineError> {
         // Find all nodes that depend on this node's outputs
         for edge in &graph.edges {
             if edge.from_node == node.id {
@@ -551,7 +438,11 @@ impl RuleEngine {
     }
 
     /// Implements lazy evaluation for a node
-    pub fn evaluate_lazy(&mut self, node_id: u32, graph: &ExecutionGraph) -> Result<Value, RuleEngineError> {
+    pub fn evaluate_lazy(
+        &mut self,
+        node_id: u32,
+        graph: &ExecutionGraph,
+    ) -> Result<Value, RuleEngineError> {
         // Check if the result is already computed and cached
         let cache_key = format!("lazy_result_{}", node_id);
         if let Some(cached_result) = self.context.variables.get(&cache_key) {
@@ -559,7 +450,9 @@ impl RuleEngine {
         }
 
         // Execute the node to get the result
-        let specialized_node = graph.nodes.iter()
+        let specialized_node = graph
+            .nodes
+            .iter()
             .find(|n| n.get_base().id == node_id)
             .ok_or(RuleEngineError::InvalidNodeType)?;
 
@@ -591,7 +484,11 @@ impl RuleEngine {
     }
 
     /// Implements lazy evaluation for a graph with dependencies
-    pub fn evaluate_lazy_with_dependencies(&mut self, node_id: u32, graph: &ExecutionGraph) -> Result<Value, RuleEngineError> {
+    pub fn evaluate_lazy_with_dependencies(
+        &mut self,
+        node_id: u32,
+        graph: &ExecutionGraph,
+    ) -> Result<Value, RuleEngineError> {
         // First, evaluate all dependencies lazily
         for edge in &graph.edges {
             if edge.to_node == node_id && edge.edge_type == EdgeType::Data {
@@ -626,7 +523,11 @@ impl RuleEngine {
     }
 
     /// Passes context to a sub-flow or rule
-    pub fn pass_context_to_subflow(&mut self, subflow_node_id: u32, graph: &ExecutionGraph) -> Result<(), RuleEngineError> {
+    pub fn pass_context_to_subflow(
+        &mut self,
+        subflow_node_id: u32,
+        graph: &ExecutionGraph,
+    ) -> Result<(), RuleEngineError> {
         // Create a new context based on the current one
         let mut sub_context = self.clone_context();
         sub_context.current_node_id = Some(subflow_node_id);
@@ -643,18 +544,28 @@ impl RuleEngine {
         result
     }
 
-    fn execute_node_from_specialized(&mut self, node: &SpecializedNode, graph: &ExecutionGraph) -> Result<(), RuleEngineError> {
+    fn execute_node_from_specialized(
+        &mut self,
+        node: &SpecializedNode,
+        graph: &ExecutionGraph,
+    ) -> Result<(), RuleEngineError> {
         let base_node = node.get_base();
         match base_node.node_type {
             kern_graph_builder::GraphNodeType::Op => self.execute_op_node(base_node),
             kern_graph_builder::GraphNodeType::Rule => self.execute_rule_node(base_node, graph),
-            kern_graph_builder::GraphNodeType::Control => self.execute_control_node(base_node, graph),
+            kern_graph_builder::GraphNodeType::Control => {
+                self.execute_control_node(base_node, graph)
+            }
             kern_graph_builder::GraphNodeType::Graph => self.execute_graph_node(base_node),
             kern_graph_builder::GraphNodeType::Io => self.execute_io_node(base_node),
         }
     }
 
-    fn execute_node(&mut self, node: &GraphNode, graph: &ExecutionGraph) -> Result<(), RuleEngineError> {
+    fn execute_node(
+        &mut self,
+        node: &GraphNode,
+        graph: &ExecutionGraph,
+    ) -> Result<(), RuleEngineError> {
         match node.node_type {
             kern_graph_builder::GraphNodeType::Op => self.execute_op_node(node),
             kern_graph_builder::GraphNodeType::Rule => self.execute_rule_node(node, graph),
@@ -666,10 +577,10 @@ impl RuleEngine {
 
     fn execute_op_node(&mut self, node: &GraphNode) -> Result<(), RuleEngineError> {
         match node.opcode {
-            0x10 => self.execute_load_sym(node),      // LOAD_SYM
-            0x11 => self.execute_load_num(node),      // LOAD_NUM
-            0x12 => self.execute_move(node),          // MOVE
-            0x13 => self.execute_compare(node),       // COMPARE
+            0x10 => self.execute_load_sym(node), // LOAD_SYM
+            0x11 => self.execute_load_num(node), // LOAD_NUM
+            0x12 => self.execute_move(node),     // MOVE
+            0x13 => self.execute_compare(node),  // COMPARE
             _ => {
                 // For other opcodes, we'll implement as needed
                 println!("Executing operation node with opcode: {}", node.opcode);
@@ -723,14 +634,17 @@ impl RuleEngine {
             return Err(RuleEngineError::MissingRegisterValue(reg_a as u16));
         }
 
-        if let (Some(val_a), Some(val_b)) = (&self.context.registers[reg_a], &self.context.registers[reg_b]) {
+        if let (Some(val_a), Some(val_b)) = (
+            &self.context.registers[reg_a],
+            &self.context.registers[reg_b],
+        ) {
             let result = match node.flags as u8 {
-                0 => Value::Bool(self.compare_values(val_a, val_b, &Comparator::Equal)?),      // ==
-                1 => Value::Bool(self.compare_values(val_a, val_b, &Comparator::NotEqual)?),   // !=
-                2 => Value::Bool(self.compare_values(val_a, val_b, &Comparator::Greater)?),    // >
-                3 => Value::Bool(self.compare_values(val_a, val_b, &Comparator::Less)?),       // <
+                0 => Value::Bool(self.compare_values(val_a, val_b, &Comparator::Equal)?), // ==
+                1 => Value::Bool(self.compare_values(val_a, val_b, &Comparator::NotEqual)?), // !=
+                2 => Value::Bool(self.compare_values(val_a, val_b, &Comparator::Greater)?), // >
+                3 => Value::Bool(self.compare_values(val_a, val_b, &Comparator::Less)?),  // <
                 4 => Value::Bool(self.compare_values(val_a, val_b, &Comparator::GreaterEqual)?), // >=
-                5 => Value::Bool(self.compare_values(val_a, val_b, &Comparator::LessEqual)?),  // <=
+                5 => Value::Bool(self.compare_values(val_a, val_b, &Comparator::LessEqual)?), // <=
                 _ => Value::Bool(false), // Default to false for unknown comparators
             };
 
@@ -746,7 +660,12 @@ impl RuleEngine {
         Ok(())
     }
 
-    fn compare_values(&self, val_a: &Value, val_b: &Value, op: &Comparator) -> Result<bool, RuleEngineError> {
+    fn compare_values(
+        &self,
+        val_a: &Value,
+        val_b: &Value,
+        op: &Comparator,
+    ) -> Result<bool, RuleEngineError> {
         match (val_a, val_b, op) {
             (Value::Num(a), Value::Num(b), Comparator::Equal) => Ok(a == b),
             (Value::Num(a), Value::Num(b), Comparator::NotEqual) => Ok(a != b),
@@ -758,11 +677,19 @@ impl RuleEngine {
             (Value::Sym(a), Value::Sym(b), Comparator::NotEqual) => Ok(a != b),
             (Value::Bool(a), Value::Bool(b), Comparator::Equal) => Ok(a == b),
             (Value::Bool(a), Value::Bool(b), Comparator::NotEqual) => Ok(a != b),
-            _ => Err(RuleEngineError::InvalidComparison(op.clone(), val_a.clone(), val_b.clone())),
+            _ => Err(RuleEngineError::InvalidComparison(
+                op.clone(),
+                val_a.clone(),
+                val_b.clone(),
+            )),
         }
     }
 
-    fn execute_rule_node(&mut self, node: &GraphNode, graph: &ExecutionGraph) -> Result<(), RuleEngineError> {
+    fn execute_rule_node(
+        &mut self,
+        node: &GraphNode,
+        graph: &ExecutionGraph,
+    ) -> Result<(), RuleEngineError> {
         println!("Executing rule node: {}", node.id);
 
         // Start tracking execution of this rule (with recursion prevention)
@@ -789,13 +716,21 @@ impl RuleEngine {
     }
 
     /// Evaluates the condition part of a rule
-    fn evaluate_rule_condition(&mut self, rule_node: &GraphNode, graph: &ExecutionGraph) -> Result<bool, RuleEngineError> {
+    fn evaluate_rule_condition(
+        &mut self,
+        rule_node: &GraphNode,
+        graph: &ExecutionGraph,
+    ) -> Result<bool, RuleEngineError> {
         // Find all nodes connected to this rule node that represent conditions
         let mut condition_nodes = Vec::new();
 
         for edge in &graph.edges {
-            if edge.from_node == rule_node.id && edge.edge_type == kern_graph_builder::EdgeType::Data {
-                if let Some(specialized_node) = graph.nodes.iter().find(|n| n.get_base().id == edge.to_node) {
+            if edge.from_node == rule_node.id
+                && edge.edge_type == kern_graph_builder::EdgeType::Data
+            {
+                if let Some(specialized_node) =
+                    graph.nodes.iter().find(|n| n.get_base().id == edge.to_node)
+                {
                     condition_nodes.push(specialized_node.clone());
                 }
             }
@@ -805,7 +740,10 @@ impl RuleEngine {
         // In a real implementation, we'd properly evaluate the logical expressions
         for condition_specialized_node in condition_nodes {
             let condition_node = condition_specialized_node.get_base();
-            if condition_node.node_type == kern_graph_builder::GraphNodeType::Op && condition_node.opcode == 0x13 { // COMPARE
+            if condition_node.node_type == kern_graph_builder::GraphNodeType::Op
+                && condition_node.opcode == 0x13
+            {
+                // COMPARE
                 // Execute the comparison operation
                 self.execute_compare(condition_node)?;
 
@@ -825,15 +763,26 @@ impl RuleEngine {
     }
 
     /// Executes the action part of a rule
-    fn execute_rule_actions(&mut self, rule_node: &GraphNode, graph: &ExecutionGraph) -> Result<(), RuleEngineError> {
+    fn execute_rule_actions(
+        &mut self,
+        rule_node: &GraphNode,
+        graph: &ExecutionGraph,
+    ) -> Result<(), RuleEngineError> {
         // Find all nodes connected to this rule node that represent actions
         let mut action_nodes = Vec::new();
 
         for edge in &graph.edges {
-            if edge.from_node == rule_node.id && edge.edge_type == kern_graph_builder::EdgeType::Data {
-                if let Some(specialized_node) = graph.nodes.iter().find(|n| n.get_base().id == edge.to_node) {
+            if edge.from_node == rule_node.id
+                && edge.edge_type == kern_graph_builder::EdgeType::Data
+            {
+                if let Some(specialized_node) =
+                    graph.nodes.iter().find(|n| n.get_base().id == edge.to_node)
+                {
                     let node = specialized_node.get_base();
-                    if node.node_type != kern_graph_builder::GraphNodeType::Op || node.opcode != 0x13 { // Not a comparison
+                    if node.node_type != kern_graph_builder::GraphNodeType::Op
+                        || node.opcode != 0x13
+                    {
+                        // Not a comparison
                         action_nodes.push(specialized_node.clone());
                     }
                 }
@@ -848,12 +797,18 @@ impl RuleEngine {
         Ok(())
     }
 
-    fn execute_control_node(&mut self, node: &GraphNode, graph: &ExecutionGraph) -> Result<(), RuleEngineError> {
+    fn execute_control_node(
+        &mut self,
+        node: &GraphNode,
+        graph: &ExecutionGraph,
+    ) -> Result<(), RuleEngineError> {
         match node.opcode {
-            0x00 => { // NOP - No operation
+            0x00 => {
+                // NOP - No operation
                 println!("Executing NOP: {}", node.id);
-            },
-            0x01 => { // JMP - Jump
+            }
+            0x01 => {
+                // JMP - Jump
                 println!("Executing JMP: {}", node.id);
                 // Get the target from metadata or input register
                 if !node.input_regs.is_empty() {
@@ -867,18 +822,22 @@ impl RuleEngine {
                         }
                     }
                 }
-            },
-            0x02 => { // JMP_IF - Conditional jump
+            }
+            0x02 => {
+                // JMP_IF - Conditional jump
                 println!("Executing JMP_IF: {}", node.id);
                 // Check the condition register
                 if node.input_regs.len() >= 2 {
                     let condition_reg = node.input_regs[0] as usize;
                     let target_reg = node.input_regs[1] as usize;
 
-                    if condition_reg < self.context.registers.len() &&
-                       target_reg < self.context.registers.len() {
-                        if let (Some(Value::Bool(condition)), Some(Value::Num(target_id))) =
-                            (&self.context.registers[condition_reg], &self.context.registers[target_reg]) {
+                    if condition_reg < self.context.registers.len()
+                        && target_reg < self.context.registers.len()
+                    {
+                        if let (Some(Value::Bool(condition)), Some(Value::Num(target_id))) = (
+                            &self.context.registers[condition_reg],
+                            &self.context.registers[target_reg],
+                        ) {
                             if *condition {
                                 // Add the target node to the priority queue if condition is true
                                 if !self.priority_queue.contains(&(*target_id as u32)) {
@@ -888,13 +847,14 @@ impl RuleEngine {
                         }
                     }
                 }
-            },
-            0x03 => { // HALT - Stop execution
+            }
+            0x03 => {
+                // HALT - Stop execution
                 println!("Executing HALT: {}", node.id);
                 // In a real implementation, this would stop the execution
                 // For now, we'll just clear the priority queue to stop execution
                 self.priority_queue.clear();
-            },
+            }
             _ => {
                 println!("Executing control node with opcode: {}", node.opcode);
                 // Handle other control operations based on the graph structure
@@ -909,10 +869,15 @@ impl RuleEngine {
     }
 
     /// Adds connected control nodes based on execution flow
-    fn add_connected_control_nodes(&mut self, node: &GraphNode, graph: &ExecutionGraph) -> Result<(), RuleEngineError> {
+    fn add_connected_control_nodes(
+        &mut self,
+        node: &GraphNode,
+        graph: &ExecutionGraph,
+    ) -> Result<(), RuleEngineError> {
         // For control nodes, we need to handle special cases like if/then/else and loops
         match node.opcode {
-            0x02 => { // JMP_IF - Handle conditional flow
+            0x02 => {
+                // JMP_IF - Handle conditional flow
                 // Find the conditional edges from this node
                 for edge in &graph.edges {
                     if edge.from_node == node.id {
@@ -920,7 +885,9 @@ impl RuleEngine {
                         // based on the condition value in the register
                         let condition_reg = node.input_regs[0] as usize;
                         if condition_reg < self.context.registers.len() {
-                            if let Some(Value::Bool(condition)) = &self.context.registers[condition_reg] {
+                            if let Some(Value::Bool(condition)) =
+                                &self.context.registers[condition_reg]
+                            {
                                 // Add the appropriate branch based on condition
                                 // In a real implementation, we'd check the edge's condition_flag
                                 if !self.priority_queue.contains(&edge.to_node) {
@@ -930,7 +897,7 @@ impl RuleEngine {
                         }
                     }
                 }
-            },
+            }
             _ => {
                 // For other control nodes, add all connected nodes
                 for edge in &graph.edges {
@@ -946,7 +913,11 @@ impl RuleEngine {
     }
 
     /// Executes a loop control node
-    fn execute_loop_node(&mut self, node: &GraphNode, graph: &ExecutionGraph) -> Result<(), RuleEngineError> {
+    fn execute_loop_node(
+        &mut self,
+        node: &GraphNode,
+        graph: &ExecutionGraph,
+    ) -> Result<(), RuleEngineError> {
         // Get the iteration counter register
         let counter_reg = node.input_regs[0] as usize;
         let limit_reg = node.input_regs[1] as usize;
@@ -959,10 +930,11 @@ impl RuleEngine {
         }
 
         // Check the counter against the limit
-        if counter_reg < self.context.registers.len() &&
-           limit_reg < self.context.registers.len() {
-            if let (Some(Value::Num(counter)), Some(Value::Num(limit))) =
-                (&self.context.registers[counter_reg], &self.context.registers[limit_reg]) {
+        if counter_reg < self.context.registers.len() && limit_reg < self.context.registers.len() {
+            if let (Some(Value::Num(counter)), Some(Value::Num(limit))) = (
+                &self.context.registers[counter_reg],
+                &self.context.registers[limit_reg],
+            ) {
                 if *counter < *limit {
                     // Continue the loop - add the loop body to the queue
                     for edge in &graph.edges {
@@ -1004,16 +976,20 @@ impl RuleEngine {
         Ok(())
     }
 
-    fn process_node_dependencies(&mut self, node: &GraphNode, graph: &ExecutionGraph) -> Result<(), RuleEngineError> {
+    fn process_node_dependencies(
+        &mut self,
+        node: &GraphNode,
+        graph: &ExecutionGraph,
+    ) -> Result<(), RuleEngineError> {
         // Process dependencies for the current node
         // This would involve evaluating inputs and preparing for execution
         for i in 0..node.input_regs.len() {
-            if node.input_regs[i] != 0 {  // Non-zero means there's an input register
-                // In a real implementation, we'd validate that the input register has a value
-                // and that all dependencies are satisfied
+            if node.input_regs[i] != 0 { // Non-zero means there's an input register
+                 // In a real implementation, we'd validate that the input register has a value
+                 // and that all dependencies are satisfied
             }
         }
-        
+
         Ok(())
     }
 
@@ -1040,7 +1016,11 @@ impl RuleEngine {
     }
 
     /// Matches a pattern against the current context
-    pub fn match_pattern(&self, pattern: &Pattern, value: &Value) -> Option<HashMap<String, Value>> {
+    pub fn match_pattern(
+        &self,
+        pattern: &Pattern,
+        value: &Value,
+    ) -> Option<HashMap<String, Value>> {
         let mut bindings = HashMap::new();
         if self.match_pattern_with_bindings(pattern, value, &mut bindings) {
             Some(bindings)
@@ -1050,12 +1030,17 @@ impl RuleEngine {
     }
 
     /// Internal function to match a pattern with variable bindings
-    fn match_pattern_with_bindings(&self, pattern: &Pattern, value: &Value, bindings: &mut HashMap<String, Value>) -> bool {
+    fn match_pattern_with_bindings(
+        &self,
+        pattern: &Pattern,
+        value: &Value,
+        bindings: &mut HashMap<String, Value>,
+    ) -> bool {
         match pattern {
             Pattern::Value(expected) => {
                 // Direct value comparison
                 expected == value
-            },
+            }
             Pattern::Variable(var_name) => {
                 // Check if this variable is already bound
                 if let Some(bound_value) = bindings.get(var_name) {
@@ -1066,7 +1051,7 @@ impl RuleEngine {
                     bindings.insert(var_name.clone(), value.clone());
                     true
                 }
-            },
+            }
             Pattern::Composite(pattern_name, pattern_parts) => {
                 // Match structured data patterns
                 match (pattern_name.as_str(), value) {
@@ -1078,7 +1063,7 @@ impl RuleEngine {
                             }
                         }
                         false
-                    },
+                    }
                     ("entity", Value::Sym(entity_value)) => {
                         // Match entity pattern against symbol value
                         if let Some(expected_entity) = pattern_parts.get(0) {
@@ -1087,12 +1072,18 @@ impl RuleEngine {
                             }
                         }
                         false
-                    },
+                    }
                     ("entity.fields", Value::Vec(field_values)) => {
                         // Match entity fields pattern against vector of values
                         if pattern_parts.len() == field_values.len() {
-                            for (pattern_part, field_value) in pattern_parts.iter().zip(field_values.iter()) {
-                                if !self.match_pattern_with_bindings(pattern_part, field_value, bindings) {
+                            for (pattern_part, field_value) in
+                                pattern_parts.iter().zip(field_values.iter())
+                            {
+                                if !self.match_pattern_with_bindings(
+                                    pattern_part,
+                                    field_value,
+                                    bindings,
+                                ) {
                                     return false;
                                 }
                             }
@@ -1100,7 +1091,7 @@ impl RuleEngine {
                         } else {
                             false
                         }
-                    },
+                    }
                     _ => false,
                 }
             }
@@ -1108,11 +1099,12 @@ impl RuleEngine {
     }
 
     /// Enhanced rule matching algorithm that matches against facts in the context
-    pub fn match_rule_condition(&self, condition: &kern_parser::Condition) -> Result<bool, RuleEngineError> {
+    pub fn match_rule_condition(
+        &self,
+        condition: &kern_parser::Condition,
+    ) -> Result<bool, RuleEngineError> {
         match condition {
-            kern_parser::Condition::Expression(expr) => {
-                self.evaluate_expression(expr)
-            },
+            kern_parser::Condition::Expression(expr) => self.evaluate_expression(expr),
             kern_parser::Condition::LogicalOp(left, op, right) => {
                 let left_result = self.match_rule_condition(left)?;
                 let right_result = self.match_rule_condition(right)?;
@@ -1126,7 +1118,10 @@ impl RuleEngine {
     }
 
     /// Evaluates an expression to determine if it matches the current context
-    fn evaluate_expression(&self, expression: &kern_parser::Expression) -> Result<bool, RuleEngineError> {
+    fn evaluate_expression(
+        &self,
+        expression: &kern_parser::Expression,
+    ) -> Result<bool, RuleEngineError> {
         match expression {
             kern_parser::Expression::Comparison { left, op, right } => {
                 let left_value = self.get_term_value(left)?;
@@ -1135,32 +1130,40 @@ impl RuleEngine {
                 match op {
                     kern_parser::Comparator::Equal => Ok(left_value == right_value),
                     kern_parser::Comparator::NotEqual => Ok(left_value != right_value),
-                    kern_parser::Comparator::Greater => {
-                        match (&left_value, &right_value) {
-                            (Value::Num(a), Value::Num(b)) => Ok(a > b),
-                            _ => Err(RuleEngineError::InvalidComparison(op.clone(), left_value, right_value)),
-                        }
+                    kern_parser::Comparator::Greater => match (&left_value, &right_value) {
+                        (Value::Num(a), Value::Num(b)) => Ok(a > b),
+                        _ => Err(RuleEngineError::InvalidComparison(
+                            op.clone(),
+                            left_value,
+                            right_value,
+                        )),
                     },
-                    kern_parser::Comparator::Less => {
-                        match (&left_value, &right_value) {
-                            (Value::Num(a), Value::Num(b)) => Ok(a < b),
-                            _ => Err(RuleEngineError::InvalidComparison(op.clone(), left_value, right_value)),
-                        }
+                    kern_parser::Comparator::Less => match (&left_value, &right_value) {
+                        (Value::Num(a), Value::Num(b)) => Ok(a < b),
+                        _ => Err(RuleEngineError::InvalidComparison(
+                            op.clone(),
+                            left_value,
+                            right_value,
+                        )),
                     },
-                    kern_parser::Comparator::GreaterEqual => {
-                        match (&left_value, &right_value) {
-                            (Value::Num(a), Value::Num(b)) => Ok(a >= b),
-                            _ => Err(RuleEngineError::InvalidComparison(op.clone(), left_value, right_value)),
-                        }
+                    kern_parser::Comparator::GreaterEqual => match (&left_value, &right_value) {
+                        (Value::Num(a), Value::Num(b)) => Ok(a >= b),
+                        _ => Err(RuleEngineError::InvalidComparison(
+                            op.clone(),
+                            left_value,
+                            right_value,
+                        )),
                     },
-                    kern_parser::Comparator::LessEqual => {
-                        match (&left_value, &right_value) {
-                            (Value::Num(a), Value::Num(b)) => Ok(a <= b),
-                            _ => Err(RuleEngineError::InvalidComparison(op.clone(), left_value, right_value)),
-                        }
+                    kern_parser::Comparator::LessEqual => match (&left_value, &right_value) {
+                        (Value::Num(a), Value::Num(b)) => Ok(a <= b),
+                        _ => Err(RuleEngineError::InvalidComparison(
+                            op.clone(),
+                            left_value,
+                            right_value,
+                        )),
                     },
                 }
-            },
+            }
             kern_parser::Expression::Predicate(predicate) => {
                 // For now, we'll return true for any predicate
                 // In a real implementation, this would call external functions
@@ -1181,9 +1184,12 @@ impl RuleEngine {
                     Ok(value.clone())
                 } else {
                     // If not found, return a default value or error
-                    Err(RuleEngineError::InvalidPredicate(format!("Undefined identifier: {}", name)))
+                    Err(RuleEngineError::InvalidPredicate(format!(
+                        "Undefined identifier: {}",
+                        name
+                    )))
                 }
-            },
+            }
             kern_parser::Term::Number(n) => Ok(Value::Num(*n)),
             kern_parser::Term::QualifiedRef(entity, field) => {
                 // Look up qualified reference (entity.field)
@@ -1194,14 +1200,21 @@ impl RuleEngine {
                     Ok(value.clone())
                 } else {
                     // If not found, return a default value or error
-                    Err(RuleEngineError::InvalidPredicate(format!("Undefined qualified reference: {}", var_name)))
+                    Err(RuleEngineError::InvalidPredicate(format!(
+                        "Undefined qualified reference: {}",
+                        var_name
+                    )))
                 }
             }
         }
     }
 
     /// Matches a pattern against the graph nodes
-    pub fn match_graph_pattern(&mut self, pattern: &Pattern, graph: &ExecutionGraph) -> Vec<PatternMatch> {
+    pub fn match_graph_pattern(
+        &mut self,
+        pattern: &Pattern,
+        graph: &ExecutionGraph,
+    ) -> Vec<PatternMatch> {
         let mut matches = Vec::new();
 
         // Iterate through all nodes in the graph to find matches
@@ -1222,7 +1235,11 @@ impl RuleEngine {
     }
 
     /// Enhanced pattern matching engine that supports complex pattern matching
-    pub fn match_complex_pattern(&self, pattern: &Pattern, value: &Value) -> Option<HashMap<String, Value>> {
+    pub fn match_complex_pattern(
+        &self,
+        pattern: &Pattern,
+        value: &Value,
+    ) -> Option<HashMap<String, Value>> {
         let mut bindings = HashMap::new();
         if self.match_complex_pattern_with_bindings(pattern, value, &mut bindings) {
             Some(bindings)
@@ -1232,12 +1249,17 @@ impl RuleEngine {
     }
 
     /// Internal function to match complex patterns with variable bindings
-    fn match_complex_pattern_with_bindings(&self, pattern: &Pattern, value: &Value, bindings: &mut HashMap<String, Value>) -> bool {
+    fn match_complex_pattern_with_bindings(
+        &self,
+        pattern: &Pattern,
+        value: &Value,
+        bindings: &mut HashMap<String, Value>,
+    ) -> bool {
         match pattern {
             Pattern::Value(expected) => {
                 // Direct value comparison
                 expected == value
-            },
+            }
             Pattern::Variable(var_name) => {
                 // Check if this variable is already bound
                 if let Some(bound_value) = bindings.get(var_name) {
@@ -1248,7 +1270,7 @@ impl RuleEngine {
                     bindings.insert(var_name.clone(), value.clone());
                     true
                 }
-            },
+            }
             Pattern::Composite(pattern_name, pattern_parts) => {
                 match (pattern_name.as_str(), value) {
                     // Match entity.field pattern
@@ -1259,7 +1281,7 @@ impl RuleEngine {
                             }
                         }
                         false
-                    },
+                    }
                     // Match entity pattern
                     ("entity", Value::Sym(entity_value)) => {
                         if let Some(expected_entity) = pattern_parts.get(0) {
@@ -1268,12 +1290,18 @@ impl RuleEngine {
                             }
                         }
                         false
-                    },
+                    }
                     // Match entity fields pattern
                     ("entity.fields", Value::Vec(field_values)) => {
                         if pattern_parts.len() == field_values.len() {
-                            for (pattern_part, field_value) in pattern_parts.iter().zip(field_values.iter()) {
-                                if !self.match_complex_pattern_with_bindings(pattern_part, field_value, bindings) {
+                            for (pattern_part, field_value) in
+                                pattern_parts.iter().zip(field_values.iter())
+                            {
+                                if !self.match_complex_pattern_with_bindings(
+                                    pattern_part,
+                                    field_value,
+                                    bindings,
+                                ) {
                                     return false;
                                 }
                             }
@@ -1281,12 +1309,18 @@ impl RuleEngine {
                         } else {
                             false
                         }
-                    },
+                    }
                     // Match vector pattern
                     ("vec", Value::Vec(vec_values)) => {
                         if pattern_parts.len() == vec_values.len() {
-                            for (pattern_part, vec_value) in pattern_parts.iter().zip(vec_values.iter()) {
-                                if !self.match_complex_pattern_with_bindings(pattern_part, vec_value, bindings) {
+                            for (pattern_part, vec_value) in
+                                pattern_parts.iter().zip(vec_values.iter())
+                            {
+                                if !self.match_complex_pattern_with_bindings(
+                                    pattern_part,
+                                    vec_value,
+                                    bindings,
+                                ) {
                                     return false;
                                 }
                             }
@@ -1294,15 +1328,15 @@ impl RuleEngine {
                         } else {
                             false
                         }
-                    },
+                    }
                     // Match any pattern (wildcard)
                     ("any", _) => true,
                     // Match type pattern
-                    ("type.sym", Value::Sym(_)) |
-                    ("type.num", Value::Num(_)) |
-                    ("type.bool", Value::Bool(_)) |
-                    ("type.vec", Value::Vec(_)) |
-                    ("type.ref", Value::Ref(_)) => {
+                    ("type.sym", Value::Sym(_))
+                    | ("type.num", Value::Num(_))
+                    | ("type.bool", Value::Bool(_))
+                    | ("type.vec", Value::Vec(_))
+                    | ("type.ref", Value::Ref(_)) => {
                         let expected_type = pattern_name.strip_prefix("type.").unwrap_or("");
                         match expected_type {
                             "sym" => matches!(value, Value::Sym(_)),
@@ -1312,7 +1346,7 @@ impl RuleEngine {
                             "ref" => matches!(value, Value::Ref(_)),
                             _ => false,
                         }
-                    },
+                    }
                     _ => false,
                 }
             }
@@ -1320,7 +1354,11 @@ impl RuleEngine {
     }
 
     /// Matches multiple patterns against a set of values (for rule conditions)
-    pub fn match_multiple_patterns(&self, patterns: &[Pattern], values: &[Value]) -> Option<Vec<HashMap<String, Value>>> {
+    pub fn match_multiple_patterns(
+        &self,
+        patterns: &[Pattern],
+        values: &[Value],
+    ) -> Option<Vec<HashMap<String, Value>>> {
         if patterns.len() != values.len() {
             return None;
         }
@@ -1358,9 +1396,11 @@ impl RuleEngine {
                 }
                 // If no output register has a value, return a default
                 Value::Sym(format!("op_{}_{}", node.opcode, node.id))
-            },
+            }
             kern_graph_builder::GraphNodeType::Rule => Value::Sym(format!("rule_{}", node.id)),
-            kern_graph_builder::GraphNodeType::Control => Value::Sym(format!("control_{}", node.id)),
+            kern_graph_builder::GraphNodeType::Control => {
+                Value::Sym(format!("control_{}", node.id))
+            }
             kern_graph_builder::GraphNodeType::Graph => Value::Sym(format!("graph_{}", node.id)),
             kern_graph_builder::GraphNodeType::Io => Value::Sym(format!("io_{}", node.id)),
         }
@@ -1371,7 +1411,9 @@ impl RuleEngine {
         let mut conflicts = Vec::new();
 
         // Get all rule nodes in the graph
-        let rule_nodes: Vec<&SpecializedNode> = graph.nodes.iter()
+        let rule_nodes: Vec<&SpecializedNode> = graph
+            .nodes
+            .iter()
             .filter(|node| node.get_base().node_type == kern_graph_builder::GraphNodeType::Rule)
             .collect();
 
@@ -1391,7 +1433,12 @@ impl RuleEngine {
     }
 
     /// Checks if two rules conflict with each other
-    fn check_rule_conflict(&self, rule1: &SpecializedNode, rule2: &SpecializedNode, graph: &ExecutionGraph) -> Option<RuleConflict> {
+    fn check_rule_conflict(
+        &self,
+        rule1: &SpecializedNode,
+        rule2: &SpecializedNode,
+        graph: &ExecutionGraph,
+    ) -> Option<RuleConflict> {
         // For now, we'll implement a basic check
         // In a real implementation, this would be more sophisticated
 
@@ -1407,7 +1454,11 @@ impl RuleEngine {
                         rule1_id: rule1.get_base().id,
                         rule2_id: rule2.get_base().id,
                         conflict_type: ConflictType::ActionConflict,
-                        description: format!("Rules {} and {} have conflicting actions", rule1.get_base().id, rule2.get_base().id),
+                        description: format!(
+                            "Rules {} and {} have conflicting actions",
+                            rule1.get_base().id,
+                            rule2.get_base().id
+                        ),
                     });
                 }
             }
@@ -1417,16 +1468,27 @@ impl RuleEngine {
     }
 
     /// Gets the actions associated with a rule node
-    fn get_rule_actions(&self, rule_node: &GraphNode, graph: &ExecutionGraph) -> Vec<SpecializedNode> {
+    fn get_rule_actions(
+        &self,
+        rule_node: &GraphNode,
+        graph: &ExecutionGraph,
+    ) -> Vec<SpecializedNode> {
         let mut actions = Vec::new();
 
         // Find all nodes connected to this rule node that represent actions
         for edge in &graph.edges {
-            if edge.from_node == rule_node.id && edge.edge_type == kern_graph_builder::EdgeType::Data {
-                if let Some(specialized_node) = graph.nodes.iter().find(|n| n.get_base().id == edge.to_node) {
+            if edge.from_node == rule_node.id
+                && edge.edge_type == kern_graph_builder::EdgeType::Data
+            {
+                if let Some(specialized_node) =
+                    graph.nodes.iter().find(|n| n.get_base().id == edge.to_node)
+                {
                     let node = specialized_node.get_base();
                     // Exclude comparison nodes which are part of conditions
-                    if !(node.node_type == kern_graph_builder::GraphNodeType::Op && node.opcode == 0x13) { // COMPARE
+                    if !(node.node_type == kern_graph_builder::GraphNodeType::Op
+                        && node.opcode == 0x13)
+                    {
+                        // COMPARE
                         actions.push(specialized_node.clone());
                     }
                 }
@@ -1445,7 +1507,7 @@ impl RuleEngine {
         // the actual operations and their effects on shared state
         let base1 = action1.get_base();
         let base2 = action2.get_base();
-        base1.opcode == 0x12 && base2.opcode == 0x12  // Both are MOVE operations
+        base1.opcode == 0x12 && base2.opcode == 0x12 // Both are MOVE operations
     }
 
     /// Resolves conflicts between rules using the current priority strategy
@@ -1470,7 +1532,11 @@ impl RuleEngine {
     /// Checks if executing a rule would cause recursion beyond the allowed depth
     fn would_exceed_recursion_limit(&self, rule_id: u32) -> bool {
         // Check if this rule is already in the current execution path
-        let current_rule_count = self.execution_path.iter().filter(|&&id| id == rule_id).count() as u32;
+        let current_rule_count = self
+            .execution_path
+            .iter()
+            .filter(|&&id| id == rule_id)
+            .count() as u32;
 
         // If we've already executed this rule more than the allowed depth, it would exceed the limit
         current_rule_count >= self.max_recursion_depth
@@ -1515,17 +1581,31 @@ impl RuleEngine {
     }
 
     /// Executes a rule based on RuleExecutionInfo
-    pub fn execute_rule_from_info(&mut self, rule_info: &RuleExecutionInfo, graph: &ExecutionGraph) -> Result<(), String> {
+    pub fn execute_rule_from_info(
+        &mut self,
+        rule_info: &RuleExecutionInfo,
+        graph: &ExecutionGraph,
+    ) -> Result<(), String> {
         // Check recursion limit
         if rule_info.execution_count >= rule_info.recursion_limit {
-            return Err(format!("Recursion limit exceeded for rule {}", rule_info.rule_id));
+            return Err(format!(
+                "Recursion limit exceeded for rule {}",
+                rule_info.rule_id
+            ));
         }
 
         // Execute the rule by processing the graph node
-        if let Some(specialized_node) = graph.nodes.iter().find(|n| n.get_base().id == rule_info.rule_id) {
+        if let Some(specialized_node) = graph
+            .nodes
+            .iter()
+            .find(|n| n.get_base().id == rule_info.rule_id)
+        {
             match self.execute_node_from_specialized(specialized_node, graph) {
                 Ok(()) => Ok(()),
-                Err(e) => Err(format!("Error executing rule {}: {:?}", rule_info.rule_id, e)),
+                Err(e) => Err(format!(
+                    "Error executing rule {}: {:?}",
+                    rule_info.rule_id, e
+                )),
             }
         } else {
             Err(format!("Rule {} not found in graph", rule_info.rule_id))
@@ -1553,53 +1633,4 @@ pub enum ConflictType {
     ResourceConflict = 3,
     /// Rules modify the same state in conflicting ways
     StateConflict = 4,
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use kern_parser::Parser;
-    use kern_graph_builder::GraphBuilder;
-
-    #[test]
-    fn test_rule_engine_execution() {
-        let input = r#"
-        entity Farmer {
-            id
-            location
-            produce
-        }
-
-        rule CheckLocation:
-            if farmer.location == "valid"
-            then approve_farmer(farmer)
-
-        flow ProcessFarmers {
-            load_farmers()
-            validate_farmers()
-        }
-
-        constraint ValidId: farmer.id > 0
-        "#;
-
-        let mut parser = Parser::new(input);
-        let result = parser.parse_program();
-        assert!(result.is_ok());
-        let program = result.unwrap();
-
-        let mut builder = GraphBuilder::new();
-        let graph = builder.build_execution_graph(&program);
-        println!("Generated execution graph with {} nodes", graph.nodes.len());
-
-        let mut engine = RuleEngine::new();
-        
-        // Set up some initial values for testing
-        engine.set_variable("farmer.location", Value::Sym("valid".to_string()));
-        engine.set_variable("farmer.id", Value::Num(123));
-        
-        let execution_result = engine.execute_graph(&graph);
-        assert!(execution_result.is_ok());
-        
-        println!("Rule engine executed successfully with {} steps", engine.step_count);
-    }
 }

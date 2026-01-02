@@ -98,7 +98,7 @@ pub struct Parser {
     lexer: Lexer,
     current_token: Token,
     errors: Vec<ParseError>,
-    recovery_enabled: bool, // Flag to enable/disable error recovery
+    pub recovery_enabled: bool, // Flag to enable/disable error recovery
 }
 
 impl Parser {

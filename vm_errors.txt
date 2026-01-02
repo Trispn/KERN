@@ -1,0 +1,1417 @@
+cargo : warning: 
+unused import: `std::
+collections::HashMap`
+At line:1 char:1
++ cargo check -p 
+kern_vm 
+--all-targets 2>&1 | 
+Out-File -Encoding 
+ascii  ...
++ ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~
+    + CategoryInfo   
+           : NotSpe  
+  cified: (warning   
+ : unused...tions    
+::HashMap`:Strin    
+g) [], RemoteExc    
+eption
+    + FullyQualified 
+   ErrorId : Native  
+  CommandError
+ 
+ --> kern-lexer\src\l
+exer.rs:1:5
+  |
+1 | use std::collecti
+ons::HashMap;
+  |     ^^^^^^^^^^^^^
+^^^^^^^^^^^^
+  |
+  = note: `#[warn(unu
+sed_imports)]` (part 
+of 
+`#[warn(unused)]`) 
+on by default
+
+warning: unused 
+variable: `start_pos`
+   --> kern-lexer\src
+\lexer.rs:222:21
+    |
+222 |                
+ let start_pos = 
+self.position;
+    |                
+     ^^^^^^^^^ help: 
+if this is 
+intentional, prefix 
+it with an 
+underscore: 
+`_start_pos`
+    |
+    = note: `#[warn(u
+nused_variables)]` 
+(part of 
+`#[warn(unused)]`) 
+on by default
+
+warning: method 
+`skip_string` is 
+never used
+  --> kern-lexer\src\
+lexer.rs:74:8
+   |
+14 | impl Lexer {
+   | ---------- 
+method in this 
+implementation
+...
+74 |     fn 
+skip_string(&mut 
+self) {
+   |        
+^^^^^^^^^^^
+   |
+   = note: 
+`#[warn(dead_code)]` 
+(part of 
+`#[warn(unused)]`) 
+on by default
+
+warning: 
+`kern_lexer` (lib) 
+generated 3 warnings 
+(run `cargo fix 
+--lib -p kern_lexer` 
+to apply 2 
+suggestions)
+warning: methods 
+`peek_token` and 
+`is_peek_token` are 
+never used
+   --> kern-parser\sr
+c\parser.rs:121:8
+    |
+104 | impl Parser {
+    | ----------- 
+methods in this 
+implementation
+...
+121 |     fn 
+peek_token(&mut 
+self) -> Token {
+    |        
+^^^^^^^^^^
+...
+152 |     fn 
+is_peek_token(&mut 
+self, token_type: 
+&TokenType) -> bool {
+    |        
+^^^^^^^^^^^^^
+    |
+    = note: 
+`#[warn(dead_code)]` 
+(part of 
+`#[warn(unused)]`) 
+on by default
+
+warning: field `predi
+cate_signatures` is 
+never read
+  --> kern-parser\src
+\type_checker.rs:69:5
+   |
+61 | pub struct 
+TypeChecker {
+   |            
+----------- field in 
+this struct
+...
+69 |     predicate_si
+gnatures: 
+HashMap<String, 
+Type>,
+   |     
+^^^^^^^^^^^^^^^^^^^^
+
+warning: field `instr
+uction_operands` is 
+never read
+  --> kern-parser\src
+\bytecode_validation.
+rs:36:5
+   |
+34 | pub struct Bytec
+odeCompatibilityValid
+ator {
+   |            -----
+---------------------
+---- field in this 
+struct
+35 |     // Map from 
+instruction names to 
+their expected 
+operand types
+36 |     instruction_
+operands: 
+HashMap<String, 
+Vec<String>>,
+   |     
+^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `BytecodeC
+ompatibilityValidator
+` has a derived impl 
+for the trait 
+`Debug`, but this is 
+intentionally 
+ignored during dead 
+code analysis
+
+warning: error 
+copying object file `
+C:\Users\LENOVO\OneDr
+ive\Desktop\KERN\targ
+et\debug\deps\libkern
+_parser-91524a0b66bd3
+696.rmeta` to 
+incremental 
+directory as `\\?\C:\
+Users\LENOVO\OneDrive
+\Desktop\KERN\target\
+debug\incremental\ker
+n_parser-0vl3b6n3u54n
+d\s-hegvll2ytq-1d110u
+e-working\metadata.rm
+eta`: The process 
+cannot access the 
+file because it is 
+being used by 
+another process. (os 
+error 32)
+
+warning: 
+`kern_parser` (lib) 
+generated 4 warnings
+warning: unused 
+variable: `node`
+   --> kern-ast\src\v
+isitor.rs:158:36
+    |
+158 |     fn visit_id
+entifier(&mut self, 
+node: 
+&IdentifierNode) {
+    |                
+                    
+^^^^ help: if this 
+is intentional, 
+prefix it with an 
+underscore: `_node`
+    |
+    = note: `#[warn(u
+nused_variables)]` 
+(part of 
+`#[warn(unused)]`) 
+on by default
+
+warning: unused 
+variable: `node`
+   --> kern-ast\src\v
+isitor.rs:313:36
+    |
+313 |     fn visit_id
+entifier(&mut self, 
+node: &mut 
+IdentifierNode) {
+    |                
+                    
+^^^^ help: if this 
+is intentional, 
+prefix it with an 
+underscore: `_node`
+
+warning: variant 
+`Int` is never 
+constructed
+  --> kern-ast\src\se
+rializer.rs:21:5
+   |
+17 | enum FieldKind {
+   |      --------- 
+variant in this enum
+...
+21 |     Int = 3,
+   |     ^^^
+   |
+   = note: 
+`FieldKind` has 
+derived impls for 
+the traits `Clone` 
+and `Debug`, but 
+these are 
+intentionally 
+ignored during dead 
+code analysis
+   = note: 
+`#[warn(dead_code)]` 
+(part of 
+`#[warn(unused)]`) 
+on by default
+
+warning: `kern-ast` 
+(lib) generated 3 
+warnings (run `cargo 
+fix --lib -p 
+kern-ast` to apply 2 
+suggestions)
+warning: unused 
+import: `AstNode`
+ --> kern-graph-build
+er\src\graph_builder.
+rs:2:25
+  |
+2 |     Action, 
+Assignment, AstNode, 
+Condition, 
+ConstraintDef, 
+ControlAction, 
+Definition, 
+EntityDef,
+  |                  
+       ^^^^^^^
+  |
+  = note: `#[warn(unu
+sed_imports)]` (part 
+of 
+`#[warn(unused)]`) 
+on by default
+
+warning: variable 
+does not need to be 
+mutable
+   --> kern-graph-bui
+lder\src\graph_builde
+r.rs:856:21
+    |
+856 |                
+ let mut path: 
+Vec<u32> = 
+Vec::new();
+    |                
+     ----^^^^
+    |                
+     |
+    |                
+     help: remove 
+this `mut`
+    |
+    = note: `#[warn(u
+nused_mut)]` (part 
+of 
+`#[warn(unused)]`) 
+on by default
+
+warning: unused 
+variable: `path`
+   --> kern-graph-bui
+lder\src\graph_builde
+r.rs:856:21
+    |
+856 |                
+ let mut path: 
+Vec<u32> = 
+Vec::new();
+    |                
+     ^^^^^^^^ help: 
+if this is 
+intentional, prefix 
+it with an 
+underscore: `_path`
+    |
+    = note: `#[warn(u
+nused_variables)]` 
+(part of 
+`#[warn(unused)]`) 
+on by default
+
+warning: variable 
+does not need to be 
+mutable
+    --> kern-graph-bu
+ilder\src\graph_build
+er.rs:1054:13
+     |
+1054 |         let 
+mut combined = false;
+     |             
+----^^^^^^^^
+     |             |
+     |             
+help: remove this 
+`mut`
+
+warning: field 
+`source_map` is 
+never read
+   --> kern-graph-bui
+lder\src\graph_builde
+r.rs:236:5
+    |
+228 | pub struct 
+GraphBuilder {
+    |            
+------------ field 
+in this struct
+...
+236 |     
+source_map: 
+HashMap<u32, 
+String>, // Maps 
+node IDs to source 
+locations for 
+debugging
+    |     ^^^^^^^^^^
+    |
+    = note: 
+`#[warn(dead_code)]` 
+(part of 
+`#[warn(unused)]`) 
+on by default
+
+warning: 
+`kern_graph_builder` 
+(lib) generated 5 
+warnings (run `cargo 
+fix --lib -p 
+kern_graph_builder` 
+to apply 4 
+suggestions)
+warning: unused 
+import: 
+`GraphNodeType`
+ --> kern-rule-engine
+\src\lib.rs:4:63
+  |
+4 | use kern_graph_bu
+ilder::{EdgeType, 
+ExecutionGraph, 
+GraphNode, 
+GraphNodeType, 
+SpecializedNode};
+  |                  
+                     
+                     
+   ^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unu
+sed_imports)]` (part 
+of 
+`#[warn(unused)]`) 
+on by default
+
+warning: unused 
+import: `LogicalOp`
+ --> kern-rule-engine
+\src\lib.rs:5:31
+  |
+5 | use kern_parser::
+{Comparator, 
+LogicalOp};
+  |                  
+             
+^^^^^^^^^
+
+warning: unused 
+imports: 
+`ConflictEntry`, 
+`ExecutionContext`, 
+`PriorityStrategy`, 
+`ResolutionMode`, 
+`RuleEngineError`, 
+`RuleExecutionInfo`, 
+`RuleMatch`, 
+`RulePriority`, and 
+`Value`
+ --> kern-rule-engine
+\src\rule_engine.rs:2
+:5
+  |
+2 |     
+ConflictEntry, 
+ExecutionContext, 
+PriorityStrategy, 
+ResolutionMode, 
+RuleEngineError,
+  |     
+^^^^^^^^^^^^^  
+^^^^^^^^^^^^^^^^  
+^^^^^^^^^^^^^^^^  
+^^^^^^^^^^^^^^  
+^^^^^^^^^^^^^^^
+3 |     
+RuleExecutionInfo, 
+RuleMatch, 
+RulePriority, Value,
+  |     
+^^^^^^^^^^^^^^^^^  
+^^^^^^^^^  
+^^^^^^^^^^^^  ^^^^^
+
+warning: unused 
+imports: 
+`ExecutionGraph`, 
+`GraphNodeType`, 
+`GraphNode`, and 
+`SpecializedNode`
+ --> kern-rule-engine
+\src\rule_engine.rs:5
+:26
+  |
+5 | use kern_graph_bu
+ilder::{ExecutionGrap
+h, GraphNode, 
+GraphNodeType, 
+SpecializedNode};
+  |                  
+        
+^^^^^^^^^^^^^^  
+^^^^^^^^^  
+^^^^^^^^^^^^^  
+^^^^^^^^^^^^^^^
+
+warning: unused 
+import: `std::collect
+ions::HashMap`
+ --> kern-rule-engine
+\src\rule_engine.rs:6
+:5
+  |
+6 | use std::collecti
+ons::HashMap;
+  |     ^^^^^^^^^^^^^
+^^^^^^^^^^^^
+
+warning: unused 
+imports: 
+`ExecutionContext` 
+and `Value`
+ --> kern-rule-engine
+\src\implementation.r
+s:6:20
+  |
+6 | use crate::types:
+:{ExecutionContext, 
+RuleExecutionInfo, 
+Value};
+  |                  
+  ^^^^^^^^^^^^^^^^   
+                  
+^^^^^
+
+warning: unused 
+imports: 
+`GraphNodeType`, 
+`GraphNode`, and 
+`SpecializedNode`
+  --> kern-rule-engin
+e\src\implementation.
+rs:10:42
+   |
+10 | use kern_graph_b
+uilder::{ExecutionGra
+ph, GraphNode, 
+GraphNodeType, 
+SpecializedNode};
+   |                 
+                     
+    ^^^^^^^^^  
+^^^^^^^^^^^^^  
+^^^^^^^^^^^^^^^
+
+warning: unused 
+import: `std::collect
+ions::HashMap`
+  --> kern-rule-engin
+e\src\implementation.
+rs:11:5
+   |
+11 | use std::collect
+ions::HashMap;
+   |     ^^^^^^^^^^^^
+^^^^^^^^^^^^^
+
+warning: unused 
+import: `LogicalOp`
+ --> kern-rule-engine
+\src\types.rs:1:31
+  |
+1 | use kern_parser::
+{Comparator, 
+LogicalOp};
+  |                  
+             
+^^^^^^^^^
+
+warning: unused 
+import: 
+`implementation::*`
+  --> kern-rule-engin
+e\src\lib.rs:19:9
+   |
+19 | pub use 
+implementation::*;
+   |         
+^^^^^^^^^^^^^^^^^
+
+warning: unused 
+import: 
+`rule_engine::*`
+  --> kern-rule-engin
+e\src\lib.rs:23:9
+   |
+23 | pub use 
+rule_engine::*;
+   |         
+^^^^^^^^^^^^^^
+
+warning: unused 
+variable: `rule1`
+  --> kern-rule-engin
+e\src\conflict_resolv
+er.rs:54:30
+   |
+54 |     fn rules_con
+flict(&self, rule1: 
+&RuleExecutionInfo, 
+rule2: 
+&RuleExecutionInfo) 
+-> bool {
+   |                 
+             ^^^^^ 
+help: if this is 
+intentional, prefix 
+it with an 
+underscore: `_rule1`
+   |
+   = note: `#[warn(un
+used_variables)]` 
+(part of 
+`#[warn(unused)]`) 
+on by default
+
+warning: unused 
+variable: `rule2`
+  --> kern-rule-engin
+e\src\conflict_resolv
+er.rs:54:57
+   |
+54 |     fn rules_con
+flict(&self, rule1: 
+&RuleExecutionInfo, 
+rule2: 
+&RuleExecutionInfo) 
+-> bool {
+   |                 
+                     
+                   
+^^^^^ help: if this 
+is intentional, 
+prefix it with an 
+underscore: `_rule2`
+
+warning: unused 
+variable: `rules`
+   --> kern-rule-engi
+ne\src\conflict_resol
+ver.rs:126:9
+    |
+126 |         rules: 
+&mut 
+[RuleExecutionInfo],
+    |         ^^^^^ 
+help: if this is 
+intentional, prefix 
+it with an 
+underscore: `_rules`
+
+warning: variable 
+does not need to be 
+mutable
+  --> kern-rule-engin
+e\src\implementation.
+rs:33:13
+   |
+33 |         let mut 
+pattern_matcher = Pat
+ternMatcher::new();
+   |             
+----^^^^^^^^^^^^^^^
+   |             |
+   |             
+help: remove this 
+`mut`
+   |
+   = note: `#[warn(un
+used_mut)]` (part of 
+`#[warn(unused)]`) 
+on by default
+
+warning: variable 
+does not need to be 
+mutable
+  --> kern-rule-engin
+e\src\implementation.
+rs:34:13
+   |
+34 |         let mut 
+scheduler = 
+RuleScheduler::new();
+   |             
+----^^^^^^^^^
+   |             |
+   |             
+help: remove this 
+`mut`
+
+warning: variable 
+does not need to be 
+mutable
+  --> kern-rule-engin
+e\src\implementation.
+rs:35:13
+   |
+35 |         let mut 
+conflict_resolver = C
+onflictResolver::new(
+);
+   |             
+----^^^^^^^^^^^^^^^^^
+   |             |
+   |             
+help: remove this 
+`mut`
+
+warning: variable 
+does not need to be 
+mutable
+  --> kern-rule-engin
+e\src\implementation.
+rs:36:13
+   |
+36 |         let mut 
+priority_manager = Pr
+iorityManager::new();
+   |             
+----^^^^^^^^^^^^^^^^
+   |             |
+   |             
+help: remove this 
+`mut`
+
+warning: variable 
+does not need to be 
+mutable
+  --> kern-rule-engin
+e\src\implementation.
+rs:37:13
+   |
+37 |         let mut 
+recursion_guard = Rec
+ursionGuard::new();
+   |             
+----^^^^^^^^^^^^^^^
+   |             |
+   |             
+help: remove this 
+`mut`
+
+warning: unused 
+variable: 
+`pattern_matcher`
+  --> kern-rule-engin
+e\src\implementation.
+rs:33:13
+   |
+33 |         let mut 
+pattern_matcher = Pat
+ternMatcher::new();
+   |             
+^^^^^^^^^^^^^^^^^^^ 
+help: if this is 
+intentional, prefix 
+it with an 
+underscore: 
+`_pattern_matcher`
+
+warning: unused 
+variable: `scheduler`
+  --> kern-rule-engin
+e\src\implementation.
+rs:34:13
+   |
+34 |         let mut 
+scheduler = 
+RuleScheduler::new();
+   |             
+^^^^^^^^^^^^^ help: 
+if this is 
+intentional, prefix 
+it with an 
+underscore: 
+`_scheduler`
+
+warning: unused 
+variable: 
+`conflict_resolver`
+  --> kern-rule-engin
+e\src\implementation.
+rs:35:13
+   |
+35 |         let mut 
+conflict_resolver = C
+onflictResolver::new(
+);
+   |             ^^^^
+^^^^^^^^^^^^^^^^^ 
+help: if this is 
+intentional, prefix 
+it with an 
+underscore: 
+`_conflict_resolver`
+
+warning: unused 
+variable: 
+`priority_manager`
+  --> kern-rule-engin
+e\src\implementation.
+rs:36:13
+   |
+36 |         let mut 
+priority_manager = Pr
+iorityManager::new();
+   |             
+^^^^^^^^^^^^^^^^^^^^ 
+help: if this is 
+intentional, prefix 
+it with an 
+underscore: 
+`_priority_manager`
+
+warning: unused 
+variable: 
+`recursion_guard`
+  --> kern-rule-engin
+e\src\implementation.
+rs:37:13
+   |
+37 |         let mut 
+recursion_guard = Rec
+ursionGuard::new();
+   |             
+^^^^^^^^^^^^^^^^^^^ 
+help: if this is 
+intentional, prefix 
+it with an 
+underscore: 
+`_recursion_guard`
+
+warning: variable 
+does not need to be 
+mutable
+  --> kern-rule-engin
+e\src\implementation.
+rs:49:13
+   |
+49 |         let mut 
+scheduler = 
+RuleScheduler::new();
+   |             
+----^^^^^^^^^
+   |             |
+   |             
+help: remove this 
+`mut`
+
+warning: variable 
+does not need to be 
+mutable
+  --> kern-rule-engin
+e\src\implementation.
+rs:50:13
+   |
+50 |         let mut 
+conflict_resolver = C
+onflictResolver::new(
+);
+   |             
+----^^^^^^^^^^^^^^^^^
+   |             |
+   |             
+help: remove this 
+`mut`
+
+warning: variable 
+does not need to be 
+mutable
+  --> kern-rule-engin
+e\src\implementation.
+rs:51:13
+   |
+51 |         let mut 
+priority_manager = Pr
+iorityManager::new();
+   |             
+----^^^^^^^^^^^^^^^^
+   |             |
+   |             
+help: remove this 
+`mut`
+
+warning: variable 
+does not need to be 
+mutable
+  --> kern-rule-engin
+e\src\implementation.
+rs:52:13
+   |
+52 |         let mut 
+recursion_guard = Rec
+ursionGuard::new();
+   |             
+----^^^^^^^^^^^^^^^
+   |             |
+   |             
+help: remove this 
+`mut`
+
+warning: unused 
+variable: `scheduler`
+  --> kern-rule-engin
+e\src\implementation.
+rs:49:13
+   |
+49 |         let mut 
+scheduler = 
+RuleScheduler::new();
+   |             
+^^^^^^^^^^^^^ help: 
+if this is 
+intentional, prefix 
+it with an 
+underscore: 
+`_scheduler`
+
+warning: unused 
+variable: 
+`conflict_resolver`
+  --> kern-rule-engin
+e\src\implementation.
+rs:50:13
+   |
+50 |         let mut 
+conflict_resolver = C
+onflictResolver::new(
+);
+   |             ^^^^
+^^^^^^^^^^^^^^^^^ 
+help: if this is 
+intentional, prefix 
+it with an 
+underscore: 
+`_conflict_resolver`
+
+warning: unused 
+variable: 
+`recursion_guard`
+  --> kern-rule-engin
+e\src\implementation.
+rs:52:13
+   |
+52 |         let mut 
+recursion_guard = Rec
+ursionGuard::new();
+   |             
+^^^^^^^^^^^^^^^^^^^ 
+help: if this is 
+intentional, prefix 
+it with an 
+underscore: 
+`_recursion_guard`
+
+warning: variable 
+does not need to be 
+mutable
+   --> kern-rule-engi
+ne\src\implementation
+.rs:102:21
+    |
+102 |                
+ let mut rule_info = 
+RuleExecutionInfo {
+    |                
+     ----^^^^^^^^^
+    |                
+     |
+    |                
+     help: remove 
+this `mut`
+
+warning: unused 
+variable: `rule_info`
+   --> kern-rule-engi
+ne\src\implementation
+.rs:128:34
+    |
+128 |     fn evaluate
+_condition(&self, 
+rule_info: 
+&RuleExecutionInfo) 
+-> Result<bool, 
+String> {
+    |                
+                  
+^^^^^^^^^ help: if 
+this is intentional, 
+prefix it with an 
+underscore: 
+`_rule_info`
+
+warning: unused 
+variable: `graph`
+   --> kern-rule-engi
+ne\src\implementation
+.rs:145:9
+    |
+145 |         graph: 
+&ExecutionGraph,
+    |         ^^^^^ 
+help: if this is 
+intentional, prefix 
+it with an 
+underscore: `_graph`
+
+warning: unused 
+variable: `flow_speci
+alized_node`
+   --> kern-rule-engi
+ne\src\lib.rs:318:13
+    |
+318 |         let flo
+w_specialized_node = 
+graph
+    |             ^^^
+^^^^^^^^^^^^^^^^^^ 
+help: if this is 
+intentional, prefix 
+it with an 
+underscore: `_flow_sp
+ecialized_node`
+
+warning: unused 
+variable: `condition`
+   --> kern-rule-engi
+ne\src\lib.rs:888:53
+    |
+888 | ...            
+       if let Some(Va
+lue::Bool(condition))
+ =
+    |                
+                     
+          ^^^^^^^^^ 
+help: if this is 
+intentional, prefix 
+it with an 
+underscore: 
+`_condition`
+
+warning: unused 
+variable: `graph`
+   --> kern-rule-engi
+ne\src\lib.rs:982:9
+    |
+982 |         graph: 
+&ExecutionGraph,
+    |         ^^^^^ 
+help: if this is 
+intentional, prefix 
+it with an 
+underscore: `_graph`
+
+warning: unused 
+variable: `i`
+    --> kern-rule-eng
+ine\src\lib.rs:1390:2
+2
+     |
+1390 |               
+  for (i, &reg_idx) 
+in node.output_regs.i
+ter().enumerate() {
+     |               
+       ^ help: if 
+this is intentional, 
+prefix it with an 
+underscore: `_i`
+
+warning: methods `add
+_to_priority_queue`, 
+`execute_node_demand_
+driven`, 
+`execute_node`, 
+`execute_loop_node`, 
+`process_node_depende
+ncies`, and `is_in_ex
+ecution_path` are 
+never used
+    --> kern-rule-eng
+ine\src\lib.rs:151:8
+     |
+  48 | impl 
+RuleEngine {
+     | 
+--------------- 
+methods in this 
+implementation
+...
+ 151 |     fn add_to_
+priority_queue(&mut 
+self, node_id: u32) {
+     |        
+^^^^^^^^^^^^^^^^^^^^^
+...
+ 361 |     fn execute
+_node_demand_driven(
+     |        ^^^^^^^
+^^^^^^^^^^^^^^^^^^^
+...
+ 564 |     fn 
+execute_node(
+     |        
+^^^^^^^^^^^^
+...
+ 916 |     fn 
+execute_loop_node(
+     |        
+^^^^^^^^^^^^^^^^^
+...
+ 979 |     fn process
+_node_dependencies(
+     |        ^^^^^^^
+^^^^^^^^^^^^^^^^^^
+...
+1579 |     fn is_in_e
+xecution_path(&self, 
+rule_id: u32) -> 
+bool {
+     |        
+^^^^^^^^^^^^^^^^^^^^
+     |
+     = note: 
+`#[warn(dead_code)]` 
+(part of 
+`#[warn(unused)]`) 
+on by default
+
+warning: methods `eva
+luate_condition`, `ch
+eck_dependencies`, 
+and `execute_action_s
+ubgraph` are never 
+used
+   --> kern-rule-engi
+ne\src\implementation
+.rs:128:8
+    |
+ 13 | impl 
+RuleEngine {
+    | 
+--------------- 
+methods in this 
+implementation
+...
+128 |     fn evaluate
+_condition(&self, 
+rule_info: 
+&RuleExecutionInfo) 
+-> Result<bool, 
+String> {
+    |        
+^^^^^^^^^^^^^^^^^^
+...
+136 |     fn check_de
+pendencies(&self, 
+_rule_info: 
+&RuleExecutionInfo) 
+-> Result<bool, 
+String> {
+    |        
+^^^^^^^^^^^^^^^^^^
+...
+142 |     fn execute_
+action_subgraph(
+    |        ^^^^^^^^
+^^^^^^^^^^^^^^^
+
+warning: 
+`kern_rule_engine` 
+(lib) generated 40 
+warnings (run `cargo 
+fix --lib -p 
+kern_rule_engine` to 
+apply 38 suggestions)
+warning: unused 
+import: 
+`super::Instruction`
+   --> kern-bytecode\
+src\lib.rs:562:9
+    |
+562 |     use 
+super::Instruction;
+    |         
+^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(u
+nused_imports)]` 
+(part of 
+`#[warn(unused)]`) 
+on by default
+
+warning: method 
+`compile_context_op` 
+is never used
+   --> kern-bytecode\
+src\lib.rs:516:8
+    |
+146 | impl 
+BytecodeCompiler {
+    | ---------------
+------ method in 
+this implementation
+...
+516 |     fn compile_
+context_op(&mut 
+self, opcode: u8, 
+flags: u8, operand: 
+u64) -> Instruction {
+    |        
+^^^^^^^^^^^^^^^^^^
+    |
+    = note: 
+`#[warn(dead_code)]` 
+(part of 
+`#[warn(unused)]`) 
+on by default
+
+warning: 
+`kern_bytecode` 
+(lib) generated 2 
+warnings (run `cargo 
+fix --lib -p 
+kern_bytecode` to 
+apply 1 suggestion)
+warning: unused 
+imports: 
+`BytecodeCompiler` 
+and `Opcode`
+ --> kern-vm\src\lib.
+rs:1:21
+  |
+1 | use kern_bytecode
+::{BytecodeCompiler, 
+Instruction, Opcode};
+  |                  
+   ^^^^^^^^^^^^^^^^  
+             ^^^^^^
+  |
+  = note: `#[warn(unu
+sed_imports)]` (part 
+of 
+`#[warn(unused)]`) 
+on by default
+
+    Checking kern_vm 
+v0.1.0 (C:\Users\LENO
+VO\OneDrive\Desktop\K
+ERN\kern-vm)
+warning: `kern_vm` 
+(lib) generated 1 
+warning (run `cargo 
+fix --lib -p 
+kern_vm` to apply 1 
+suggestion)
+error[E0061]: this 
+function takes 3 
+arguments but 5 
+arguments were 
+supplied
+   --> kern-vm\src\li
+b.rs:510:13
+    |
+510 |             Ins
+truction::new(0x11, 
+0, 42, 0, 0), // 
+LOAD_NUM R0, 42
+    |             
+^^^^^^^^^^^^^^^^     
+         -  - 
+unexpected argument 
+#5 of type 
+`{integer}`
+    |                
+                     
+      |
+    |                
+                     
+      unexpected 
+argument #4 of type 
+`{integer}`
+    |
+note: associated 
+function defined here
+   --> C:\Users\LENOV
+O\OneDrive\Desktop\KE
+RN\kern-bytecode\src\
+lib.rs:13:12
+    |
+ 13 |     pub fn 
+new(opcode: u8, 
+flags: u8, operand: 
+u64) -> Self {
+    |            ^^^
+help: remove the 
+extra arguments
+    |
+510 -             Ins
+truction::new(0x11, 
+0, 42, 0, 0), // 
+LOAD_NUM R0, 42
+510 +             Ins
+truction::new(0x11, 
+0, 42), // LOAD_NUM 
+R0, 42
+    |
+
+error[E0061]: this 
+function takes 3 
+arguments but 5 
+arguments were 
+supplied
+   --> kern-vm\src\li
+b.rs:511:13
+    |
+511 |             Ins
+truction::new(0x11, 
+1, 24, 0, 0), // 
+LOAD_NUM R1, 24
+    |             
+^^^^^^^^^^^^^^^^     
+         -  - 
+unexpected argument 
+#5 of type 
+`{integer}`
+    |                
+                     
+      |
+    |                
+                     
+      unexpected 
+argument #4 of type 
+`{integer}`
+    |
+note: associated 
+function defined here
+   --> C:\Users\LENOV
+O\OneDrive\Desktop\KE
+RN\kern-bytecode\src\
+lib.rs:13:12
+    |
+ 13 |     pub fn 
+new(opcode: u8, 
+flags: u8, operand: 
+u64) -> Self {
+    |            ^^^
+help: remove the 
+extra arguments
+    |
+511 -             Ins
+truction::new(0x11, 
+1, 24, 0, 0), // 
+LOAD_NUM R1, 24
+511 +             Ins
+truction::new(0x11, 
+1, 24), // LOAD_NUM 
+R1, 24
+    |
+
+error[E0061]: this 
+function takes 3 
+arguments but 5 
+arguments were 
+supplied
+   --> kern-vm\src\li
+b.rs:512:13
+    |
+512 |             Ins
+truction::new(0x13, 
+0, 1, 2, 0),  // 
+COMPARE R0, R1, R2 
+(result)
+    |             
+^^^^^^^^^^^^^^^^     
+        -  - 
+unexpected argument 
+#5 of type 
+`{integer}`
+    |                
+                     
+     |
+    |                
+                     
+     unexpected 
+argument #4 of type 
+`{integer}`
+    |
+note: associated 
+function defined here
+   --> C:\Users\LENOV
+O\OneDrive\Desktop\KE
+RN\kern-bytecode\src\
+lib.rs:13:12
+    |
+ 13 |     pub fn 
+new(opcode: u8, 
+flags: u8, operand: 
+u64) -> Self {
+    |            ^^^
+help: remove the 
+extra arguments
+    |
+512 -             Ins
+truction::new(0x13, 
+0, 1, 2, 0),  // 
+COMPARE R0, R1, R2 
+(result)
+512 +             Ins
+truction::new(0x13, 
+0, 1),  // COMPARE 
+R0, R1, R2 (result)
+    |
+
+For more information 
+about this error, 
+try `rustc --explain 
+E0061`.
+warning: `kern_vm` 
+(lib test) generated 
+1 warning (1 
+duplicate)
+error: could not 
+compile `kern_vm` 
+(lib test) due to 3 
+previous errors; 1 
+warning emitted

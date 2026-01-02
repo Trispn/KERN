@@ -38,12 +38,12 @@ impl Instruction {
             return None;
         }
 
-        let operand = (bytes[2] as u64) |
-                     ((bytes[3] as u64) << 8) |
-                     ((bytes[4] as u64) << 16) |
-                     ((bytes[5] as u64) << 24) |
-                     ((bytes[6] as u64) << 32) |
-                     ((bytes[7] as u64) << 40);
+        let operand = (bytes[2] as u64)
+            | ((bytes[3] as u64) << 8)
+            | ((bytes[4] as u64) << 16)
+            | ((bytes[5] as u64) << 24)
+            | ((bytes[6] as u64) << 32)
+            | ((bytes[7] as u64) << 40);
 
         Some(Instruction {
             opcode: bytes[0],
@@ -57,22 +57,22 @@ impl Instruction {
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Opcode {
     // Control Flow Instructions
-    Nop = 0x00,      // Do nothing
-    Jmp = 0x01,      // Jump unconditionally to address
-    JmpIf = 0x02,    // Jump if top-of-stack Bool is true
-    Halt = 0x03,     // Stop execution
+    Nop = 0x00,   // Do nothing
+    Jmp = 0x01,   // Jump unconditionally to address
+    JmpIf = 0x02, // Jump if top-of-stack Bool is true
+    Halt = 0x03,  // Stop execution
 
     // Data & Symbol Instructions
-    LoadSym = 0x10,  // Load symbol value onto stack
-    LoadNum = 0x11,  // Push literal number onto stack
-    Move = 0x12,     // Copy top of stack to dst symbol
-    Compare = 0x13,  // Compare top 2 stack values, result pushed as Bool
+    LoadSym = 0x10, // Load symbol value onto stack
+    LoadNum = 0x11, // Push literal number onto stack
+    Move = 0x12,    // Copy top of stack to dst symbol
+    Compare = 0x13, // Compare top 2 stack values, result pushed as Bool
 
     // Graph Operation Instructions
-    CreateNode = 0x20,    // Create graph node in execution graph
-    Connect = 0x21,       // Create edge (data/control)
-    Merge = 0x22,         // Merge nodes into single logical node
-    DeleteNode = 0x23,    // Remove node from graph
+    CreateNode = 0x20, // Create graph node in execution graph
+    Connect = 0x21,    // Create edge (data/control)
+    Merge = 0x22,      // Merge nodes into single logical node
+    DeleteNode = 0x23, // Remove node from graph
 
     // Rule Execution Instructions
     CallRule = 0x30,           // Invoke rule subgraph
@@ -81,17 +81,17 @@ pub enum Opcode {
     IncrementExecCount = 0x33, // Track recursion / iteration
 
     // Context & State Instructions
-    PushCtx = 0x40,  // Push new context frame onto stack
-    PopCtx = 0x41,   // Pop context frame
+    PushCtx = 0x40,   // Push new context frame onto stack
+    PopCtx = 0x41,    // Pop context frame
     SetSymbol = 0x42, // Update symbol in current context
     GetSymbol = 0x43, // Read symbol value onto stack
     CopyCtx = 0x44,   // Duplicate context for subflow / rule
 
     // Error Handling Instructions
-    Throw = 0x50,     // Raise error with deterministic code
-    Try = 0x51,       // Start try block at addr
-    Catch = 0x52,     // Jump to catch block if exception thrown
-    ClearErr = 0x53,  // Reset error state
+    Throw = 0x50,    // Raise error with deterministic code
+    Try = 0x51,      // Start try block at addr
+    Catch = 0x52,    // Jump to catch block if exception thrown
+    ClearErr = 0x53, // Reset error state
 
     // External Interface Instructions
     CallExtern = 0x60, // Call external function in host environment
@@ -154,7 +154,10 @@ impl BytecodeCompiler {
     }
 
     // Compile an execution graph to bytecode
-    pub fn compile_graph(&mut self, graph: &kern_graph_builder::ExecutionGraph) -> Vec<Instruction> {
+    pub fn compile_graph(
+        &mut self,
+        graph: &kern_graph_builder::ExecutionGraph,
+    ) -> Vec<Instruction> {
         // Reset the compiler state
         self.instructions.clear();
         self.symbol_table.clear();
@@ -162,7 +165,8 @@ impl BytecodeCompiler {
         self.register_map.clear();
 
         // Process each node in the execution graph
-        for node in &graph.nodes {
+        for specialized_node in &graph.nodes {
+            let node = specialized_node.get_base();
             if let Err(e) = self.compile_node(node) {
                 eprintln!("Error compiling node: {}", e);
             }
@@ -181,32 +185,55 @@ impl BytecodeCompiler {
         }
     }
 
-    fn compile_op_node(&mut self, node: &kern_graph_builder::GraphNode) -> Result<(), &'static str> {
+    fn compile_op_node(
+        &mut self,
+        node: &kern_graph_builder::GraphNode,
+    ) -> Result<(), &'static str> {
         match node.opcode {
-            0x10 => { // LOAD_SYM
+            0x10 => {
+                // LOAD_SYM
                 // operand: symbol ID
                 let symbol_id = self.get_or_create_symbol("temp_symbol"); // In real impl, get from metadata
-                self.instructions.push(Instruction::new(Opcode::LoadSym as u8, node.flags as u8, symbol_id));
-            },
-            0x11 => { // LOAD_NUM
+                self.instructions.push(Instruction::new(
+                    Opcode::LoadSym as u8,
+                    node.flags as u8,
+                    symbol_id,
+                ));
+            }
+            0x11 => {
+                // LOAD_NUM
                 // operand: number value
                 let value = node.id as u64; // In real impl, get actual value
-                self.instructions.push(Instruction::new(Opcode::LoadNum as u8, node.flags as u8, value));
-            },
-            0x12 => { // MOVE
+                self.instructions.push(Instruction::new(
+                    Opcode::LoadNum as u8,
+                    node.flags as u8,
+                    value,
+                ));
+            }
+            0x12 => {
+                // MOVE
                 // operand: encoded as (src << 32) | dst
                 let src_reg = node.input_regs[0] as u64;
                 let dst_reg = node.output_regs[0] as u64;
                 let operand = (src_reg << 32) | dst_reg;
-                self.instructions.push(Instruction::new(Opcode::Move as u8, node.flags as u8, operand));
-            },
-            0x13 => { // COMPARE
+                self.instructions.push(Instruction::new(
+                    Opcode::Move as u8,
+                    node.flags as u8,
+                    operand,
+                ));
+            }
+            0x13 => {
+                // COMPARE
                 // operand: encoded as (reg_a << 32) | reg_b
                 let reg_a = node.input_regs[0] as u64;
                 let reg_b = node.input_regs[1] as u64;
                 let operand = (reg_a << 32) | reg_b;
-                self.instructions.push(Instruction::new(Opcode::Compare as u8, node.flags as u8, operand));
-            },
+                self.instructions.push(Instruction::new(
+                    Opcode::Compare as u8,
+                    node.flags as u8,
+                    operand,
+                ));
+            }
             _ => {
                 // For other opcodes, we'll add implementations as needed
                 println!("Compiling operation node with opcode: {}", node.opcode);
@@ -215,67 +242,124 @@ impl BytecodeCompiler {
         Ok(())
     }
 
-    fn compile_rule_node(&mut self, node: &kern_graph_builder::GraphNode) -> Result<(), &'static str> {
+    fn compile_rule_node(
+        &mut self,
+        node: &kern_graph_builder::GraphNode,
+    ) -> Result<(), &'static str> {
         // Compile rule evaluation
-        self.instructions.push(Instruction::new(Opcode::CallRule as u8, node.flags as u8, node.id as u64));
+        self.instructions.push(Instruction::new(
+            Opcode::CallRule as u8,
+            node.flags as u8,
+            node.id as u64,
+        ));
 
         // Add rule execution instructions
-        self.instructions.push(Instruction::new(Opcode::CheckCondition as u8, node.flags as u8, node.id as u64));
-        self.instructions.push(Instruction::new(Opcode::IncrementExecCount as u8, node.flags as u8, node.id as u64));
+        self.instructions.push(Instruction::new(
+            Opcode::CheckCondition as u8,
+            node.flags as u8,
+            node.id as u64,
+        ));
+        self.instructions.push(Instruction::new(
+            Opcode::IncrementExecCount as u8,
+            node.flags as u8,
+            node.id as u64,
+        ));
 
         Ok(())
     }
 
-    fn compile_control_node(&mut self, node: &kern_graph_builder::GraphNode) -> Result<(), &'static str> {
+    fn compile_control_node(
+        &mut self,
+        node: &kern_graph_builder::GraphNode,
+    ) -> Result<(), &'static str> {
         match node.opcode {
-            0x00 => { // NOP
-                self.instructions.push(Instruction::new(Opcode::Nop as u8, node.flags as u8, 0));
-            },
-            0x01 => { // JMP
+            0x00 => {
+                // NOP
+                self.instructions
+                    .push(Instruction::new(Opcode::Nop as u8, node.flags as u8, 0));
+            }
+            0x01 => {
+                // JMP
                 // operand: target instruction index
                 let target = node.input_regs[0] as u64; // In real impl, get actual target
-                self.instructions.push(Instruction::new(Opcode::Jmp as u8, node.flags as u8, target));
-            },
-            0x02 => { // JMP_IF
+                self.instructions.push(Instruction::new(
+                    Opcode::Jmp as u8,
+                    node.flags as u8,
+                    target,
+                ));
+            }
+            0x02 => {
+                // JMP_IF
                 // operand: encoded as (flag_reg << 32) | target
                 let flag_reg = node.input_regs[0] as u64;
                 let target = node.input_regs[1] as u64; // In real impl, get actual target
                 let operand = (flag_reg << 32) | target;
-                self.instructions.push(Instruction::new(Opcode::JmpIf as u8, node.flags as u8, operand));
-            },
-            0x03 => { // HALT
-                self.instructions.push(Instruction::new(Opcode::Halt as u8, node.flags as u8, 0));
-            },
+                self.instructions.push(Instruction::new(
+                    Opcode::JmpIf as u8,
+                    node.flags as u8,
+                    operand,
+                ));
+            }
+            0x03 => {
+                // HALT
+                self.instructions
+                    .push(Instruction::new(Opcode::Halt as u8, node.flags as u8, 0));
+            }
             // Context operations
-            0x40 => { // PUSH_CTX
+            0x40 => {
+                // PUSH_CTX
                 let ctx_id = node.id as u64;
-                self.instructions.push(Instruction::new(Opcode::PushCtx as u8, node.flags as u8, ctx_id));
-            },
-            0x41 => { // POP_CTX
+                self.instructions.push(Instruction::new(
+                    Opcode::PushCtx as u8,
+                    node.flags as u8,
+                    ctx_id,
+                ));
+            }
+            0x41 => {
+                // POP_CTX
                 let ctx_id = node.id as u64;
-                self.instructions.push(Instruction::new(Opcode::PopCtx as u8, node.flags as u8, ctx_id));
-            },
-            0x42 => { // SET_SYMBOL
+                self.instructions.push(Instruction::new(
+                    Opcode::PopCtx as u8,
+                    node.flags as u8,
+                    ctx_id,
+                ));
+            }
+            0x42 => {
+                // SET_SYMBOL
                 // operand: encoded as (symbol_id << 32) | value_reg
                 let symbol_id = self.get_or_create_symbol("temp_symbol"); // In real impl, get actual symbol
                 let value_reg = node.input_regs[0] as u64;
                 let operand = (symbol_id << 32) | value_reg;
-                self.instructions.push(Instruction::new(Opcode::SetSymbol as u8, node.flags as u8, operand));
-            },
-            0x43 => { // GET_SYMBOL
+                self.instructions.push(Instruction::new(
+                    Opcode::SetSymbol as u8,
+                    node.flags as u8,
+                    operand,
+                ));
+            }
+            0x43 => {
+                // GET_SYMBOL
                 // operand: encoded as (symbol_id << 32) | dest_reg
                 let symbol_id = self.get_or_create_symbol("temp_symbol"); // In real impl, get actual symbol
                 let dest_reg = node.output_regs[0] as u64;
                 let operand = (symbol_id << 32) | dest_reg;
-                self.instructions.push(Instruction::new(Opcode::GetSymbol as u8, node.flags as u8, operand));
-            },
-            0x44 => { // COPY_CTX
+                self.instructions.push(Instruction::new(
+                    Opcode::GetSymbol as u8,
+                    node.flags as u8,
+                    operand,
+                ));
+            }
+            0x44 => {
+                // COPY_CTX
                 // operand: encoded as (src_ctx << 32) | dst_ctx
                 let src_ctx = node.input_regs[0] as u64;
                 let dst_ctx = node.output_regs[0] as u64;
                 let operand = (src_ctx << 32) | dst_ctx;
-                self.instructions.push(Instruction::new(Opcode::CopyCtx as u8, node.flags as u8, operand));
-            },
+                self.instructions.push(Instruction::new(
+                    Opcode::CopyCtx as u8,
+                    node.flags as u8,
+                    operand,
+                ));
+            }
             _ => {
                 println!("Compiling control node with opcode: {}", node.opcode);
             }
@@ -283,31 +367,54 @@ impl BytecodeCompiler {
         Ok(())
     }
 
-    fn compile_graph_node(&mut self, node: &kern_graph_builder::GraphNode) -> Result<(), &'static str> {
+    fn compile_graph_node(
+        &mut self,
+        node: &kern_graph_builder::GraphNode,
+    ) -> Result<(), &'static str> {
         // Compile graph operations
         match node.opcode {
-            0x20 => { // CREATE_NODE
+            0x20 => {
+                // CREATE_NODE
                 // operand: node_id
-                self.instructions.push(Instruction::new(Opcode::CreateNode as u8, node.flags as u8, node.id as u64));
-            },
-            0x21 => { // CONNECT
+                self.instructions.push(Instruction::new(
+                    Opcode::CreateNode as u8,
+                    node.flags as u8,
+                    node.id as u64,
+                ));
+            }
+            0x21 => {
+                // CONNECT
                 // operand: encoded as (from_id << 32) | to_id
                 if node.input_regs.len() >= 2 {
                     let from_id = node.input_regs[0] as u64;
                     let to_id = node.input_regs[1] as u64;
                     let operand = (from_id << 32) | to_id;
-                    self.instructions.push(Instruction::new(Opcode::Connect as u8, node.flags as u8, operand));
+                    self.instructions.push(Instruction::new(
+                        Opcode::Connect as u8,
+                        node.flags as u8,
+                        operand,
+                    ));
                 }
-            },
-            0x22 => { // MERGE
+            }
+            0x22 => {
+                // MERGE
                 // operand: encoded as (node_list_addr << 32) | count
                 // For now, just add a placeholder
-                self.instructions.push(Instruction::new(Opcode::Merge as u8, node.flags as u8, node.id as u64));
-            },
-            0x23 => { // DELETE_NODE
+                self.instructions.push(Instruction::new(
+                    Opcode::Merge as u8,
+                    node.flags as u8,
+                    node.id as u64,
+                ));
+            }
+            0x23 => {
+                // DELETE_NODE
                 // operand: node_id
-                self.instructions.push(Instruction::new(Opcode::DeleteNode as u8, node.flags as u8, node.id as u64));
-            },
+                self.instructions.push(Instruction::new(
+                    Opcode::DeleteNode as u8,
+                    node.flags as u8,
+                    node.id as u64,
+                ));
+            }
             _ => {
                 println!("Compiling graph node with opcode: {}", node.opcode);
             }
@@ -315,40 +422,78 @@ impl BytecodeCompiler {
         Ok(())
     }
 
-    fn compile_io_node(&mut self, node: &kern_graph_builder::GraphNode) -> Result<(), &'static str> {
+    fn compile_io_node(
+        &mut self,
+        node: &kern_graph_builder::GraphNode,
+    ) -> Result<(), &'static str> {
         // Compile external interface calls and error handling
         match node.opcode {
-            0x50 => { // THROW
+            0x50 => {
+                // THROW
                 // operand: error code
                 let error_code = node.id as u64;
-                self.instructions.push(Instruction::new(Opcode::Throw as u8, node.flags as u8, error_code));
-            },
-            0x51 => { // TRY
+                self.instructions.push(Instruction::new(
+                    Opcode::Throw as u8,
+                    node.flags as u8,
+                    error_code,
+                ));
+            }
+            0x51 => {
+                // TRY
                 // operand: address of try block
                 let try_addr = node.id as u64;
-                self.instructions.push(Instruction::new(Opcode::Try as u8, node.flags as u8, try_addr));
-            },
-            0x52 => { // CATCH
+                self.instructions.push(Instruction::new(
+                    Opcode::Try as u8,
+                    node.flags as u8,
+                    try_addr,
+                ));
+            }
+            0x52 => {
+                // CATCH
                 // operand: address of catch block
                 let catch_addr = node.id as u64;
-                self.instructions.push(Instruction::new(Opcode::Catch as u8, node.flags as u8, catch_addr));
-            },
-            0x53 => { // CLEAR_ERR
+                self.instructions.push(Instruction::new(
+                    Opcode::Catch as u8,
+                    node.flags as u8,
+                    catch_addr,
+                ));
+            }
+            0x53 => {
+                // CLEAR_ERR
                 // operand: unused
-                self.instructions.push(Instruction::new(Opcode::ClearErr as u8, node.flags as u8, 0));
-            },
-            0x60 => { // CALL_EXTERN
+                self.instructions.push(Instruction::new(
+                    Opcode::ClearErr as u8,
+                    node.flags as u8,
+                    0,
+                ));
+            }
+            0x60 => {
+                // CALL_EXTERN
                 // operand: function ID
-                self.instructions.push(Instruction::new(Opcode::CallExtern as u8, node.flags as u8, node.id as u64));
-            },
-            0x61 => { // READ_IO
+                self.instructions.push(Instruction::new(
+                    Opcode::CallExtern as u8,
+                    node.flags as u8,
+                    node.id as u64,
+                ));
+            }
+            0x61 => {
+                // READ_IO
                 // operand: IO ID
-                self.instructions.push(Instruction::new(Opcode::ReadIo as u8, node.flags as u8, node.id as u64));
-            },
-            0x62 => { // WRITE_IO
+                self.instructions.push(Instruction::new(
+                    Opcode::ReadIo as u8,
+                    node.flags as u8,
+                    node.id as u64,
+                ));
+            }
+            0x62 => {
+                // WRITE_IO
                 // operand: IO ID
-                self.instructions.push(Instruction::new(Opcode::WriteIo as u8, node.flags as u8, node.id as u64));
-            },
+                self.instructions.push(Instruction::new(
+                    Opcode::WriteIo as u8,
+                    node.flags as u8,
+                    node.id as u64,
+                ));
+            }
             _ => {
                 println!("Compiling IO node with opcode: {}", node.opcode);
             }
@@ -370,11 +515,11 @@ impl BytecodeCompiler {
     // Helper function to compile context operations
     fn compile_context_op(&mut self, opcode: u8, flags: u8, operand: u64) -> Instruction {
         match opcode {
-            0x40 => Instruction::new(Opcode::PushCtx as u8, flags, operand),  // PUSH_CTX
-            0x41 => Instruction::new(Opcode::PopCtx as u8, flags, operand),   // POP_CTX
+            0x40 => Instruction::new(Opcode::PushCtx as u8, flags, operand), // PUSH_CTX
+            0x41 => Instruction::new(Opcode::PopCtx as u8, flags, operand),  // POP_CTX
             0x42 => Instruction::new(Opcode::SetSymbol as u8, flags, operand), // SET_SYMBOL
             0x43 => Instruction::new(Opcode::GetSymbol as u8, flags, operand), // GET_SYMBOL
-            0x44 => Instruction::new(Opcode::CopyCtx as u8, flags, operand),   // COPY_CTX
+            0x44 => Instruction::new(Opcode::CopyCtx as u8, flags, operand), // COPY_CTX
             _ => Instruction::new(Opcode::Nop as u8, flags, operand), // Default to NOP for unknown opcodes
         }
     }
@@ -469,8 +614,8 @@ pub mod operand_utils {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use kern_graph_builder::GraphBuilder;
     use kern_parser::Parser;
-    use kern_graph_builder::{GraphBuilder, ExecutionGraph};
 
     #[test]
     fn test_instruction_serialization() {
@@ -645,7 +790,10 @@ mod comprehensive_instruction_tests {
 
         // Test INCREMENT_EXEC_COUNT
         let inc_exec_count_instr = Instruction::new(Opcode::IncrementExecCount as u8, 0, 3000);
-        assert_eq!(inc_exec_count_instr.opcode, Opcode::IncrementExecCount as u8);
+        assert_eq!(
+            inc_exec_count_instr.opcode,
+            Opcode::IncrementExecCount as u8
+        );
         assert_eq!(inc_exec_count_instr.operand, 3000);
     }
 

@@ -1,11 +1,12 @@
-use std::collections::{HashMap, VecDeque};
-use crate::{RuleExecutionInfo, RuleEngine};
+use crate::types::RuleExecutionInfo;
+use crate::RuleEngine;
 use kern_graph_builder::ExecutionGraph;
+use std::collections::{HashMap, VecDeque};
 
 #[derive(Debug, Clone)]
 pub struct RuleQueueEntry {
     pub rule_info: RuleExecutionInfo,
-    pub execution_order: u32,  // For deterministic tie-breaking
+    pub execution_order: u32, // For deterministic tie-breaking
 }
 
 pub struct RuleScheduler {
@@ -27,7 +28,10 @@ impl RuleScheduler {
     pub fn schedule_rule(&mut self, rule_info: RuleExecutionInfo) -> Result<bool, String> {
         // Check recursion limit
         if rule_info.execution_count >= rule_info.recursion_limit {
-            return Err(format!("Recursion limit exceeded for rule {}", rule_info.rule_id));
+            return Err(format!(
+                "Recursion limit exceeded for rule {}",
+                rule_info.rule_id
+            ));
         }
 
         // Add to execution queue
@@ -45,8 +49,9 @@ impl RuleScheduler {
     pub fn schedule_rules(&mut self, mut rules: Vec<RuleExecutionInfo>) -> Result<(), String> {
         // Sort by priority (descending) and then by rule_id (for deterministic tie-break)
         rules.sort_by(|a, b| {
-            b.priority.cmp(&a.priority)  // Higher priority first
-                .then_with(|| a.rule_id.cmp(&b.rule_id))  // Then by rule_id for stability
+            b.priority
+                .cmp(&a.priority) // Higher priority first
+                .then_with(|| a.rule_id.cmp(&b.rule_id)) // Then by rule_id for stability
         });
 
         for rule_info in rules {
@@ -57,7 +62,7 @@ impl RuleScheduler {
 
             // Schedule the rule
             match self.schedule_rule(rule_info) {
-                Ok(_) => {}, // Rule scheduled successfully
+                Ok(_) => {} // Rule scheduled successfully
                 Err(e) => {
                     eprintln!("Error scheduling rule: {}", e);
                     continue;
@@ -69,7 +74,11 @@ impl RuleScheduler {
     }
 
     /// Executes the next rule in the queue
-    pub fn execute_next_rule(&mut self, rule_engine: &mut RuleEngine, graph: &ExecutionGraph) -> Result<bool, String> {
+    pub fn execute_next_rule(
+        &mut self,
+        rule_engine: &mut RuleEngine,
+        graph: &ExecutionGraph,
+    ) -> Result<bool, String> {
         if let Some(queue_entry) = self.execution_queue.pop_front() {
             let rule_info = queue_entry.rule_info;
 
@@ -86,7 +95,11 @@ impl RuleScheduler {
     }
 
     /// Executes all scheduled rules
-    pub fn execute_all_scheduled(&mut self, rule_engine: &mut RuleEngine, graph: &ExecutionGraph) -> Result<(), String> {
+    pub fn execute_all_scheduled(
+        &mut self,
+        rule_engine: &mut RuleEngine,
+        graph: &ExecutionGraph,
+    ) -> Result<(), String> {
         while !self.execution_queue.is_empty() {
             self.execute_next_rule(rule_engine, graph)?;
         }
@@ -114,8 +127,10 @@ impl RuleScheduler {
         let mut queue_vec: Vec<RuleQueueEntry> = self.execution_queue.drain(..).collect();
 
         queue_vec.sort_by(|a, b| {
-            b.rule_info.priority.cmp(&a.rule_info.priority)  // Higher priority first
-                .then_with(|| a.execution_order.cmp(&b.execution_order))  // Then by execution order for stability
+            b.rule_info
+                .priority
+                .cmp(&a.rule_info.priority) // Higher priority first
+                .then_with(|| a.execution_order.cmp(&b.execution_order)) // Then by execution order for stability
         });
 
         for entry in queue_vec {
@@ -127,7 +142,7 @@ impl RuleScheduler {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::RuleExecutionInfo;
+    use crate::types::RuleExecutionInfo;
     use kern_graph_builder::ExecutionGraph;
 
     #[test]
@@ -139,12 +154,20 @@ mod tests {
             edge_count: 0,
             entry_points: vec![],
             entry_count: 0,
-            registers: kern_graph_builder::RegisterSet { regs: [kern_graph_builder::Register { reg_type: 0, value_id: 0 }; 16] },
+            registers: kern_graph_builder::RegisterSet {
+                regs: [kern_graph_builder::Register {
+                    reg_type: 0,
+                    value_id: 0,
+                }; 16],
+            },
             contexts: kern_graph_builder::ContextPool { contexts: vec![] },
-            metadata: kern_graph_builder::GraphMeta { build_hash: 0, version: 0 },
+            metadata: kern_graph_builder::GraphMeta {
+                build_hash: 0,
+                version: 0,
+            },
         };
 
-        let mut rule_engine = RuleEngine::new();
+        let mut rule_engine = RuleEngine::new(Some(graph.clone()));
         let mut scheduler = RuleScheduler::new();
 
         // Create a test rule

@@ -1,5 +1,5 @@
-use std::time::Instant;
 use std::collections::HashMap;
+use std::time::Instant;
 
 #[derive(Debug, Clone)]
 pub struct TestResult {
@@ -22,9 +22,7 @@ pub struct TestRunner {
 
 impl TestRunner {
     pub fn new() -> Self {
-        Self {
-            tests: Vec::new(),
-        }
+        Self { tests: Vec::new() }
     }
 
     pub fn add_test(&mut self, name: &'static str, test_fn: fn() -> TestResult) {
@@ -33,14 +31,14 @@ impl TestRunner {
 
     pub fn run_all(&self) -> Vec<TestResult> {
         let mut results = Vec::new();
-        
+
         for (name, test_fn) in &self.tests {
             println!("Running test: {}", name);
             let start_time = Instant::now();
-            
+
             let result = test_fn();
             let duration = start_time.elapsed();
-            
+
             results.push(TestResult {
                 name: result.name,
                 status: result.status,
@@ -48,7 +46,7 @@ impl TestRunner {
                 message: result.message,
             });
         }
-        
+
         results
     }
 
@@ -72,23 +70,34 @@ pub struct TestReport {
 
 impl TestReport {
     pub fn new(results: Vec<TestResult>) -> Self {
-        let start = results.iter()
+        let start = results
+            .iter()
             .map(|r| r.duration)
             .min()
             .unwrap_or(std::time::Duration::new(0, 0));
-        let end = results.iter()
+        let end = results
+            .iter()
             .map(|r| r.duration)
             .max()
             .unwrap_or(std::time::Duration::new(0, 0));
-        
+
         let total_duration = end.saturating_sub(start);
-        
-        let passed = results.iter().filter(|r| matches!(r.status, TestStatus::Pass)).count();
-        let failed = results.iter().filter(|r| matches!(r.status, TestStatus::Fail)).count();
-        let skipped = results.iter().filter(|r| matches!(r.status, TestStatus::Skip)).count();
-        
+
+        let passed = results
+            .iter()
+            .filter(|r| matches!(r.status, TestStatus::Pass))
+            .count();
+        let failed = results
+            .iter()
+            .filter(|r| matches!(r.status, TestStatus::Fail))
+            .count();
+        let skipped = results
+            .iter()
+            .filter(|r| matches!(r.status, TestStatus::Skip))
+            .count();
+
         Self {
-            results,
+            results: results.clone(),
             total: results.len(),
             passed,
             failed,
@@ -104,7 +113,7 @@ impl TestReport {
         println!("Failed: {}", self.failed);
         println!("Skipped: {}", self.skipped);
         println!("Duration: {:?}", self.duration);
-        
+
         if self.failed > 0 {
             println!("\nFailed tests:");
             for result in &self.results {
@@ -116,28 +125,30 @@ impl TestReport {
     }
 
     pub fn to_json(&self) -> String {
-        let json_results: Vec<HashMap<String, String>> = self.results.iter()
+        let json_results: Vec<HashMap<String, String>> = self
+            .results
+            .iter()
             .map(|result| {
                 let mut map = HashMap::new();
                 map.insert("name".to_string(), result.name.clone());
-                
+
                 let status_str = match result.status {
                     TestStatus::Pass => "PASS".to_string(),
                     TestStatus::Fail => "FAIL".to_string(),
                     TestStatus::Skip => "SKIP".to_string(),
                 };
-                
+
                 map.insert("status".to_string(), status_str);
                 map.insert("duration".to_string(), format!("{:?}", result.duration));
-                
+
                 if let Some(ref msg) = result.message {
                     map.insert("message".to_string(), msg.clone());
                 }
-                
+
                 map
             })
             .collect();
-        
+
         format!("{:#?}", json_results)
     }
 }
@@ -160,14 +171,14 @@ macro_rules! test {
         #[test]
         fn $name() {
             let start_time = std::time::Instant::now();
-            
+
             let result = std::panic::catch_unwind(|| {
                 $body
                 true
             });
-            
+
             let duration = start_time.elapsed();
-            
+
             match result {
                 Ok(true) => {
                     println!("[PASS] {} (Duration: {:?})", stringify!($name), duration);
