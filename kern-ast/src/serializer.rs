@@ -14,6 +14,7 @@ const KAST_VERSION: u16 = 1;
 
 /// FieldKind represents the type of a field in the serialized AST
 #[derive(Debug, Clone, Copy)]
+#[allow(dead_code)]
 enum FieldKind {
     NodeRef = 0,
     NodeList = 1,

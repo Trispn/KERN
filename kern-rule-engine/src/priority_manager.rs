@@ -185,7 +185,7 @@ mod tests {
         assert_eq!(manager.get_default_priority(), PriorityLevel::Normal as u16);
 
         // Create a test rule
-        let mut rule_info = RuleExecutionInfo::new(1);
+        let _rule_info = RuleExecutionInfo::new(1);
 
         // Test getting default priority
         assert_eq!(manager.get_rule_priority(1), PriorityLevel::Normal as u16);

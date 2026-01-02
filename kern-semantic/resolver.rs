@@ -6,8 +6,8 @@ use crate::scope::ScopeManager;
 use crate::symbol::{SourceLocation, Symbol, SymbolKind};
 use crate::types::{TypeDescriptor, TypeKind};
 use kern_parser::{
-    Action, Assignment, AstNode, Condition, ConstraintDef, ControlAction, Definition, EntityDef,
-    Expression, FlowDef, HaltAction, IfAction, LoopAction, Predicate, Program, RuleDef, Term,
+    Action, Assignment, Condition, ConstraintDef, ControlAction, Definition, EntityDef, Expression,
+    FlowDef, IfAction, LoopAction, Predicate, Program, RuleDef, Term,
 };
 
 #[derive(Debug, Clone)]

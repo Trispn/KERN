@@ -3,7 +3,7 @@
 //! Handles lexical scoping and symbol resolution in the KERN language.
 
 use crate::symbol::{Symbol, SymbolKind, SymbolTable};
-use std::collections::{HashMap, VecDeque};
+use std::collections::HashMap;
 
 /// A scope in the KERN language
 #[derive(Debug, Clone)]

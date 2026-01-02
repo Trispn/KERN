@@ -1,8 +1,8 @@
 // Re-export common types from the types module
 pub use types::*;
 
-use kern_graph_builder::{EdgeType, ExecutionGraph, GraphNode, GraphNodeType, SpecializedNode};
-use kern_parser::{Comparator, LogicalOp};
+use kern_graph_builder::{EdgeType, ExecutionGraph, GraphNode, SpecializedNode};
+use kern_parser::Comparator;
 use std::collections::HashMap;
 
 mod conflict_resolver;
@@ -16,11 +16,9 @@ mod implementation;
 mod types;
 
 pub use conflict_resolver::*;
-pub use implementation::*;
 pub use pattern_matcher::*;
 pub use priority_manager::*;
 pub use recursion_guard::*;
-pub use rule_engine::*;
 pub use scheduler::*;
 
 #[cfg(test)]

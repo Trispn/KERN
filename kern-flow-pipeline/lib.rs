@@ -4,25 +4,25 @@
 //! It handles demand-driven evaluation, lazy evaluation strategies, context passing,
 //! and control flow operations.
 
-pub mod types;
-pub mod flow_execution_context;
-pub mod flow_step_info;
-pub mod flow_evaluator;
+pub mod context_manager;
+pub mod control_ops_break_halt;
 pub mod control_ops_if_then_else;
 pub mod control_ops_loop;
-pub mod control_ops_break_halt;
+pub mod flow_evaluator;
+pub mod flow_execution_context;
+pub mod flow_step_info;
 pub mod lazy_evaluation_manager;
-pub mod context_manager;
+pub mod types;
 
-pub use types::{Value, SymbolTable};
-pub use flow_execution_context::FlowExecutionContext;
-pub use flow_step_info::FlowStepExecutionInfo;
-pub use flow_evaluator::{FlowEvaluator, FlowEvaluationError};
+pub use context_manager::{ContextError, ContextManager};
+pub use control_ops_break_halt::BreakHaltHandler;
 pub use control_ops_if_then_else::IfThenElseHandler;
 pub use control_ops_loop::LoopHandler;
-pub use control_ops_break_halt::BreakHaltHandler;
+pub use flow_evaluator::{FlowEvaluationError, FlowEvaluator};
+pub use flow_execution_context::FlowExecutionContext;
+pub use flow_step_info::FlowStepExecutionInfo;
 pub use lazy_evaluation_manager::LazyEvaluationManager;
-pub use context_manager::{ContextManager, ContextError};
+pub use types::{SymbolTable, Value};
 
 #[cfg(test)]
 mod tests {
@@ -41,8 +41,8 @@ mod tests {
 
     #[test]
     fn test_flow_execution() {
-        let mut evaluator = FlowEvaluator::new();
-        let mut context = FlowExecutionContext::new(1);
+        let evaluator = FlowEvaluator::new();
+        let context = FlowExecutionContext::new(1);
 
         // For now, just verify that we can create the necessary components
         assert_eq!(context.flow_id, 1);

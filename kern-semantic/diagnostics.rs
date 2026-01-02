@@ -1,5 +1,5 @@
 //! KERN Diagnostic System
-//! 
+//!
 //! Provides diagnostic reporting for the KERN semantic analysis system.
 
 use std::fmt;
@@ -14,33 +14,34 @@ pub enum Severity {
 }
 
 /// Diagnostic codes for different types of issues
+#[allow(non_camel_case_types)]
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum DiagnosticCode {
     // Type-related diagnostics
     TYPE_MISMATCH,
     INVALID_TYPE,
     UNKNOWN_TYPE,
-    
+
     // Scope-related diagnostics
     UNDECLARED_SYMBOL,
     DUPLICATE_DECLARATION,
     ILLEGAL_SHADOWING,
-    
+
     // Dependency-related diagnostics
     CYCLIC_DEPENDENCY,
     SELF_DEPENDENCY,
-    
+
     // Rule-related diagnostics
     RULE_CONFLICT,
     OVERLAPPING_CONDITIONS,
     MUTUALLY_EXCLUSIVE_ACTIONS,
-    
+
     // Bytecode-related diagnostics
     UNSUPPORTED_TYPE_FOR_BYTECODE,
     DYNAMIC_TYPE_REQUIRED,
     STACK_UNDERFLOW_RISK,
     INVALIDopCODE,
-    
+
     // General diagnostics
     SYNTAX_ERROR,
     SEMANTIC_ERROR,
@@ -60,7 +61,9 @@ impl fmt::Display for DiagnosticCode {
             DiagnosticCode::RULE_CONFLICT => write!(f, "RULE_CONFLICT"),
             DiagnosticCode::OVERLAPPING_CONDITIONS => write!(f, "OVERLAPPING_CONDITIONS"),
             DiagnosticCode::MUTUALLY_EXCLUSIVE_ACTIONS => write!(f, "MUTUALLY_EXCLUSIVE_ACTIONS"),
-            DiagnosticCode::UNSUPPORTED_TYPE_FOR_BYTECODE => write!(f, "UNSUPPORTED_TYPE_FOR_BYTECODE"),
+            DiagnosticCode::UNSUPPORTED_TYPE_FOR_BYTECODE => {
+                write!(f, "UNSUPPORTED_TYPE_FOR_BYTECODE")
+            }
             DiagnosticCode::DYNAMIC_TYPE_REQUIRED => write!(f, "DYNAMIC_TYPE_REQUIRED"),
             DiagnosticCode::STACK_UNDERFLOW_RISK => write!(f, "STACK_UNDERFLOW_RISK"),
             DiagnosticCode::INVALIDopCODE => write!(f, "INVALIDopCODE"),
@@ -76,7 +79,7 @@ pub struct SourceLocation {
     pub file: String,
     pub line: usize,
     pub column: usize,
-    pub length: usize,  // Length of the problematic text
+    pub length: usize, // Length of the problematic text
 }
 
 impl SourceLocation {
@@ -102,8 +105,8 @@ pub struct Diagnostic {
     pub code: DiagnosticCode,
     pub message: String,
     pub location: SourceLocation,
-    pub notes: Vec<String>,  // Additional notes about the diagnostic
-    pub help: Option<String>,  // Suggested fix or help text
+    pub notes: Vec<String>,   // Additional notes about the diagnostic
+    pub help: Option<String>, // Suggested fix or help text
 }
 
 impl Diagnostic {
@@ -170,8 +173,8 @@ impl Diagnostic {
 #[derive(Debug)]
 pub struct DiagnosticReporter {
     diagnostics: Vec<Diagnostic>,
-    max_errors: usize,  // Maximum number of errors before stopping
-    max_warnings: usize,  // Maximum number of warnings before stopping
+    max_errors: usize,   // Maximum number of errors before stopping
+    max_warnings: usize, // Maximum number of warnings before stopping
     has_errors: bool,
 }
 
@@ -179,8 +182,8 @@ impl DiagnosticReporter {
     pub fn new() -> Self {
         DiagnosticReporter {
             diagnostics: Vec::new(),
-            max_errors: 100,  // Default to 100 errors before stopping
-            max_warnings: 100,  // Default to 100 warnings before stopping
+            max_errors: 100,   // Default to 100 errors before stopping
+            max_warnings: 100, // Default to 100 warnings before stopping
             has_errors: false,
         }
     }
@@ -198,7 +201,7 @@ impl DiagnosticReporter {
     /// Reports a diagnostic
     pub fn report(&mut self, diagnostic: Diagnostic) {
         self.diagnostics.push(diagnostic.clone());
-        
+
         if matches!(diagnostic.severity, Severity::Error | Severity::Fatal) {
             self.has_errors = true;
         }
@@ -311,7 +314,10 @@ mod tests {
 
         assert_eq!(diagnostic.severity, Severity::Error);
         assert_eq!(diagnostic.code, DiagnosticCode::TYPE_MISMATCH);
-        assert_eq!(diagnostic.message, "Type mismatch: expected Int, found Bool");
+        assert_eq!(
+            diagnostic.message,
+            "Type mismatch: expected Int, found Bool"
+        );
         assert_eq!(diagnostic.location.file, "test.kern");
         assert_eq!(diagnostic.location.line, 10);
         assert_eq!(diagnostic.location.column, 5);
@@ -340,20 +346,20 @@ mod tests {
     #[test]
     fn test_diagnostic_reporter() {
         let mut reporter = DiagnosticReporter::new();
-        
+
         let location = SourceLocation::new("test.kern".to_string(), 10, 5);
         reporter.error(
             DiagnosticCode::TYPE_MISMATCH,
             "Type mismatch: expected Int, found Bool".to_string(),
             location.clone(),
         );
-        
+
         reporter.warning(
             DiagnosticCode::UNDECLARED_SYMBOL,
             "Undeclared symbol 'x'".to_string(),
             location.clone(),
         );
-        
+
         reporter.info(
             DiagnosticCode::SEMANTIC_ERROR,
             "Semantic analysis completed".to_string(),
@@ -369,8 +375,17 @@ mod tests {
 
     #[test]
     fn test_diagnostic_codes_display() {
-        assert_eq!(format!("{}", DiagnosticCode::TYPE_MISMATCH), "TYPE_MISMATCH");
-        assert_eq!(format!("{}", DiagnosticCode::UNDECLARED_SYMBOL), "UNDECLARED_SYMBOL");
-        assert_eq!(format!("{}", DiagnosticCode::CYCLIC_DEPENDENCY), "CYCLIC_DEPENDENCY");
+        assert_eq!(
+            format!("{}", DiagnosticCode::TYPE_MISMATCH),
+            "TYPE_MISMATCH"
+        );
+        assert_eq!(
+            format!("{}", DiagnosticCode::UNDECLARED_SYMBOL),
+            "UNDECLARED_SYMBOL"
+        );
+        assert_eq!(
+            format!("{}", DiagnosticCode::CYCLIC_DEPENDENCY),
+            "CYCLIC_DEPENDENCY"
+        );
     }
 }

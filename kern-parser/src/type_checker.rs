@@ -1,5 +1,5 @@
 use crate::ast::*;
-use crate::symbol_table::{SymbolTable, Symbol, SymbolKind};
+use crate::symbol_table::{Symbol, SymbolKind, SymbolTable};
 use std::collections::HashMap;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -49,7 +49,7 @@ impl std::fmt::Display for Type {
 #[derive(Debug, Clone)]
 pub struct TypeError {
     pub message: String,
-    pub node: AstNode,  // The AST node where the error occurred
+    pub node: AstNode, // The AST node where the error occurred
 }
 
 impl std::fmt::Display for TypeError {
@@ -66,6 +66,7 @@ pub struct TypeChecker {
     // Map from entity names to their field types
     entity_fields: HashMap<String, HashMap<String, Type>>,
     // Map from predicate names to their signature
+    #[allow(dead_code)]
     predicate_signatures: HashMap<String, Type>,
     // List of type errors encountered
     errors: Vec<TypeError>,
@@ -94,7 +95,7 @@ impl TypeChecker {
                         });
                     }
                     self.register_entity(entity_def);
-                },
+                }
                 Definition::Rule(rule_def) => {
                     if let Err(e) = self.symbol_table.register_rule(rule_def) {
                         self.errors.push(TypeError {
@@ -102,7 +103,7 @@ impl TypeChecker {
                             node: AstNode::RuleDef(rule_def.clone()),
                         });
                     }
-                },
+                }
                 Definition::Flow(flow_def) => {
                     if let Err(e) = self.symbol_table.register_flow(flow_def) {
                         self.errors.push(TypeError {
@@ -110,7 +111,7 @@ impl TypeChecker {
                             node: AstNode::FlowDef(flow_def.clone()),
                         });
                     }
-                },
+                }
                 Definition::Constraint(constraint_def) => {
                     if let Err(e) = self.symbol_table.register_constraint(constraint_def) {
                         self.errors.push(TypeError {
@@ -118,7 +119,7 @@ impl TypeChecker {
                             node: AstNode::ConstraintDef(constraint_def.clone()),
                         });
                     }
-                },
+                }
             }
         }
 
@@ -142,7 +143,10 @@ impl TypeChecker {
             fields.insert(field.name.clone(), Type::Unknown);
         }
         self.entity_fields.insert(entity_def.name.clone(), fields);
-        self.type_env.insert(entity_def.name.clone(), Type::Entity(entity_def.name.clone()));
+        self.type_env.insert(
+            entity_def.name.clone(),
+            Type::Entity(entity_def.name.clone()),
+        );
     }
 
     fn check_definition(&mut self, def: &Definition) {
@@ -160,7 +164,10 @@ impl TypeChecker {
         for field in &entity_def.fields {
             if field_names.contains(&field.name) {
                 self.errors.push(TypeError {
-                    message: format!("Duplicate field name '{}' in entity '{}'", field.name, entity_def.name),
+                    message: format!(
+                        "Duplicate field name '{}' in entity '{}'",
+                        field.name, entity_def.name
+                    ),
                     node: AstNode::FieldDef(field.clone()),
                 });
             } else {
@@ -178,7 +185,10 @@ impl TypeChecker {
         let condition_type = self.check_condition(&rule_def.condition);
         if condition_type != Type::Bool && condition_type != Type::Unknown {
             self.errors.push(TypeError {
-                message: format!("Rule condition must evaluate to bool, got {}", condition_type),
+                message: format!(
+                    "Rule condition must evaluate to bool, got {}",
+                    condition_type
+                ),
                 node: AstNode::Condition(rule_def.condition.clone()),
             });
         }
@@ -211,7 +221,10 @@ impl TypeChecker {
         let condition_type = self.check_condition(&constraint_def.condition);
         if condition_type != Type::Bool && condition_type != Type::Unknown {
             self.errors.push(TypeError {
-                message: format!("Constraint condition must evaluate to bool, got {}", condition_type),
+                message: format!(
+                    "Constraint condition must evaluate to bool, got {}",
+                    condition_type
+                ),
                 node: AstNode::Condition(constraint_def.condition.clone()),
             });
         }
@@ -232,14 +245,20 @@ impl TypeChecker {
                 // Both operands of logical operators should be boolean
                 if left_type != Type::Bool && left_type != Type::Unknown {
                     self.errors.push(TypeError {
-                        message: format!("Left operand of logical operation must be bool, got {}", left_type),
+                        message: format!(
+                            "Left operand of logical operation must be bool, got {}",
+                            left_type
+                        ),
                         node: AstNode::Condition(*left.clone()),
                     });
                 }
 
                 if right_type != Type::Bool && right_type != Type::Unknown {
                     self.errors.push(TypeError {
-                        message: format!("Right operand of logical operation must be bool, got {}", right_type),
+                        message: format!(
+                            "Right operand of logical operation must be bool, got {}",
+                            right_type
+                        ),
                         node: AstNode::Condition(*right.clone()),
                     });
                 }
@@ -257,7 +276,10 @@ impl TypeChecker {
                 let right_type = self.check_term(right);
 
                 // For comparison, both operands should have the same type
-                if left_type != right_type && left_type != Type::Unknown && right_type != Type::Unknown {
+                if left_type != right_type
+                    && left_type != Type::Unknown
+                    && right_type != Type::Unknown
+                {
                     self.errors.push(TypeError {
                         message: format!("Cannot compare {} with {}", left_type, right_type),
                         node: AstNode::Expression(expression.clone()),
@@ -266,10 +288,8 @@ impl TypeChecker {
 
                 // Result of comparison is always boolean
                 Type::Bool
-            },
-            Expression::Predicate(predicate) => {
-                self.check_predicate(predicate)
             }
+            Expression::Predicate(predicate) => self.check_predicate(predicate),
         }
     }
 
@@ -291,16 +311,16 @@ impl TypeChecker {
                                         Type::Unknown
                                     }
                                 }
-                            },
+                            }
                             SymbolKind::Field => {
                                 // For fields, we need to determine the type from context
                                 // This would typically be handled by qualified references
                                 Type::Unknown
-                            },
+                            }
                             SymbolKind::Rule | SymbolKind::Flow => Type::Unknown, // Rules and flows don't have a direct type
                             SymbolKind::Predicate => Type::Unknown, // Predicates return types based on their signature
                         }
-                    },
+                    }
                     None => {
                         // Undefined variable
                         self.errors.push(TypeError {
@@ -310,7 +330,7 @@ impl TypeChecker {
                         Type::Error
                     }
                 }
-            },
+            }
             Term::Number(_) => Type::Num,
             Term::QualifiedRef(entity_name, field_name) => {
                 // Check if the entity exists in the symbol table
@@ -318,7 +338,9 @@ impl TypeChecker {
                     // Check if the field exists in the entity
                     if let Some(entity_def) = self.symbol_table.get_entity(entity_name) {
                         // Look for the field in the entity definition
-                        let field_exists = entity_def.fields.iter()
+                        let field_exists = entity_def
+                            .fields
+                            .iter()
                             .any(|field| field.name == *field_name);
 
                         if field_exists {
@@ -332,7 +354,10 @@ impl TypeChecker {
                             Type::Unknown
                         } else {
                             self.errors.push(TypeError {
-                                message: format!("Field '{}' does not exist in entity '{}'", field_name, entity_name),
+                                message: format!(
+                                    "Field '{}' does not exist in entity '{}'",
+                                    field_name, entity_name
+                                ),
                                 node: AstNode::Term(term.clone()),
                             });
                             Type::Error
@@ -358,12 +383,12 @@ impl TypeChecker {
     fn check_predicate(&mut self, predicate: &Predicate) -> Type {
         // For now, we'll assume all predicates return boolean
         // In a more sophisticated system, we'd have predicate signatures
-        
+
         // Check argument types
         for arg in &predicate.arguments {
             self.check_term(arg);
         }
-        
+
         // For now, assume predicates return bool
         // In a real implementation, we'd look up the predicate signature
         Type::Bool
@@ -373,10 +398,10 @@ impl TypeChecker {
         match action {
             Action::Predicate(predicate) => {
                 self.check_predicate(predicate);
-            },
+            }
             Action::Assignment(assignment) => {
                 self.check_assignment(assignment);
-            },
+            }
             Action::Control(control_action) => {
                 self.check_control_action(control_action);
             }
@@ -397,7 +422,10 @@ impl TypeChecker {
                 Some(format!("{}", value_type)), // Store the type as string
             );
 
-            if let Err(e) = self.symbol_table.insert(assignment.variable.clone(), var_symbol) {
+            if let Err(e) = self
+                .symbol_table
+                .insert(assignment.variable.clone(), var_symbol)
+            {
                 self.errors.push(TypeError {
                     message: e,
                     node: AstNode::Assignment(assignment.clone()),
@@ -406,12 +434,18 @@ impl TypeChecker {
         }
 
         // Look up or create the variable type in the environment
-        let var_type = self.type_env.entry(assignment.variable.clone()).or_insert(value_type.clone());
+        let var_type = self
+            .type_env
+            .entry(assignment.variable.clone())
+            .or_insert(value_type.clone());
 
         // Check if types are compatible
         if *var_type != value_type && *var_type != Type::Unknown && value_type != Type::Unknown {
             self.errors.push(TypeError {
-                message: format!("Cannot assign {} to variable of type {}", value_type, var_type),
+                message: format!(
+                    "Cannot assign {} to variable of type {}",
+                    value_type, var_type
+                ),
                 node: AstNode::Assignment(assignment.clone()),
             });
         } else {
@@ -488,7 +522,6 @@ impl TypeChecker {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::parser::Parser;
 
     #[test]
     fn test_type_checker_basic() {
@@ -500,8 +533,12 @@ mod tests {
                 Definition::Entity(EntityDef {
                     name: "Farmer".to_string(),
                     fields: vec![
-                        FieldDef { name: "id".to_string() },
-                        FieldDef { name: "location".to_string() },
+                        FieldDef {
+                            name: "id".to_string(),
+                        },
+                        FieldDef {
+                            name: "location".to_string(),
+                        },
                     ],
                 }),
                 Definition::Rule(RuleDef {
@@ -511,14 +548,12 @@ mod tests {
                         op: Comparator::Greater,
                         right: Box::new(Term::Number(0)),
                     }),
-                    actions: vec![
-                        Action::Predicate(Predicate {
-                            name: "validate_farmer".to_string(),
-                            arguments: vec![Term::Identifier("Farmer".to_string())],
-                        })
-                    ],
-                })
-            ]
+                    actions: vec![Action::Predicate(Predicate {
+                        name: "validate_farmer".to_string(),
+                        arguments: vec![Term::Identifier("Farmer".to_string())],
+                    })],
+                }),
+            ],
         };
 
         // This should not cause any type errors
@@ -532,17 +567,15 @@ mod tests {
 
         // Create a program with a type error
         let program = Program {
-            definitions: vec![
-                Definition::Rule(RuleDef {
-                    name: "InvalidRule".to_string(),
-                    condition: Condition::Expression(Expression::Comparison {
-                        left: Box::new(Term::Number(5)),
-                        op: Comparator::Greater,
-                        right: Box::new(Term::Identifier("undefined_var".to_string())), // This variable doesn't exist
-                    }),
-                    actions: vec![],
-                })
-            ]
+            definitions: vec![Definition::Rule(RuleDef {
+                name: "InvalidRule".to_string(),
+                condition: Condition::Expression(Expression::Comparison {
+                    left: Box::new(Term::Number(5)),
+                    op: Comparator::Greater,
+                    right: Box::new(Term::Identifier("undefined_var".to_string())), // This variable doesn't exist
+                }),
+                actions: vec![],
+            })],
         };
 
         // This should cause a type error
@@ -560,15 +593,17 @@ mod tests {
 
         // Create an entity with duplicate field names
         let program = Program {
-            definitions: vec![
-                Definition::Entity(EntityDef {
-                    name: "TestEntity".to_string(),
-                    fields: vec![
-                        FieldDef { name: "field1".to_string() },
-                        FieldDef { name: "field1".to_string() }, // Duplicate field name
-                    ],
-                })
-            ]
+            definitions: vec![Definition::Entity(EntityDef {
+                name: "TestEntity".to_string(),
+                fields: vec![
+                    FieldDef {
+                        name: "field1".to_string(),
+                    },
+                    FieldDef {
+                        name: "field1".to_string(),
+                    }, // Duplicate field name
+                ],
+            })],
         };
 
         // This should cause a type error
@@ -586,17 +621,18 @@ mod tests {
 
         // Create a rule that references a non-existent entity
         let program = Program {
-            definitions: vec![
-                Definition::Rule(RuleDef {
-                    name: "InvalidRule".to_string(),
-                    condition: Condition::Expression(Expression::Comparison {
-                        left: Box::new(Term::QualifiedRef("nonexistent".to_string(), "field".to_string())),
-                        op: Comparator::Equal,
-                        right: Box::new(Term::Number(42)),
-                    }),
-                    actions: vec![],
-                })
-            ]
+            definitions: vec![Definition::Rule(RuleDef {
+                name: "InvalidRule".to_string(),
+                condition: Condition::Expression(Expression::Comparison {
+                    left: Box::new(Term::QualifiedRef(
+                        "nonexistent".to_string(),
+                        "field".to_string(),
+                    )),
+                    op: Comparator::Equal,
+                    right: Box::new(Term::Number(42)),
+                }),
+                actions: vec![],
+            })],
         };
 
         // This should cause a type error
@@ -605,7 +641,9 @@ mod tests {
 
         let errors = result.err().unwrap();
         assert!(!errors.is_empty());
-        assert!(errors[0].message.contains("Entity 'nonexistent' does not exist"));
+        assert!(errors[0]
+            .message
+            .contains("Entity 'nonexistent' does not exist"));
     }
 
     #[test]
@@ -617,20 +655,23 @@ mod tests {
             definitions: vec![
                 Definition::Entity(EntityDef {
                     name: "TestEntity".to_string(),
-                    fields: vec![
-                        FieldDef { name: "field1".to_string() },
-                    ],
+                    fields: vec![FieldDef {
+                        name: "field1".to_string(),
+                    }],
                 }),
                 Definition::Rule(RuleDef {
                     name: "InvalidRule".to_string(),
                     condition: Condition::Expression(Expression::Comparison {
-                        left: Box::new(Term::QualifiedRef("TestEntity".to_string(), "nonexistent_field".to_string())),
+                        left: Box::new(Term::QualifiedRef(
+                            "TestEntity".to_string(),
+                            "nonexistent_field".to_string(),
+                        )),
                         op: Comparator::Equal,
                         right: Box::new(Term::Number(42)),
                     }),
                     actions: vec![],
-                })
-            ]
+                }),
+            ],
         };
 
         // This should cause a type error
@@ -639,7 +680,9 @@ mod tests {
 
         let errors = result.err().unwrap();
         assert!(!errors.is_empty());
-        assert!(errors[0].message.contains("Field 'nonexistent_field' does not exist in entity 'TestEntity'"));
+        assert!(errors[0]
+            .message
+            .contains("Field 'nonexistent_field' does not exist in entity 'TestEntity'"));
     }
 
     #[test]
@@ -651,19 +694,22 @@ mod tests {
             definitions: vec![
                 Definition::Entity(EntityDef {
                     name: "TestEntity".to_string(),
-                    fields: vec![
-                        FieldDef { name: "value".to_string() },
-                    ],
+                    fields: vec![FieldDef {
+                        name: "value".to_string(),
+                    }],
                 }),
                 Definition::Constraint(ConstraintDef {
                     name: "ValidConstraint".to_string(),
                     condition: Condition::Expression(Expression::Comparison {
-                        left: Box::new(Term::QualifiedRef("TestEntity".to_string(), "value".to_string())),
+                        left: Box::new(Term::QualifiedRef(
+                            "TestEntity".to_string(),
+                            "value".to_string(),
+                        )),
                         op: Comparator::Greater,
                         right: Box::new(Term::Number(0)),
                     }),
-                })
-            ]
+                }),
+            ],
         };
 
         // This should not cause any type errors
@@ -680,9 +726,9 @@ mod tests {
             definitions: vec![
                 Definition::Entity(EntityDef {
                     name: "TestEntity".to_string(),
-                    fields: vec![
-                        FieldDef { name: "value".to_string() },
-                    ],
+                    fields: vec![FieldDef {
+                        name: "value".to_string(),
+                    }],
                 }),
                 Definition::Constraint(ConstraintDef {
                     name: "InvalidConstraint".to_string(),
@@ -690,8 +736,8 @@ mod tests {
                         name: "some_function".to_string(),
                         arguments: vec![],
                     })),
-                })
-            ]
+                }),
+            ],
         };
 
         // This should cause a type error
@@ -700,6 +746,8 @@ mod tests {
 
         let errors = result.err().unwrap();
         assert!(!errors.is_empty());
-        assert!(errors[0].message.contains("Constraint condition must evaluate to bool"));
+        assert!(errors[0]
+            .message
+            .contains("Constraint condition must evaluate to bool"));
     }
 }

@@ -1,5 +1,4 @@
-use std::collections::HashMap;
-use crate::token::{Token, TokenType, LexerError, LexerErrorType};
+use crate::token::{LexerError, LexerErrorType, Token, TokenType};
 
 pub struct Lexer {
     input: Vec<char>,
@@ -40,11 +39,11 @@ impl Lexer {
         } else {
             self.ch = self.input[self.read_position];
         }
-        
+
         self.position = self.read_position;
         self.read_position += 1;
         self.column += 1;
-        
+
         if self.ch == '\n' {
             self.line += 1;
             self.column = 0;
@@ -71,6 +70,7 @@ impl Lexer {
         }
     }
 
+    #[allow(dead_code)]
     fn skip_string(&mut self) {
         // According to KERN spec, strings are not first-class citizens
         // So we treat quotes as illegal characters
@@ -99,7 +99,10 @@ impl Lexer {
             // Unterminated string error
             self.errors.push(LexerError::new(
                 LexerErrorType::UnterminatedString,
-                format!("Unterminated string starting at line {}, column {}", start_line, start_column),
+                format!(
+                    "Unterminated string starting at line {}, column {}",
+                    start_line, start_column
+                ),
                 start_line,
                 start_column,
                 start_position,
@@ -166,15 +169,33 @@ impl Lexer {
             '=' => {
                 if self.peek_char() == '=' {
                     self.read_char(); // consume second '='
-                    Token::from_str(TokenType::Equal, "==", self.line, self.column - 1, self.position - 1)
+                    Token::from_str(
+                        TokenType::Equal,
+                        "==",
+                        self.line,
+                        self.column - 1,
+                        self.position - 1,
+                    )
                 } else {
-                    Token::from_str(TokenType::Assignment, "=", self.line, self.column, self.position)
+                    Token::from_str(
+                        TokenType::Assignment,
+                        "=",
+                        self.line,
+                        self.column,
+                        self.position,
+                    )
                 }
-            },
+            }
             '!' => {
                 if self.peek_char() == '=' {
                     self.read_char(); // consume '='
-                    Token::from_str(TokenType::NotEqual, "!=", self.line, self.column - 1, self.position - 1)
+                    Token::from_str(
+                        TokenType::NotEqual,
+                        "!=",
+                        self.line,
+                        self.column - 1,
+                        self.position - 1,
+                    )
                 } else {
                     // Error case: '!' not followed by '=' - this is an illegal character
                     let current_ch = self.ch;
@@ -191,35 +212,83 @@ impl Lexer {
                         position,
                     ));
 
-                    Token::new(TokenType::Illegal(current_ch), Some(current_ch.to_string()), line, column, position)
+                    Token::new(
+                        TokenType::Illegal(current_ch),
+                        Some(current_ch.to_string()),
+                        line,
+                        column,
+                        position,
+                    )
                 }
-            },
+            }
             '>' => {
                 if self.peek_char() == '=' {
                     self.read_char(); // consume '='
-                    Token::from_str(TokenType::GreaterEqual, ">=", self.line, self.column - 1, self.position - 1)
+                    Token::from_str(
+                        TokenType::GreaterEqual,
+                        ">=",
+                        self.line,
+                        self.column - 1,
+                        self.position - 1,
+                    )
                 } else {
-                    Token::from_str(TokenType::Greater, ">", self.line, self.column, self.position)
+                    Token::from_str(
+                        TokenType::Greater,
+                        ">",
+                        self.line,
+                        self.column,
+                        self.position,
+                    )
                 }
-            },
+            }
             '<' => {
                 if self.peek_char() == '=' {
                     self.read_char(); // consume '='
-                    Token::from_str(TokenType::LessEqual, "<=", self.line, self.column - 1, self.position - 1)
+                    Token::from_str(
+                        TokenType::LessEqual,
+                        "<=",
+                        self.line,
+                        self.column - 1,
+                        self.position - 1,
+                    )
                 } else {
                     Token::from_str(TokenType::Less, "<", self.line, self.column, self.position)
                 }
-            },
-            '{' => Token::from_str(TokenType::LeftBrace, "{", self.line, self.column, self.position),
-            '}' => Token::from_str(TokenType::RightBrace, "}", self.line, self.column, self.position),
-            '(' => Token::from_str(TokenType::LeftParen, "(", self.line, self.column, self.position),
-            ')' => Token::from_str(TokenType::RightParen, ")", self.line, self.column, self.position),
+            }
+            '{' => Token::from_str(
+                TokenType::LeftBrace,
+                "{",
+                self.line,
+                self.column,
+                self.position,
+            ),
+            '}' => Token::from_str(
+                TokenType::RightBrace,
+                "}",
+                self.line,
+                self.column,
+                self.position,
+            ),
+            '(' => Token::from_str(
+                TokenType::LeftParen,
+                "(",
+                self.line,
+                self.column,
+                self.position,
+            ),
+            ')' => Token::from_str(
+                TokenType::RightParen,
+                ")",
+                self.line,
+                self.column,
+                self.position,
+            ),
             ',' => Token::from_str(TokenType::Comma, ",", self.line, self.column, self.position),
             '.' => Token::from_str(TokenType::Dot, ".", self.line, self.column, self.position),
             ':' => Token::from_str(TokenType::Colon, ":", self.line, self.column, self.position),
             '\0' => Token::simple(TokenType::Eof, self.line, self.column, self.position),
             _ if is_letter(self.ch) => {
-                let start_pos = self.position;
+                let _start_pos = self.position;
                 let start_line = self.line;
                 let start_column = self.column;
                 let start_position = self.position;
@@ -228,9 +297,14 @@ impl Lexer {
                 let token_type = self.lookup_identifier(&ident);
                 let token_value = Some(ident.clone());
 
-                Token::new(token_type, token_value, start_line,
-                                start_column, start_position)
-            },
+                Token::new(
+                    token_type,
+                    token_value,
+                    start_line,
+                    start_column,
+                    start_position,
+                )
+            }
             _ if self.ch.is_ascii_digit() => {
                 let start_pos = self.position;
                 let start_line = self.line;
@@ -238,11 +312,18 @@ impl Lexer {
                 let start_position = self.position;
 
                 let value = self.read_number();
-                let number_str = self.input[start_pos..self.position].iter().collect::<String>();
+                let number_str = self.input[start_pos..self.position]
+                    .iter()
+                    .collect::<String>();
 
-                Token::new(TokenType::Number(value), Some(number_str.clone()), start_line,
-                                start_column, start_position)
-            },
+                Token::new(
+                    TokenType::Number(value),
+                    Some(number_str.clone()),
+                    start_line,
+                    start_column,
+                    start_position,
+                )
+            }
             '"' | '\'' => {
                 // According to KERN spec, strings are not first-class citizens
                 // So we treat quotes as illegal characters
@@ -261,8 +342,14 @@ impl Lexer {
                     position,
                 ));
 
-                Token::new(TokenType::Illegal(current_ch), Some(current_ch.to_string()), line, column, position)
-            },
+                Token::new(
+                    TokenType::Illegal(current_ch),
+                    Some(current_ch.to_string()),
+                    line,
+                    column,
+                    position,
+                )
+            }
             _ => {
                 // Handle unrecognized characters
                 let current_ch = self.ch;
@@ -280,7 +367,13 @@ impl Lexer {
                     position,
                 ));
 
-                Token::new(TokenType::Illegal(current_ch), Some(current_ch.to_string()), line, column, position)
+                Token::new(
+                    TokenType::Illegal(current_ch),
+                    Some(current_ch.to_string()),
+                    line,
+                    column,
+                    position,
+                )
             }
         };
 
@@ -347,11 +440,23 @@ mod tests {
         let tokens = lexer.tokenize_all();
 
         assert_eq!(tokens[0].token_type, TokenType::Entity);
-        assert_eq!(tokens[1].token_type, TokenType::Identifier("Farmer".to_string()));
+        assert_eq!(
+            tokens[1].token_type,
+            TokenType::Identifier("Farmer".to_string())
+        );
         assert_eq!(tokens[2].token_type, TokenType::LeftBrace);
-        assert_eq!(tokens[3].token_type, TokenType::Identifier("id".to_string()));
-        assert_eq!(tokens[4].token_type, TokenType::Identifier("location".to_string()));
-        assert_eq!(tokens[5].token_type, TokenType::Identifier("produce".to_string()));
+        assert_eq!(
+            tokens[3].token_type,
+            TokenType::Identifier("id".to_string())
+        );
+        assert_eq!(
+            tokens[4].token_type,
+            TokenType::Identifier("location".to_string())
+        );
+        assert_eq!(
+            tokens[5].token_type,
+            TokenType::Identifier("produce".to_string())
+        );
         assert_eq!(tokens[6].token_type, TokenType::RightBrace);
         assert_eq!(tokens[7].token_type, TokenType::Eof);
     }
@@ -363,12 +468,21 @@ mod tests {
         let tokens = lexer.tokenize_all();
 
         assert_eq!(tokens[0].token_type, TokenType::Rule);
-        assert_eq!(tokens[1].token_type, TokenType::Identifier("Name".to_string()));
+        assert_eq!(
+            tokens[1].token_type,
+            TokenType::Identifier("Name".to_string())
+        );
         assert_eq!(tokens[2].token_type, TokenType::Colon);
         assert_eq!(tokens[3].token_type, TokenType::If);
-        assert_eq!(tokens[4].token_type, TokenType::Identifier("condition".to_string()));
+        assert_eq!(
+            tokens[4].token_type,
+            TokenType::Identifier("condition".to_string())
+        );
         assert_eq!(tokens[5].token_type, TokenType::Then);
-        assert_eq!(tokens[6].token_type, TokenType::Identifier("action".to_string()));
+        assert_eq!(
+            tokens[6].token_type,
+            TokenType::Identifier("action".to_string())
+        );
     }
 
     #[test]
@@ -392,7 +506,10 @@ mod tests {
         let mut lexer = Lexer::new(input);
         let tokens = lexer.tokenize_all();
 
-        assert_eq!(tokens[0].token_type, TokenType::Identifier("num".to_string()));
+        assert_eq!(
+            tokens[0].token_type,
+            TokenType::Identifier("num".to_string())
+        );
         assert_eq!(tokens[1].token_type, TokenType::Number(42));
         assert_eq!(tokens[2].token_type, TokenType::Eof);
     }

@@ -171,7 +171,7 @@ mod tests {
         let mut scheduler = RuleScheduler::new();
 
         // Create a test rule
-        let rule_info = RuleExecutionInfo::new(1);
+        let _rule_info = RuleExecutionInfo::new(1);
         let rule_info_with_priority = RuleExecutionInfo {
             rule_id: 1,
             priority: 50,

@@ -2,7 +2,7 @@
 //!
 //! Manages symbols and their properties in the KERN language.
 
-use crate::types::{TypeDescriptor, TypeKind};
+use crate::types::TypeDescriptor;
 use std::collections::HashMap;
 
 /// Different kinds of symbols in KERN
@@ -144,7 +144,7 @@ impl SymbolTable {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::TypeDescriptor;
+    use crate::types::{TypeDescriptor, TypeKind};
 
     #[test]
     fn test_symbol_creation() {

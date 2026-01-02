@@ -1,6 +1,2 @@
-use crate::types::{
-    ConflictEntry, ExecutionContext, PriorityStrategy, ResolutionMode, RuleEngineError,
-    RuleExecutionInfo, RuleMatch, RulePriority, Value,
-};
-use kern_graph_builder::{ExecutionGraph, GraphNode, GraphNodeType, SpecializedNode};
-use std::collections::HashMap;
+// This module re-exports the RuleEngine from lib.rs
+// All types are defined in lib.rs and types.rs

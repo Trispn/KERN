@@ -1,4 +1,4 @@
-use kern_lexer::{Lexer, Token, TokenType};
+use kern_lexer::{Lexer, TokenType};
 
 fn main() {
     let input = r#"
@@ -14,14 +14,14 @@ rule CheckLocation:
 "#;
 
     let mut lexer = Lexer::new(input);
-    
+
     println!("Tokenizing input:\n{}", input);
     println!("\nTokens:");
-    
+
     loop {
         let token = lexer.next_token();
         println!("{:?}", token);
-        
+
         if matches!(token.token_type, TokenType::Eof) {
             break;
         }

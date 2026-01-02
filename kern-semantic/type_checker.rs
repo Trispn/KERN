@@ -3,12 +3,10 @@
 //! Performs type checking on the KERN AST after symbol resolution.
 
 use crate::resolver::Resolver;
-use crate::symbol::{Symbol, SymbolKind};
 use crate::types::{TypeChecker as TypeCheckerUtil, TypeDescriptor, TypeKind};
 use kern_parser::{
-    Action, Assignment, AstNode, Comparator, Condition, ConstraintDef, ControlAction, Definition,
-    EntityDef, Expression, FlowDef, HaltAction, IfAction, LogicalOp, LoopAction, Predicate,
-    Program, RuleDef, Term,
+    Action, Assignment, Comparator, Condition, ConstraintDef, ControlAction, Definition, EntityDef,
+    Expression, FlowDef, IfAction, LoopAction, Predicate, Program, RuleDef, Term,
 };
 
 #[derive(Debug)]

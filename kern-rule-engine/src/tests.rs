@@ -38,7 +38,7 @@ mod tests {
     #[test]
     fn test_pattern_matching_basic() {
         let graph = create_mock_graph();
-        let engine = RuleEngine::new(Some(graph));
+        let _engine = RuleEngine::new(Some(graph));
 
         // Test Value equality
         let v1 = Value::Num(42);

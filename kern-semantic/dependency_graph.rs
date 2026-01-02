@@ -3,12 +3,12 @@
 //! Analyzes dependencies between symbols in the KERN language.
 
 use crate::resolver::Resolver;
-use crate::symbol::{Symbol, SymbolKind};
+use crate::symbol::SymbolKind;
 use kern_parser::{
-    Action, Assignment, AstNode, Condition, ConstraintDef, ControlAction, Definition, EntityDef,
-    Expression, FlowDef, HaltAction, IfAction, LoopAction, Predicate, Program, RuleDef, Term,
+    Action, Condition, ConstraintDef, ControlAction, Definition, EntityDef, Expression, FlowDef,
+    Program, RuleDef, Term,
 };
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::collections::{HashMap, HashSet};
 
 #[derive(Debug, Clone)]
 pub struct DependencyNode {

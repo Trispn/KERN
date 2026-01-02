@@ -513,6 +513,7 @@ impl BytecodeCompiler {
     }
 
     // Helper function to compile context operations
+    #[allow(dead_code)]
     fn compile_context_op(&mut self, opcode: u8, flags: u8, operand: u64) -> Instruction {
         match opcode {
             0x40 => Instruction::new(Opcode::PushCtx as u8, flags, operand), // PUSH_CTX
@@ -559,7 +560,6 @@ pub fn decode(instr_bytes: &[u8]) -> Option<Instruction> {
 
 // Operand encoding and decoding utilities
 pub mod operand_utils {
-    use super::Instruction;
 
     // Encode two 24-bit values into a 48-bit operand
     pub fn encode_two_24bit(val1: u32, val2: u32) -> u64 {

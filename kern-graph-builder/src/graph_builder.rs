@@ -1,6 +1,6 @@
 use kern_parser::{
-    Action, Assignment, AstNode, Condition, ConstraintDef, ControlAction, Definition, EntityDef,
-    Expression, FlowDef, HaltAction, IfAction, LoopAction, Predicate, Program, RuleDef, Term,
+    Action, Assignment, Condition, ConstraintDef, ControlAction, Definition, EntityDef, Expression,
+    FlowDef, HaltAction, IfAction, LoopAction, Predicate, Program, RuleDef, Term,
 };
 use std::collections::HashMap;
 
@@ -233,6 +233,7 @@ pub struct GraphBuilder {
     entry_points: Vec<EntryPoint>,
     registers: RegisterSet,
     contexts: ContextPool,
+    #[allow(dead_code)]
     source_map: HashMap<u32, String>, // Maps node IDs to source locations for debugging
 }
 
@@ -853,7 +854,7 @@ impl GraphBuilder {
 
         for entry_point in &graph.entry_points {
             if !visited[entry_point.node_id as usize] {
-                let mut path: Vec<u32> = Vec::new();
+                let _path: Vec<u32> = Vec::new();
                 let mut rec_stack = vec![false; graph.node_count as usize];
                 let mut path_stack = Vec::new();
 
@@ -1051,7 +1052,7 @@ impl GraphBuilder {
     fn combine_similar_operations(&mut self, graph: &mut ExecutionGraph) -> bool {
         // This is a basic implementation - in a real system, we would have more
         // sophisticated optimization techniques
-        let mut combined = false;
+        let combined = false;
 
         // Look for consecutive LOAD operations that can be combined
         for i in 0..graph.nodes.len() {

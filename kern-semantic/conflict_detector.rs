@@ -3,13 +3,11 @@
 //! Detects conflicts between rules in the KERN language.
 
 use crate::resolver::Resolver;
-use crate::symbol::{Symbol, SymbolKind};
+use crate::symbol::SymbolKind;
 use kern_parser::{
-    Action, Assignment, AstNode, Comparator, Condition, ConstraintDef, ControlAction, Definition,
-    EntityDef, Expression, FlowDef, HaltAction, IfAction, LoopAction, Predicate, Program, RuleDef,
-    Term,
+    Action, Comparator, Condition, Definition, Expression, Predicate, Program, RuleDef, Term,
 };
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum ConflictType {

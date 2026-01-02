@@ -1,8 +1,6 @@
 //! KERN Type System
-//! 
+//!
 //! Defines the type system for KERN language with explicit typing and deterministic behavior.
-
-use std::collections::HashMap;
 
 /// Core primitive types in KERN
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -12,9 +10,9 @@ pub enum TypeKind {
     Bool,
     String,
     Void,
-    Entity(String),  // Entity<T> where T is the entity name
-    List(Box<TypeDescriptor>),  // List<T>
-    Optional(Box<TypeDescriptor>),  // Optional<T>
+    Entity(String),                // Entity<T> where T is the entity name
+    List(Box<TypeDescriptor>),     // List<T>
+    Optional(Box<TypeDescriptor>), // Optional<T>
     Sym,
     Num,
     Ref,
@@ -26,8 +24,8 @@ pub enum TypeKind {
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct TypeDescriptor {
     pub kind: TypeKind,
-    pub name_id: Option<String>,  // Optional name for named types
-    pub parameters: Vec<TypeDescriptor>,  // Type parameters for generics
+    pub name_id: Option<String>,         // Optional name for named types
+    pub parameters: Vec<TypeDescriptor>, // Type parameters for generics
 }
 
 impl TypeDescriptor {
@@ -137,7 +135,8 @@ mod tests {
 
     #[test]
     fn test_entity_type() {
-        let entity_type = TypeDescriptor::new_named(TypeKind::Entity("Farmer".to_string()), "Farmer".to_string());
+        let entity_type =
+            TypeDescriptor::new_named(TypeKind::Entity("Farmer".to_string()), "Farmer".to_string());
         assert!(entity_type.is_entity());
         assert!(!entity_type.is_numeric());
     }
@@ -145,7 +144,10 @@ mod tests {
     #[test]
     fn test_composite_types() {
         let int_type = TypeDescriptor::new(TypeKind::Int);
-        let list_type = TypeDescriptor::new_composite(TypeKind::List(Box::new(int_type.clone())), vec![int_type.clone()]);
+        let list_type = TypeDescriptor::new_composite(
+            TypeKind::List(Box::new(int_type.clone())),
+            vec![int_type.clone()],
+        );
         assert!(!list_type.is_numeric());
     }
 
@@ -154,7 +156,7 @@ mod tests {
         let int_type1 = TypeDescriptor::new(TypeKind::Int);
         let int_type2 = TypeDescriptor::new(TypeKind::Int);
         assert!(int_type1.is_compatible(&int_type2));
-        
+
         let bool_type = TypeDescriptor::new(TypeKind::Bool);
         assert!(!int_type1.is_compatible(&bool_type));
     }

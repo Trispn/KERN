@@ -51,7 +51,7 @@ impl ConflictResolver {
     }
 
     /// Checks if two rules conflict with each other
-    fn rules_conflict(&self, rule1: &RuleExecutionInfo, rule2: &RuleExecutionInfo) -> bool {
+    fn rules_conflict(&self, _rule1: &RuleExecutionInfo, _rule2: &RuleExecutionInfo) -> bool {
         // In a real implementation, this would check for actual conflicts
         // For example, if both rules try to modify the same entity attribute
         // For now, we'll return false to indicate no conflicts
@@ -123,7 +123,7 @@ impl ConflictResolver {
     /// Attempts to merge actions of conflicting rules
     fn resolve_by_merging(
         &self,
-        rules: &mut [RuleExecutionInfo],
+        _rules: &mut [RuleExecutionInfo],
         conflicting_rule_ids: &[u32],
     ) -> Result<(), String> {
         // In a real implementation, this would attempt to merge the actions of conflicting rules

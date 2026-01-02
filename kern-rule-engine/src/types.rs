@@ -1,4 +1,4 @@
-use kern_parser::{Comparator, LogicalOp};
+use kern_parser::Comparator;
 use std::collections::HashMap;
 use std::fmt;
 

@@ -118,6 +118,7 @@ impl Parser {
         self.current_token = self.lexer.next_token();
     }
 
+    #[allow(dead_code)]
     fn peek_token(&mut self) -> Token {
         self.lexer.peek_next_token()
     }
@@ -149,6 +150,7 @@ impl Parser {
         self.current_token.token_type == *token_type
     }
 
+    #[allow(dead_code)]
     fn is_peek_token(&mut self, token_type: &TokenType) -> bool {
         let peek = self.peek_token();
         peek.token_type == *token_type

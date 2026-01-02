@@ -1,7 +1,7 @@
 //! Validation edge case tests
 //! These tests cover edge cases and boundary conditions for the parser
 
-use kern_parser::{Parser, Program, Definition};
+use kern_parser::{Definition, Parser};
 
 #[test]
 fn test_empty_entity() {

@@ -1,7 +1,7 @@
 //! Comprehensive test suite for all KERN grammar productions
 //! Based on the formal KERN grammar specification (EBNF)
 
-use kern_parser::{Parser, Program, Definition};
+use kern_parser::{Definition, Parser};
 
 // Test entity definitions according to grammar:
 // entity_def = "entity" , identifier , "{" , { field_def } , "}" ;

@@ -1,7 +1,7 @@
 //! Verification tests to ensure all grammar productions match KERN specification
 //! Based on the formal KERN grammar specification (EBNF)
 
-use kern_parser::{Parser, Program, Definition};
+use kern_parser::{Definition, Parser};
 
 // Test that all grammar productions are correctly parsed according to the formal specification
 #[test]
