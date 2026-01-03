@@ -1,0 +1,57 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#001F3F;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#000d1a;stop-opacity:1" />
+    </linearGradient>
+    <style>
+      .text { font-family: Arial, sans-serif; font-weight: bold; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGrad)"/>
+  
+  <!-- Subtle Network Graph Pattern -->
+  <g stroke="#ffffff" stroke-opacity="0.1" stroke-width="1">
+    <line x1="100" y1="100" x2="300" y2="200"/>
+    <line x1="300" y1="200" x2="500" y2="100"/>
+    <line x1="300" y1="200" x2="300" y2="400"/>
+    <line x1="100" y1="500" x2="300" y2="400"/>
+    <line x1="500" y1="500" x2="300" y2="400"/>
+    <line x1="800" y1="100" x2="1000" y2="300"/>
+    <line x1="1000" y1="300" x2="900" y2="500"/>
+    <line x1="1100" y1="50" x2="1000" y2="300"/>
+  </g>
+  <g fill="#ffffff" fill-opacity="0.1">
+    <circle cx="100" cy="100" r="4"/>
+    <circle cx="300" cy="200" r="4"/>
+    <circle cx="500" cy="100" r="4"/>
+    <circle cx="300" cy="400" r="4"/>
+    <circle cx="100" cy="500" r="4"/>
+    <circle cx="500" cy="500" r="4"/>
+    <circle cx="800" cy="100" r="4"/>
+    <circle cx="1000" cy="300" r="4"/>
+    <circle cx="900" cy="500" r="5"/>
+    <circle cx="1100" cy="50" r="5"/>
+  </g>
+
+  <!-- Content Container -->
+  <g transform="translate(300, 165)">
+      <!-- Huge Logo -->
+      <g transform="scale(0.6)">
+        <!-- Hexagon Gold -->
+        <path d="M256 20 L472.5 145 L472.5 395 L256 520 L39.5 395 L39.5 145 Z" fill="#B8860B"/>
+        <!-- Hexagon Navy -->
+        <path d="M256 50 L429 150 L429 350 L256 450 L83 350 L83 150 Z" fill="#001F3F"/>
+        <!-- K -->
+        <path d="M160 140 L210 140 L210 372 L160 372 Z" fill="#FFFFFF"/>
+        <path d="M210 260 L310 140 L370 140 L250 280 Z" fill="#FFFFFF"/>
+        <path d="M250 230 L370 372 L310 372 L210 250 Z" fill="#FFFFFF"/>
+      </g>
+      
+      <!-- Text -->
+      <text x="350" y="200" class="text" font-size="120" fill="#FFFFFF">KERN</text>
+      <text x="355" y="250" class="text" font-size="30" fill="#B8860B" letter-spacing="4">PROGRAMMING LANGUAGE</text>
+  </g>
+</svg>

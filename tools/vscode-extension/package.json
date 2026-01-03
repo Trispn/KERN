@@ -1,0 +1,40 @@
+{
+    "name": "kern-language",
+    "displayName": "KERN Programming Language",
+    "description": "Language support for KERN (Knowledge Execution & Reasoning Notation)",
+    "version": "0.1.0",
+    "publisher": "KERN",
+    "icon": "icon.png",
+    "engines": {
+        "vscode": "^1.70.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "contributes": {
+        "languages": [
+            {
+                "id": "kern",
+                "aliases": [
+                    "KERN",
+                    "kern"
+                ],
+                "extensions": [
+                    ".kern"
+                ],
+                "icon": {
+                    "light": "./icons/kern.svg",
+                    "dark": "./icons/kern.svg"
+                },
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "kern",
+                "scopeName": "source.kern",
+                "path": "./syntaxes/kern.tmLanguage.json"
+            }
+        ]
+    }
+}

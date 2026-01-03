@@ -1,0 +1,56 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "KERN",
+    "patterns": [
+        {
+            "include": "#keywords"
+        },
+        {
+            "include": "#strings"
+        },
+        {
+            "include": "#comments"
+        },
+        {
+            "include": "#numbers"
+        }
+    ],
+    "repository": {
+        "keywords": {
+            "patterns": [
+                {
+                    "name": "keyword.control.kern",
+                    "match": "\\b(if|else|then|and|or|not|return|match|with)\\b"
+                },
+                {
+                    "name": "storage.type.kern",
+                    "match": "\\b(entity|rule|flow|constraint|input|output)\\b"
+                },
+                {
+                    "name": "storage.modifier.kern",
+                    "match": "\\b(primary)\\b"
+                }
+            ]
+        },
+        "strings": {
+            "name": "string.quoted.double.kern",
+            "begin": "\"",
+            "end": "\"",
+            "patterns": [
+                {
+                    "name": "constant.character.escape.kern",
+                    "match": "\\\\."
+                }
+            ]
+        },
+        "comments": {
+            "name": "comment.line.number-sign.kern",
+            "match": "#.*$"
+        },
+        "numbers": {
+            "name": "constant.numeric.kern",
+            "match": "\\b\\d+(\\.\\d+)?\\b"
+        }
+    },
+    "scopeName": "source.kern"
+}

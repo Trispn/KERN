@@ -1,0 +1,44 @@
+<svg width="200" height="260" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+      <feOffset dx="1" dy="1" result="offsetblur"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.5"/>
+      </feComponentTransfer>
+      <feMerge> 
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/> 
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Paper Sheet -->
+  <path d="M20 10 L140 10 L180 50 L180 250 L20 250 Z" fill="#1E1E1E" stroke="#333333" stroke-width="1" filter="url(#shadow)"/>
+  
+  <!-- Folded Corner -->
+  <path d="M140 10 L140 50 L180 50" fill="#2D2D2D" stroke="#333333" stroke-width="1"/>
+  
+  <!-- Binary Background Pattern -->
+  <text x="25" y="40" font-family="monospace" font-size="10" fill="#333333">01011001 01</text>
+  <text x="25" y="55" font-family="monospace" font-size="10" fill="#333333">1010 010100</text>
+  <text x="25" y="70" font-family="monospace" font-size="10" fill="#333333">11 0010 110</text>
+  <text x="25" y="190" font-family="monospace" font-size="10" fill="#333333">01001 10101</text>
+  <text x="25" y="205" font-family="monospace" font-size="10" fill="#333333">110 01011 0</text>
+  
+  <!-- Logo in Center (Scaled Down) -->
+  <g transform="translate(50, 70) scale(0.2)">
+      <!-- Logo but with Dark/Gold theme adjustment -->
+      <!-- Hexagon Gold -->
+      <path d="M256 20 L472.5 145 L472.5 395 L256 520 L39.5 395 L39.5 145 Z" fill="#B8860B"/>
+      <!-- Hexagon Darker Navy/Black -->
+      <path d="M256 50 L429 150 L429 350 L256 450 L83 350 L83 150 Z" fill="#0A0A0A"/>
+      <!-- K in Gold -->
+      <path d="M160 140 L210 140 L210 372 L160 372 Z" fill="#B8860B"/>
+      <path d="M210 260 L310 140 L370 140 L250 280 Z" fill="#B8860B"/>
+      <path d="M250 230 L370 372 L310 372 L210 250 Z" fill="#B8860B"/>
+  </g>
+
+  <!-- Text -->
+  <text x="100" y="240" font-family="Arial, sans-serif" font-weight="bold" font-size="32" fill="#B8860B" text-anchor="middle">.kbc</text>
+</svg>

@@ -1,0 +1,29 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#B8860B;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="navyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#003366;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#001F3F;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Outer Hexagon (Gold Border) -->
+  <path d="M256 20 L472.5 145 L472.5 395 L256 520 L39.5 395 L39.5 145 Z" fill="url(#goldGrad)" transform="scale(0.9) translate(28,28)"/>
+  
+  <!-- Inner Hexagon (Navy Background) -->
+  <path d="M256 50 L429 150 L429 350 L256 450 L83 350 L83 150 Z" fill="url(#navyGrad)" transform="scale(0.95) translate(13,13)"/>
+
+  <!-- Stylized K (Constructed Geometry) -->
+  <!-- Vertical Bar -->
+  <path d="M160 140 L210 140 L210 372 L160 372 Z" fill="#FFFFFF"/>
+  
+  <!-- Upper Arm -->
+  <path d="M210 260 L310 140 L370 140 L250 280 Z" fill="#FFFFFF"/>
+  
+  <!-- Lower Arm -->
+  <path d="M250 230 L370 372 L310 372 L210 250 Z" fill="#FFFFFF"/>
+  
+</svg>
