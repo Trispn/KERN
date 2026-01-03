@@ -1,0 +1,1 @@
+rule Hello: if 1 == 1 then log("Hello, World!")

@@ -213,6 +213,8 @@ fn run_bytecode(input_file: &str) {
     config.sandbox_policy = policy;
 
     let mut vm = VirtualMachine::with_config(config);
+    // Load constant pool so runtime can resolve and print string constants
+    vm.constant_pool = module.constant_pool.clone();
     vm.load_program(module.instruction_stream);
     
     match vm.execute() {

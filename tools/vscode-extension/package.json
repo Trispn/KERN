@@ -2,13 +2,13 @@
     "name": "kern-language",
     "displayName": "KERN Programming Language",
     "description": "Language support for KERN (Knowledge Execution & Reasoning Notation)",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "publisher": "KERN",
     "repository": {
         "type": "git",
         "url": "https://github.com/KERN-Language/KERN"
     },
-    "icon": "icons/kern.svg",
+    "icon": "icon.png",
     "engines": {
         "vscode": "^1.70.0"
     },

@@ -1,4 +1,4 @@
-use kern_bytecode::{BytecodeModule, Instruction, Opcode};
+use kern_bytecode::{BytecodeModule, Instruction, Opcode, Constant};
 use std::collections::HashMap;
 
 pub mod vm_safety;
@@ -169,6 +169,7 @@ pub struct VirtualMachine {
     pub step_count: u32,
     pub external_functions: HashMap<String, fn(&mut VirtualMachine) -> Result<(), String>>,
     pub execution_trace: Vec<ExecutionTraceEntry>, // For PSI introspection
+    pub constant_pool: Vec<Constant>,
     jumped: bool, // Track if the last instruction was a jump
 
     // Safety layer components
@@ -244,6 +245,7 @@ impl VirtualMachine {
             external_functions: HashMap::new(),
             execution_trace: Vec::new(),
             jumped: false,
+            constant_pool: Vec::new(),
 
             // Safety layer components
             memory_manager,
@@ -275,6 +277,7 @@ impl VirtualMachine {
             external_functions: HashMap::new(),
             execution_trace: Vec::new(),
             jumped: false,
+            constant_pool: Vec::new(),
 
             // Safety layer components
             memory_manager,
@@ -955,6 +958,23 @@ impl VirtualMachine {
             .map_err(|e| VmError::SecurityError(vm_safety::security::SecurityError::SandboxViolation(e)))?;
 
         if reg < self.registers.r.len() {
+            let val = self.registers.r[reg];
+
+            // If the VM has a constant pool and the register value indexes it, prefer printing the constant
+            if val >= 0 {
+                let idx = val as usize;
+                if idx < self.constant_pool.len() {
+                    match &self.constant_pool[idx] {
+                        Constant::Num(n) => println!("Output: {}", n),
+                        Constant::Bool(b) => println!("Output: {}", b),
+                        Constant::Sym(s) => println!("Output: {}", s),
+                        Constant::Vec(v) => println!("Output: {:?}", v),
+                    }
+                    return Ok(());
+                }
+            }
+
+            // Fallback to numeric output
             println!("Output: {}", self.registers.r[reg]);
         }
         Ok(())
