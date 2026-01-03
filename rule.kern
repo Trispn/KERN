@@ -1,0 +1,3 @@
+rule TestRule:
+    if x == 1
+    then action()

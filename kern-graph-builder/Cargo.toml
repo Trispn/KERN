@@ -10,5 +10,6 @@ path = "src/lib.rs"
 [dependencies]
 kern_parser = { path = "../kern-parser" }
 kern-ast = { path = "../kern-ast" }
+serde = { version = "1.0", features = ["derive"] }
 
 [dev-dependencies]

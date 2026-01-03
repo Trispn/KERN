@@ -273,11 +273,12 @@ dependencies = [
  "kern_graph_builder",
  "kern_lexer",
  "kern_parser",
+ "serde",
 ]
 
 [[package]]
 name = "kern_compiler_cli"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "clap",
  "kern_bytecode",
@@ -299,6 +300,7 @@ version = "0.1.0"
 dependencies = [
  "kern-ast",
  "kern_parser",
+ "serde",
 ]
 
 [[package]]

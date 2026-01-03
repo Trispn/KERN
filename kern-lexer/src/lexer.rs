@@ -297,13 +297,13 @@ impl Lexer {
                 let token_type = self.lookup_identifier(&ident);
                 let token_value = Some(ident.clone());
 
-                Token::new(
+                return Token::new(
                     token_type,
                     token_value,
                     start_line,
                     start_column,
                     start_position,
-                )
+                );
             }
             _ if self.ch.is_ascii_digit() => {
                 let start_pos = self.position;
@@ -316,13 +316,13 @@ impl Lexer {
                     .iter()
                     .collect::<String>();
 
-                Token::new(
+                return Token::new(
                     TokenType::Number(value),
-                    Some(number_str.clone()),
+                    Some(number_str),
                     start_line,
                     start_column,
                     start_position,
-                )
+                );
             }
             '"' | '\'' => {
                 // According to KERN spec, strings are not first-class citizens

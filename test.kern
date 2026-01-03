@@ -1,0 +1,30 @@
+entity Farmer {
+    id
+    name
+    location
+    produce
+}
+
+entity Crop {
+    id
+    name
+    season
+    value
+}
+
+rule ValidateFarmer:
+    if farmer.id != 0 and farmer.name != ""
+    then mark_valid(farmer)
+
+rule CheckLocation:
+    if farmer.location == "valid"
+    then approve_farmer(farmer)
+
+flow ProcessFarmers {
+    load_farmers()
+    validate_farmers()
+    approve_valid_farmers()
+}
+
+constraint ValidFarmerId: farmer.id > 0
+constraint ValidCropValue: crop.value >= 0

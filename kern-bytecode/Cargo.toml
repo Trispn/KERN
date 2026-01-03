@@ -8,5 +8,6 @@ kern-ast = { path = "../kern-ast", package = "kern-ast" }
 kern-parser = { path = "../kern-parser", package = "kern_parser" }
 kern-lexer = { path = "../kern-lexer", package = "kern_lexer" }
 kern_graph_builder = { path = "../kern-graph-builder", package = "kern_graph_builder" }
+serde = { version = "1.0", features = ["derive"] }
 
 [dev-dependencies]

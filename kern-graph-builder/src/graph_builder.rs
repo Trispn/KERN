@@ -2,10 +2,11 @@ use kern_parser::{
     Action, Assignment, Condition, ConstraintDef, ControlAction, Definition, EntityDef, Expression,
     FlowDef, HaltAction, IfAction, LoopAction, Predicate, Program, RuleDef, Term,
 };
+use serde::Serialize;
 use std::collections::HashMap;
 
 // Define the execution graph data structures as specified in the KERN language documentation
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub enum GraphNodeType {
     Op,      // bytecode operation
     Rule,    // rule evaluation
@@ -14,14 +15,14 @@ pub enum GraphNodeType {
     Io,      // external interface
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Copy)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Copy, Serialize)]
 pub enum EdgeType {
     Control,   // execution order
     Data,      // value dependency
     Condition, // conditional routing
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct GraphNode {
     pub id: u32,
     pub node_type: GraphNodeType,
@@ -35,7 +36,7 @@ pub struct GraphNode {
 }
 
 // Specialized control nodes as specified in the KERN language documentation
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct IfNode {
     pub base: GraphNode,
     pub condition_reg: u8,
@@ -43,7 +44,7 @@ pub struct IfNode {
     pub false_edge: Option<u32>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct LoopNode {
     pub base: GraphNode,
     pub body_entry: Option<u32>,
@@ -51,7 +52,7 @@ pub struct LoopNode {
     pub iteration_limit: u32,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct RuleNode {
     pub base: GraphNode,
     pub rule_id: u32,
@@ -59,7 +60,7 @@ pub struct RuleNode {
     pub evaluation_mode: u8, // 0 = eager, 1 = lazy
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct GraphOpNode {
     pub base: GraphNode,
     pub graph_op_type: u8, // 0 = create, 1 = match, 2 = traverse
@@ -109,7 +110,7 @@ impl GraphOpNode {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct GraphEdge {
     pub from_node: u32,
     pub to_node: u32,
@@ -149,42 +150,42 @@ impl GraphEdge {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct NodeMeta {
     pub source_ref: u32, // mapping to KERN source
     pub cost_hint: u16,  // heuristic cost
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Serialize)]
 pub struct Register {
     pub reg_type: u8,  // sym, num, ref, vec (represented as u8)
     pub value_id: u32, // index into value table
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct RegisterSet {
     pub regs: [Register; 16], // R0–R15
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct Context {
     pub id: u32,
     pub registers: RegisterSet,
     pub flags: u8,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct ContextPool {
     pub contexts: Vec<Context>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct EntryPoint {
     pub node_id: u32,
     pub entry_type: u8, // 0=rule, 1=flow, 2=external call
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub enum SpecializedNode {
     Base(GraphNode),
     If(IfNode),
@@ -205,7 +206,7 @@ impl SpecializedNode {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct ExecutionGraph {
     pub nodes: Vec<SpecializedNode>,
     pub edges: Vec<GraphEdge>,
@@ -218,7 +219,7 @@ pub struct ExecutionGraph {
     pub metadata: GraphMeta,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct GraphMeta {
     pub build_hash: u32,
     pub version: u16,

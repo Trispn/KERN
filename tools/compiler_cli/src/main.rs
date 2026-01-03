@@ -1,10 +1,10 @@
 use clap::Parser;
-use kern_parser::Parser;
-use kern_lexer::Lexer;
+use kern_parser::Parser as KernParser;
+use kern_parser::Definition;
 use kern_graph_builder::GraphBuilder;
-use kern_bytecode::BytecodeCompiler;
+use kern_bytecode::{BytecodeCompiler, BytecodeModule};
+use kern_vm::VirtualMachine;
 use std::fs;
-use std::path::Path;
 
 /// KERN Compiler CLI - Compiles KERN source code to bytecode
 #[derive(Parser, Debug)]
@@ -19,7 +19,7 @@ struct Args {
     output: String,
 
     /// Command to execute
-    #[arg(subcommand)]
+    #[command(subcommand)]
     command: Commands,
 }
 
@@ -37,6 +37,8 @@ enum Commands {
     Verify,
     /// Report symbols, entities, rules
     Stats,
+    /// Execute bytecode
+    Run,
 }
 
 fn main() {
@@ -66,6 +68,10 @@ fn main() {
         Commands::Stats => {
             println!("Reporting statistics for: {}", args.input);
             report_stats(&args.input);
+        },
+        Commands::Run => {
+            println!("Running KERN bytecode: {}", args.input);
+            run_bytecode(&args.input);
         }
     }
 }
@@ -75,22 +81,18 @@ fn compile_to_bytecode(input_file: &str, output_file: &str) {
     let source_code = fs::read_to_string(input_file)
         .expect("Failed to read input file");
 
-    // Tokenize the source
-    let mut lexer = Lexer::new(&source_code);
-    let tokens = lexer.tokenize();
-
-    // Parse the tokens
-    let mut parser = Parser::new(tokens);
-    let program = parser.parse_program();
-
-    // Check for parsing errors
-    if !parser.errors.is_empty() {
-        eprintln!("Parsing errors found:");
-        for error in &parser.errors {
-            eprintln!("  {}", error);
+    // Parse
+    let mut parser = KernParser::new(&source_code);
+    let program = match parser.parse_program() {
+        Ok(p) => p,
+        Err(errors) => {
+            eprintln!("Parsing errors found:");
+            for error in errors {
+                eprintln!("  {}", error);
+            }
+            return;
         }
-        return;
-    }
+    };
 
     // Build execution graph
     let mut graph_builder = GraphBuilder::new();
@@ -112,22 +114,16 @@ fn check_source(input_file: &str) {
     let source_code = fs::read_to_string(input_file)
         .expect("Failed to read input file");
 
-    // Tokenize the source
-    let mut lexer = Lexer::new(&source_code);
-    let tokens = lexer.tokenize();
-
-    // Parse the tokens
-    let mut parser = Parser::new(tokens);
-    let _program = parser.parse_program();
-
-    // Check for parsing errors
-    if !parser.errors.is_empty() {
-        eprintln!("Parsing errors found:");
-        for error in &parser.errors {
-            eprintln!("  {}", error);
+    // Parse
+    let mut parser = KernParser::new(&source_code);
+    match parser.parse_program() {
+        Ok(_) => println!("Source code is valid - no errors found"),
+        Err(errors) => {
+            eprintln!("Parsing errors found:");
+            for error in errors {
+                eprintln!("  {}", error);
+            }
         }
-    } else {
-        println!("Source code is valid - no errors found");
     }
 }
 
@@ -136,22 +132,18 @@ fn generate_graph(input_file: &str) {
     let source_code = fs::read_to_string(input_file)
         .expect("Failed to read input file");
 
-    // Tokenize the source
-    let mut lexer = Lexer::new(&source_code);
-    let tokens = lexer.tokenize();
-
-    // Parse the tokens
-    let mut parser = Parser::new(tokens);
-    let program = parser.parse_program();
-
-    // Check for parsing errors
-    if !parser.errors.is_empty() {
-        eprintln!("Parsing errors found:");
-        for error in &parser.errors {
-            eprintln!("  {}", error);
+    // Parse
+    let mut parser = KernParser::new(&source_code);
+    let program = match parser.parse_program() {
+        Ok(p) => p,
+        Err(errors) => {
+            eprintln!("Parsing errors found:");
+            for error in errors {
+                eprintln!("  {}", error);
+            }
+            return;
         }
-        return;
-    }
+    };
 
     // Build execution graph
     let mut graph_builder = GraphBuilder::new();
@@ -170,17 +162,21 @@ fn show_ir(input_file: &str) {
     let source_code = fs::read_to_string(input_file)
         .expect("Failed to read input file");
 
-    // Tokenize the source
-    let mut lexer = Lexer::new(&source_code);
-    let tokens = lexer.tokenize();
-
-    // Parse the tokens
-    let mut parser = Parser::new(tokens);
-    let program = parser.parse_program();
-
-    // Print the AST
-    println!("AST representation:");
-    println!("{:#?}", program);
+    // Parse
+    let mut parser = KernParser::new(&source_code);
+    match parser.parse_program() {
+        Ok(program) => {
+            // Print the AST
+            println!("AST representation:");
+            println!("{:#?}", program);
+        },
+        Err(errors) => {
+            eprintln!("Parsing errors found:");
+            for error in errors {
+                eprintln!("  {}", error);
+            }
+        }
+    }
 }
 
 fn verify_bytecode(bytecode_file: &str) {
@@ -189,9 +185,25 @@ fn verify_bytecode(bytecode_file: &str) {
         .expect("Failed to read bytecode file");
 
     // Attempt to deserialize the bytecode
-    match serde_json::from_str::<Vec<u8>>(&bytecode_content) {
+    match serde_json::from_str::<BytecodeModule>(&bytecode_content) {
         Ok(_) => println!("Bytecode file is valid"),
         Err(e) => eprintln!("Invalid bytecode file: {}", e),
+    }
+}
+
+fn run_bytecode(input_file: &str) {
+    let bytecode_content = fs::read_to_string(input_file)
+        .expect("Failed to read bytecode file");
+        
+    let module: BytecodeModule = serde_json::from_str(&bytecode_content)
+        .expect("Failed to deserialize bytecode");
+        
+    let mut vm = VirtualMachine::new();
+    vm.load_program(module.instruction_stream);
+    
+    match vm.execute() {
+        Ok(_) => println!("Execution finished successfully."),
+        Err(e) => eprintln!("VM Runtime Error: {:?}", e),
     }
 }
 
@@ -200,13 +212,18 @@ fn report_stats(input_file: &str) {
     let source_code = fs::read_to_string(input_file)
         .expect("Failed to read input file");
 
-    // Tokenize the source
-    let mut lexer = Lexer::new(&source_code);
-    let tokens = lexer.tokenize();
-
-    // Parse the tokens
-    let mut parser = Parser::new(tokens);
-    let program = parser.parse_program();
+    // Parse
+    let mut parser = KernParser::new(&source_code);
+    let program = match parser.parse_program() {
+        Ok(p) => p,
+        Err(errors) => {
+            eprintln!("Parsing errors found:");
+            for error in errors {
+                eprintln!("  {}", error);
+            }
+            return;
+        }
+    };
 
     // Count entities, rules, flows, and constraints
     let mut entity_count = 0;
@@ -216,10 +233,10 @@ fn report_stats(input_file: &str) {
 
     for definition in &program.definitions {
         match definition {
-            kern_parser::ast_nodes::Definition::Entity(_) => entity_count += 1,
-            kern_parser::ast_nodes::Definition::Rule(_) => rule_count += 1,
-            kern_parser::ast_nodes::Definition::Flow(_) => flow_count += 1,
-            kern_parser::ast_nodes::Definition::Constraint(_) => constraint_count += 1,
+            Definition::Entity(_) => entity_count += 1,
+            Definition::Rule(_) => rule_count += 1,
+            Definition::Flow(_) => flow_count += 1,
+            Definition::Constraint(_) => constraint_count += 1,
         }
     }
 

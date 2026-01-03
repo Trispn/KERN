@@ -13,9 +13,11 @@ pub mod verifier;
 pub mod serializer;
 pub mod compiler_driver;
 
+pub use compiler_driver::BytecodeCompiler;
+
 // Define the KERN bytecode instruction format
 // Each instruction is 8 bytes: OPCODE (1B) | ARG1 (2B) | ARG2 (2B) | ARG3 (2B) | FLAGS (1B)
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Instruction {
     pub opcode: u8,
     pub arg1: u16,  // First argument (register, immediate, etc.)
@@ -170,7 +172,7 @@ impl From<u8> for Opcode {
 }
 
 // Define the bytecode module structure as specified
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct BytecodeModule {
     pub header: ModuleHeader,
     pub instruction_stream: Vec<Instruction>,
@@ -181,7 +183,7 @@ pub struct BytecodeModule {
     pub metadata: Vec<u8>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct ModuleHeader {
     pub magic: [u8; 4],           // "KERN"
     pub version: u32,
@@ -190,7 +192,7 @@ pub struct ModuleHeader {
     pub checksum: u64,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct SectionOffsets {
     pub instruction_offset: u32,
     pub constant_pool_offset: u32,
@@ -200,7 +202,7 @@ pub struct SectionOffsets {
     pub metadata_offset: u32,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub enum Constant {
     Num(i64),
     Bool(bool),
@@ -208,20 +210,20 @@ pub enum Constant {
     Vec(Vec<Constant>),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct Symbol {
     pub id: u32,
     pub name: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct RuleEntry {
     pub id: u32,
     pub entry_pc: u32,
     pub name: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct GraphEntry {
     pub id: u32,
     pub node_count: u32,
