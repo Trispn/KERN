@@ -10,6 +10,7 @@ members = [
     "kern-semantic",
     "kern-vm",
     "tools/compiler_cli",
+    "psi",
 ]
 
 [package]

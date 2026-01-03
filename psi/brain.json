@@ -1,0 +1,49 @@
+{
+  "name": "demo-psi",
+  "operators": [
+    {
+      "name": "DefineEntities",
+      "kern_template": "rule DefineEntities: if 1 == 1 then log(\"Entities defined\")",
+      "emissions": {
+        "rust": "// Rust: define structs here",
+        "python": "# Python: define classes here"
+      }
+    },
+    {
+      "name": "CreateRoutes",
+      "kern_template": "rule CreateRoutes: if 1 == 1 then log(\"Routes created\")",
+      "emissions": {
+        "rust": "// Rust: create actix routes",
+        "python": "# Python: create flask routes"
+      }
+    },
+    {
+      "name": "ImplementAuth",
+      "kern_template": "rule ImplementAuth: if 1 == 1 then log(\"Auth implemented\")",
+      "emissions": {
+        "rust": "// Rust: implement auth logic",
+        "python": "# Python: implement auth logic"
+      }
+    },
+    {
+      "name": "WriteTests",
+      "kern_template": "rule WriteTests: if 1 == 1 then log(\"Tests written\")",
+      "emissions": {
+        "rust": "// Rust: write tests",
+        "python": "# Python: write tests"
+      }
+    }
+  ],
+  "meta_programs": [
+    {
+      "name": "GenerateModule",
+      "operators": ["DefineEntities", "CreateRoutes", "ImplementAuth", "WriteTests"]
+    }
+  ],
+  "heuristics": [
+    {
+      "name": "default",
+      "weights": { "DefineEntities": 10, "CreateRoutes": 8, "ImplementAuth": 9, "WriteTests": 5 }
+    }
+  ]
+}

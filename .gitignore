@@ -1,16 +1,21 @@
 # Rust / Cargo
-/target
-Cargo.lock
+# Ignore build artifacts in any crate
+/**/target/
+target/
 
-# Node.js / VS Code Extension
-/node_modules
-/tools/vscode-extension/node_modules
-/tools/vscode-extension/out
-/tools/vscode-extension/dist
+# NOTE: consider committing `Cargo.lock` for reproducible builds of applications.
+# By default we do NOT ignore Cargo.lock; uncomment the following line to ignore it.
+# Cargo.lock
+
+# Workspace tools / Node
+/node_modules/
+/tools/vscode-extension/node_modules/
+/tools/vscode-extension/out/
+/tools/vscode-extension/dist/
 *.vsix
 .vscode-test/
 
-# VS Code Local Metadata
+# VS Code settings - ignore all but keep recommended files tracked
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
@@ -18,12 +23,36 @@ Cargo.lock
 !.vscode/extensions.json
 *.code-workspace
 
+# IDEs
+/.idea/
+*.sublime-workspace
+
 # OS / Misc
 .DS_Store
 Thumbs.db
+
+# Logs and temp
 *.log
 tmp/
 dist/
 build/
+.cache/
+
+# Environment
 .env
 .env.local
+
+# KERN artifacts
+*.kbc
+output.kbc
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Binary artifacts
+*.exe
+*.dll
+*.so
+*.dylib
+

@@ -1,0 +1,156 @@
+{
+  "name": "full-psi-brain",
+  "version": "1.0.0",
+  "operators": [
+    {
+      "id": 1,
+      "name": "DefineEntities",
+      "domain": "code",
+      "purity": 0,
+      "arity_in": 1,
+      "arity_out": 1,
+      "cost_hint": 5,
+      "kern_template": "rule DefineEntities: if has_entities_spec() then generate_entities_code()",
+      "emissions": {
+        "rust": "// Define Rust structs\nstruct User {\n    id: u32,\n    name: String,\n    email: String,\n}",
+        "python": "# Define Python classes\nclass User:\n    def __init__(self, id, name, email):\n        self.id = id\n        self.name = name\n        self.email = email",
+        "go": "// Define Go structs\ntype User struct {\n    ID    uint32 `json:\"id\"`\n    Name  string `json:\"name\"`\n    Email string `json:\"email\"`\n}",
+        "javascript": "// Define JavaScript class\nclass User {\n    constructor(id, name, email) {\n        this.id = id;\n        this.name = name;\n        this.email = email;\n    }\n}"
+      }
+    },
+    {
+      "id": 2,
+      "name": "CreateRoutes",
+      "domain": "code",
+      "purity": 0,
+      "arity_in": 1,
+      "arity_out": 1,
+      "cost_hint": 8,
+      "kern_template": "rule CreateRoutes: if has_route_spec() then generate_route_code()",
+      "emissions": {
+        "rust": "// Create Rust routes with Actix\nuse actix_web::{web, HttpResponse, Responder};\n\nasync fn health_check() -> impl Responder {\n    HttpResponse::Ok().json(\"OK\")\n}\n\npub fn config(cfg: &mut web::ServiceConfig) {\n    cfg.route(\"/health\", web::get().to(health_check));\n}",
+        "python": "# Create Python routes with Flask\nfrom flask import Flask, jsonify\n\napp = Flask(__name__)\n\n@app.route('/health')\ndef health_check():\n    return jsonify({\"status\": \"OK\"})",
+        "go": "// Create Go routes with Gin\npackage main\n\nimport (\n    \"github.com/gin-gonic/gin\"\n    \"net/http\"\n)\n\nfunc healthCheck(c *gin.Context) {\n    c.JSON(http.StatusOK, gin.H{\"status\": \"OK\"})\n}\n\nfunc setupRoutes(router *gin.Engine) {\n    router.GET(\"/health\", healthCheck)\n}",
+        "javascript": "// Create JavaScript routes with Express\nconst express = require('express');\nconst router = express.Router();\n\nrouter.get('/health', (req, res) => {\n    res.json({ status: 'OK' });\n});\n\nmodule.exports = router;"
+      }
+    },
+    {
+      "id": 100,
+      "name": "MultiModalCodeGeneration",
+      "domain": "code_generation",
+      "purity": 0,
+      "arity_in": 1,
+      "arity_out": 1,
+      "cost_hint": 20,
+      "kern_template": "rule MultiModalCodeGeneration: if has_specification() then generate_code_for_all_modalities()",
+      "emissions": {
+        "rust": "// Generated Rust code",
+        "python": "# Generated Python code",
+        "go": "// Generated Go code",
+        "javascript": "// Generated JavaScript code"
+      }
+    },
+    {
+      "id": 101,
+      "name": "ImageGeneration",
+      "domain": "image_generation",
+      "purity": 0,
+      "arity_in": 1,
+      "arity_out": 1,
+      "cost_hint": 50,
+      "kern_template": "rule ImageGeneration: if has_description() then generate_image_from_description()",
+      "emissions": {
+        "rust": "// Image generation in Rust using image crate",
+        "python": "# Image generation in Python using PIL"
+      }
+    }
+  ],
+  "meta_programs": [
+    {
+      "id": 1,
+      "name": "GenerateModule",
+      "operators": ["DefineEntities", "CreateRoutes", "ImplementAuth", "WriteTests"],
+      "domain": "code_generation",
+      "adaptability": 80
+    },
+    {
+      "id": 2,
+      "name": "RefactorCode",
+      "operators": ["AnalyzePatterns", "OptimizeQueries", "ApplyRefactor", "Validate"],
+      "domain": "refactoring",
+      "adaptability": 70
+    },
+    {
+      "id": 3,
+      "name": "DebugIssue",
+      "operators": ["AnalyzePatterns", "DetectRaceConditions", "SuggestFixes"],
+      "domain": "debugging",
+      "adaptability": 60
+    },
+    {
+      "id": 4,
+      "name": "TranslateCode",
+      "operators": ["ParseAST", "MapToLanguageTemplates", "EmitCode"],
+      "domain": "translation",
+      "adaptability": 90
+    },
+    {
+      "id": 5,
+      "name": "MultiModalTask",
+      "operators": ["MultiModalCodeGeneration", "ImageGeneration"],
+      "domain": "multi_modal",
+      "adaptability": 95
+    }
+  ],
+  "heuristics": [
+    {
+      "id": 1,
+      "name": "generate_heuristic",
+      "trigger_type": "request",
+      "weight": 90,
+      "preferred_ops": ["DefineEntities", "CreateRoutes", "ImplementAuth", "WriteTests"]
+    },
+    {
+      "id": 2,
+      "name": "refactor_heuristic",
+      "trigger_type": "request",
+      "weight": 85,
+      "preferred_ops": ["AnalyzePatterns", "OptimizeQueries", "ApplyRefactor", "Validate"]
+    },
+    {
+      "id": 3,
+      "name": "debug_heuristic",
+      "trigger_type": "error",
+      "weight": 95,
+      "preferred_ops": ["AnalyzePatterns", "DetectRaceConditions", "SuggestFixes"]
+    },
+    {
+      "id": 4,
+      "name": "translate_heuristic",
+      "trigger_type": "request",
+      "weight": 80,
+      "preferred_ops": ["ParseAST", "MapToLanguageTemplates", "EmitCode"]
+    },
+    {
+      "id": 5,
+      "name": "multimodal_heuristic",
+      "trigger_type": "request",
+      "weight": 98,
+      "preferred_ops": ["MultiModalCodeGeneration", "ImageGeneration"]
+    }
+  ],
+  "language_maps": [
+    {
+      "language_id": "rust_to_python",
+      "abstract_operator_id": "code_translation",
+      "emission_template_id": "rust_to_python_template"
+    },
+    {
+      "language_id": "python_to_rust",
+      "abstract_operator_id": "code_translation",
+      "emission_template_id": "python_to_rust_template"
+    }
+  ],
+  "graphs": [],
+  "contexts": []
+}
