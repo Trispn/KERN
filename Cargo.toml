@@ -9,6 +9,7 @@ members = [
     "kern-rule-engine",
     "kern-semantic",
     "kern-vm",
+    "tools/compiler_cli",
 ]
 
 [package]
