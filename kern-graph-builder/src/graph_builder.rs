@@ -67,6 +67,13 @@ pub struct GraphOpNode {
     pub operand_id: u32,
 }
 
+#[derive(Debug, Clone, Serialize)]
+pub struct ValueNode {
+    pub base: GraphNode,
+    pub value_num: f64,
+    pub value_sym: String,
+}
+
 impl IfNode {
     pub fn new(base: GraphNode, condition_reg: u8) -> Self {
         IfNode {
@@ -106,6 +113,41 @@ impl GraphOpNode {
             base,
             graph_op_type,
             operand_id,
+        }
+    }
+}
+
+impl ValueNode {
+    pub fn new_num(base: GraphNode, val: f64) -> Self {
+        ValueNode {
+            base,
+            value_num: val,
+            value_sym: String::new(),
+        }
+    }
+
+    pub fn new_sym(base: GraphNode, val: String) -> Self {
+        ValueNode {
+            base,
+            value_num: 0.0,
+            value_sym: val,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct IoNode {
+    pub base: GraphNode,
+    pub io_type: u8, // 0 = call, 1 = read, 2 = write
+    pub name: String,
+}
+
+impl IoNode {
+    pub fn new(base: GraphNode, io_type: u8, name: String) -> Self {
+        IoNode {
+            base,
+            io_type,
+            name,
         }
     }
 }
@@ -192,6 +234,8 @@ pub enum SpecializedNode {
     Loop(LoopNode),
     Rule(RuleNode),
     GraphOp(GraphOpNode),
+    Value(ValueNode),
+    Io(IoNode),
 }
 
 impl SpecializedNode {
@@ -202,7 +246,17 @@ impl SpecializedNode {
             SpecializedNode::Loop(node) => &node.base,
             SpecializedNode::Rule(node) => &node.base,
             SpecializedNode::GraphOp(node) => &node.base,
+            SpecializedNode::Value(node) => &node.base,
+            SpecializedNode::Io(node) => &node.base,
         }
+    }
+
+    pub fn base(&self) -> &GraphNode {
+        self.get_base()
+    }
+
+    pub fn id(&self) -> u32 {
+        self.get_base().id
     }
 }
 
@@ -493,7 +547,7 @@ impl GraphBuilder {
 
     fn process_term(&mut self, term: &Term, parent_node_id: u32) {
         match term {
-            Term::Identifier(_name) => {
+            Term::Identifier(name) => {
                 // Create a node to load the identifier value
                 let load_node_id = self.node_id_counter;
                 self.node_id_counter += 1;
@@ -513,10 +567,11 @@ impl GraphBuilder {
                     },
                 };
 
-                self.nodes.push(SpecializedNode::Base(load_node));
+                let value_node = ValueNode::new_sym(load_node, name.clone());
+                self.nodes.push(SpecializedNode::Value(value_node));
                 self.create_edge(parent_node_id, load_node_id, EdgeType::Data);
             }
-            Term::Number(_value) => {
+            Term::Number(value) => {
                 // Create a node to load the number value
                 let load_node_id = self.node_id_counter;
                 self.node_id_counter += 1;
@@ -536,7 +591,8 @@ impl GraphBuilder {
                     },
                 };
 
-                self.nodes.push(SpecializedNode::Base(load_node));
+                let value_node = ValueNode::new_num(load_node, *value as f64);
+                self.nodes.push(SpecializedNode::Value(value_node));
                 self.create_edge(parent_node_id, load_node_id, EdgeType::Data);
             }
             Term::QualifiedRef(_entity, _field) => {
@@ -585,7 +641,8 @@ impl GraphBuilder {
             },
         };
 
-        self.nodes.push(SpecializedNode::Base(pred_node));
+        let io_node = IoNode::new(pred_node, 0, predicate.name.clone());
+        self.nodes.push(SpecializedNode::Io(io_node));
 
         // Process the arguments
         for arg in &predicate.arguments {
@@ -783,6 +840,8 @@ impl GraphBuilder {
                 SpecializedNode::Loop(n) => n.base.id,
                 SpecializedNode::Rule(n) => n.base.id,
                 SpecializedNode::GraphOp(n) => n.base.id,
+                SpecializedNode::Value(n) => n.base.id,
+                SpecializedNode::Io(n) => n.base.id,
             };
 
             if !reachable.contains(&(i as u32)) {

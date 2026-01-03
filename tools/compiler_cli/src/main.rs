@@ -3,7 +3,8 @@ use kern_parser::Parser as KernParser;
 use kern_parser::Definition;
 use kern_graph_builder::GraphBuilder;
 use kern_bytecode::{BytecodeCompiler, BytecodeModule};
-use kern_vm::VirtualMachine;
+use kern_vm::{VirtualMachine, VMConfig};
+use kern_vm::vm_safety::sandbox::SandboxPolicy;
 use std::fs;
 
 /// KERN Compiler CLI - Compiles KERN source code to bytecode
@@ -198,7 +199,20 @@ fn run_bytecode(input_file: &str) {
     let module: BytecodeModule = serde_json::from_str(&bytecode_content)
         .expect("Failed to deserialize bytecode");
         
-    let mut vm = VirtualMachine::new();
+    // Configure VM with sandbox
+    let mut config = VMConfig::new();
+    let mut policy = SandboxPolicy::new();
+    
+    // Allow standard IO and external functions used in examples
+    policy.allow_io_channel("stdout");
+    // TODO: Use symbol table to map function names to IDs
+    // For now, allow common IDs
+    policy.allow_function("extern_fn_0"); 
+    policy.set_max_calls_for_function("extern_fn_0", 100);
+    
+    config.sandbox_policy = policy;
+
+    let mut vm = VirtualMachine::with_config(config);
     vm.load_program(module.instruction_stream);
     
     match vm.execute() {

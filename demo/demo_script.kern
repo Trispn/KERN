@@ -1,0 +1,12 @@
+entity Product {
+    id
+    name
+    price
+    stock
+}
+
+rule CheckStock:
+    if product.stock < 10
+    then alert_low_stock(product)
+
+constraint PositivePrice: product.price > 0

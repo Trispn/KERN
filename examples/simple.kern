@@ -1,0 +1,1 @@
+rule TestRule: if 1 == 1 then log(123)

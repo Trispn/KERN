@@ -1,0 +1,29 @@
+# Rust / Cargo
+/target
+Cargo.lock
+
+# Node.js / VS Code Extension
+/node_modules
+/tools/vscode-extension/node_modules
+/tools/vscode-extension/out
+/tools/vscode-extension/dist
+*.vsix
+.vscode-test/
+
+# VS Code Local Metadata
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# OS / Misc
+.DS_Store
+Thumbs.db
+*.log
+tmp/
+dist/
+build/
+.env
+.env.local

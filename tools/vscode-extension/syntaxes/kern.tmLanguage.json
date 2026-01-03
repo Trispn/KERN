@@ -20,7 +20,7 @@
             "patterns": [
                 {
                     "name": "keyword.control.kern",
-                    "match": "\\b(if|else|then|and|or|not|return|match|with)\\b"
+                    "match": "\\b(if|else|then|and|or|not|return|match|with|loop|break|halt)\\b"
                 },
                 {
                     "name": "storage.type.kern",

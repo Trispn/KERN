@@ -1,37 +1,29 @@
-<svg width="200" height="260" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
-      <feOffset dx="1" dy="1" result="offsetblur"/>
-      <feComponentTransfer>
-        <feFuncA type="linear" slope="0.3"/>
-      </feComponentTransfer>
-      <feMerge> 
-        <feMergeNode/>
-        <feMergeNode in="SourceGraphic"/> 
-      </feMerge>
-    </filter>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#B8860B;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="navyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#003366;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#001F3F;stop-opacity:1" />
+    </linearGradient>
   </defs>
-
-  <!-- Paper Sheet -->
-  <path d="M20 10 L140 10 L180 50 L180 250 L20 250 Z" fill="#FFFFFF" stroke="#CCCCCC" stroke-width="1" filter="url(#shadow)"/>
   
-  <!-- Folded Corner -->
-  <path d="M140 10 L140 50 L180 50" fill="#E0E0E0" stroke="#CCCCCC" stroke-width="1"/>
+  <!-- Outer Hexagon (Gold Border) -->
+  <path d="M256 20 L472.5 145 L472.5 395 L256 520 L39.5 395 L39.5 145 Z" fill="url(#goldGrad)" transform="scale(0.9) translate(28,28)"/>
   
-  <!-- Logo in Center (Scaled Down) -->
-  <g transform="translate(50, 70) scale(0.2)">
-      <!-- Pasting simplified logo geometry -->
-      <!-- Hexagon Gold -->
-      <path d="M256 20 L472.5 145 L472.5 395 L256 520 L39.5 395 L39.5 145 Z" fill="#B8860B"/>
-      <!-- Hexagon Navy -->
-      <path d="M256 50 L429 150 L429 350 L256 450 L83 350 L83 150 Z" fill="#001F3F"/>
-      <!-- K Logic -->
-      <path d="M160 140 L210 140 L210 372 L160 372 Z" fill="#FFFFFF"/>
-      <path d="M210 260 L310 140 L370 140 L250 280 Z" fill="#FFFFFF"/>
-      <path d="M250 230 L370 372 L310 372 L210 250 Z" fill="#FFFFFF"/>
-  </g>
+  <!-- Inner Hexagon (Navy Background) -->
+  <path d="M256 50 L429 150 L429 350 L256 450 L83 350 L83 150 Z" fill="url(#navyGrad)" transform="scale(0.95) translate(13,13)"/>
 
-  <!-- Text -->
-  <text x="100" y="220" font-family="Arial, sans-serif" font-weight="bold" font-size="32" fill="#001F3F" text-anchor="middle">.kern</text>
+  <!-- Stylized K (Constructed Geometry) -->
+  <!-- Vertical Bar -->
+  <path d="M160 140 L210 140 L210 372 L160 372 Z" fill="#FFFFFF"/>
+  
+  <!-- Upper Arm -->
+  <path d="M210 260 L310 140 L370 140 L250 280 Z" fill="#FFFFFF"/>
+  
+  <!-- Lower Arm -->
+  <path d="M250 230 L370 372 L310 372 L210 250 Z" fill="#FFFFFF"/>
+  
 </svg>

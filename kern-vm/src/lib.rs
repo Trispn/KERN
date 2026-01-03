@@ -417,45 +417,63 @@ impl VirtualMachine {
             // Data & Symbol Instructions
             0x10 => self.op_load_sym(instruction)?, // LOAD_SYM
             0x11 => self.op_load_num(instruction)?, // LOAD_NUM
-            0x12 => self.op_move(instruction)?,     // MOVE
-            0x13 => self.op_compare(instruction)?,  // COMPARE
+            0x12 => self.op_load_bool(instruction)?, // LOAD_BOOL
+            0x13 => self.op_move(instruction)?,     // MOVE
+            0x14 => self.op_compare(instruction)?,  // COMPARE
+
+            // Arithmetic Instructions
+            0x20 => self.op_add(instruction)?,      // ADD
+            0x21 => self.op_sub(instruction)?,      // SUB
+            0x22 => self.op_mul(instruction)?,      // MUL
+            0x23 => self.op_div(instruction)?,      // DIV
+            0x24 => self.op_mod(instruction)?,      // MOD
+
+            // Logical Instructions
+            0x30 => self.op_and(instruction)?,      // AND
+            0x31 => self.op_or(instruction)?,       // OR
+            0x32 => self.op_not(instruction)?,      // NOT
 
             // Graph Instructions
-            0x20 => self.op_graph_node_create(instruction)?, // GRAPH_NODE_CREATE
-            0x21 => self.op_graph_edge_create(instruction)?, // GRAPH_EDGE_CREATE
-            0x22 => self.op_graph_match(instruction)?,       // GRAPH_MATCH
-            0x23 => self.op_graph_traverse(instruction)?,    // GRAPH_TRAVERSE
+            0x40 => self.op_graph_node_create(instruction)?, // GRAPH_NODE_CREATE
+            0x41 => self.op_graph_edge_create(instruction)?, // GRAPH_EDGE_CREATE
+            // 0x42 => self.op_graph_merge(instruction)?,
+            // 0x43 => self.op_graph_delete(instruction)?,
 
             // Rule Execution Instructions
-            0x30 => self.op_rule_load(instruction)?, // RULE_LOAD
-            0x31 => self.op_rule_eval(instruction)?, // RULE_EVAL
-            0x32 => self.op_rule_fire(instruction)?, // RULE_FIRE
-            0x33 => self.op_rule_priority_set(instruction)?, // RULE_PRIORITY_SET
+            // 0x50 => self.op_rule_call(instruction)?,
+            // 0x51 => self.op_rule_return(instruction)?,
+            // 0x52 => self.op_rule_check(instruction)?,
+            // 0x53 => self.op_rule_inc(instruction)?,
 
             // Context & State Instructions
-            0x40 => self.op_ctx_create(instruction)?, // CTX_CREATE
-            0x41 => self.op_ctx_switch(instruction)?, // CTX_SWITCH
-            0x42 => self.op_ctx_clone(instruction)?,  // CTX_CLONE
-            0x43 => self.op_ctx_destroy(instruction)?, // CTX_DESTROY
+            // 0x60 => self.op_ctx_push(instruction)?,
+            // 0x61 => self.op_ctx_pop(instruction)?,
+            // 0x62 => self.op_ctx_set_sym(instruction)?,
+            // 0x63 => self.op_ctx_get_sym(instruction)?,
+            0x64 => self.op_ctx_clone(instruction)?,  // CTX_CLONE
 
             // Error Handling Instructions
-            0x50 => self.op_err_set(instruction)?,   // ERR_SET
-            0x51 => self.op_err_clear(),             // ERR_CLEAR
-            0x52 => self.op_err_check(instruction)?, // ERR_CHECK
+            0x70 => self.op_err_set(instruction)?,   // THROW (reused err_set)
+            // 0x71 => self.op_try(instruction)?,    // TRY
+            0x72 => self.op_err_check(instruction)?, // CATCH (reused err_check)
+            0x73 => self.op_err_clear(),             // CLEAR_ERR
 
             // External Interface Instructions
-            0x60 => self.op_ext_call(instruction)?, // EXT_CALL
-            0x61 => self.op_ext_bind(instruction)?, // EXT_BIND
+            0x80 => self.op_ext_call(instruction)?, // EXT_CALL
+            // 0x81 => self.op_ext_read(instruction)?,
+            0x82 => self.op_output(instruction)?,   // WRITE_IO (reused output)
 
-            // Termination & Output
-            0x70 => self.op_return(instruction)?, // RETURN
-            0x71 => self.op_output(instruction)?, // OUTPUT
-
-            _ => return Err(VmError::InvalidOpcode(instruction.opcode)),
+            _ => {
+                // Ignore unknown opcodes or return error
+                // For now, let's log and error
+                // println!("Unknown opcode: 0x{:02X}", instruction.opcode);
+                return Err(VmError::InvalidOpcode(instruction.opcode));
+            }
         }
 
         Ok(())
     }
+
 
     // Context management methods
     fn push_context(&mut self, new_context: VmContext) {
@@ -602,6 +620,141 @@ impl VirtualMachine {
 
         Ok(())
     }
+
+    // Arithmetic Instructions
+    fn op_add(&mut self, instruction: &Instruction) -> Result<(), VmError> {
+        let dest_reg = instruction.arg1 as usize;
+        let left_reg = instruction.arg2 as usize;
+        let right_reg = instruction.arg3 as usize;
+
+        if dest_reg >= self.registers.r.len() || left_reg >= self.registers.r.len() || right_reg >= self.registers.r.len() {
+             return Err(VmError::InvalidRegister(dest_reg as u16));
+        }
+
+        self.registers.r[dest_reg] = self.registers.r[left_reg] + self.registers.r[right_reg];
+        Ok(())
+    }
+
+    fn op_sub(&mut self, instruction: &Instruction) -> Result<(), VmError> {
+        let dest_reg = instruction.arg1 as usize;
+        let left_reg = instruction.arg2 as usize;
+        let right_reg = instruction.arg3 as usize;
+
+        if dest_reg >= self.registers.r.len() || left_reg >= self.registers.r.len() || right_reg >= self.registers.r.len() {
+             return Err(VmError::InvalidRegister(dest_reg as u16));
+        }
+
+        self.registers.r[dest_reg] = self.registers.r[left_reg] - self.registers.r[right_reg];
+        Ok(())
+    }
+
+    fn op_mul(&mut self, instruction: &Instruction) -> Result<(), VmError> {
+        let dest_reg = instruction.arg1 as usize;
+        let left_reg = instruction.arg2 as usize;
+        let right_reg = instruction.arg3 as usize;
+
+        if dest_reg >= self.registers.r.len() || left_reg >= self.registers.r.len() || right_reg >= self.registers.r.len() {
+             return Err(VmError::InvalidRegister(dest_reg as u16));
+        }
+
+        self.registers.r[dest_reg] = self.registers.r[left_reg] * self.registers.r[right_reg];
+        Ok(())
+    }
+
+    fn op_div(&mut self, instruction: &Instruction) -> Result<(), VmError> {
+        let dest_reg = instruction.arg1 as usize;
+        let left_reg = instruction.arg2 as usize;
+        let right_reg = instruction.arg3 as usize;
+
+        if dest_reg >= self.registers.r.len() || left_reg >= self.registers.r.len() || right_reg >= self.registers.r.len() {
+             return Err(VmError::InvalidRegister(dest_reg as u16));
+        }
+
+        if self.registers.r[right_reg] == 0 {
+             // Handle divide by zero - set error flag? Or return error?
+             // For now, return 0 or handle gracefully
+             self.registers.r[dest_reg] = 0;
+             self.registers.set_error_flag(true);
+        } else {
+             self.registers.r[dest_reg] = self.registers.r[left_reg] / self.registers.r[right_reg];
+        }
+        Ok(())
+    }
+
+    fn op_mod(&mut self, instruction: &Instruction) -> Result<(), VmError> {
+        let dest_reg = instruction.arg1 as usize;
+        let left_reg = instruction.arg2 as usize;
+        let right_reg = instruction.arg3 as usize;
+
+        if dest_reg >= self.registers.r.len() || left_reg >= self.registers.r.len() || right_reg >= self.registers.r.len() {
+             return Err(VmError::InvalidRegister(dest_reg as u16));
+        }
+
+        if self.registers.r[right_reg] == 0 {
+             self.registers.r[dest_reg] = 0;
+             self.registers.set_error_flag(true);
+        } else {
+             self.registers.r[dest_reg] = self.registers.r[left_reg] % self.registers.r[right_reg];
+        }
+        Ok(())
+    }
+
+    // Logical Instructions
+    fn op_and(&mut self, instruction: &Instruction) -> Result<(), VmError> {
+        let dest_reg = instruction.arg1 as usize;
+        let left_reg = instruction.arg2 as usize;
+        let right_reg = instruction.arg3 as usize;
+
+        if dest_reg >= self.registers.r.len() || left_reg >= self.registers.r.len() || right_reg >= self.registers.r.len() {
+             return Err(VmError::InvalidRegister(dest_reg as u16));
+        }
+
+        self.registers.r[dest_reg] = self.registers.r[left_reg] & self.registers.r[right_reg];
+        Ok(())
+    }
+
+    fn op_or(&mut self, instruction: &Instruction) -> Result<(), VmError> {
+        let dest_reg = instruction.arg1 as usize;
+        let left_reg = instruction.arg2 as usize;
+        let right_reg = instruction.arg3 as usize;
+
+        if dest_reg >= self.registers.r.len() || left_reg >= self.registers.r.len() || right_reg >= self.registers.r.len() {
+             return Err(VmError::InvalidRegister(dest_reg as u16));
+        }
+
+        self.registers.r[dest_reg] = self.registers.r[left_reg] | self.registers.r[right_reg];
+        Ok(())
+    }
+
+    fn op_not(&mut self, instruction: &Instruction) -> Result<(), VmError> {
+        let dest_reg = instruction.arg1 as usize;
+        let src_reg = instruction.arg2 as usize;
+
+        if dest_reg >= self.registers.r.len() || src_reg >= self.registers.r.len() {
+             return Err(VmError::InvalidRegister(dest_reg as u16));
+        }
+
+        // Logical NOT for boolean-ish values (0 is false, anything else is true)
+        // If src is 0, result is 1. If src is != 0, result is 0.
+        // Or should it be bitwise NOT? KERN seems to be high-level logic.
+        // LirOp::Not seems to be logical.
+        self.registers.r[dest_reg] = if self.registers.r[src_reg] == 0 { 1 } else { 0 };
+        Ok(())
+    }
+
+    fn op_load_bool(&mut self, instruction: &Instruction) -> Result<(), VmError> {
+        // Load a boolean value into a register
+        let dest_reg = instruction.arg1 as usize;
+        let value = instruction.arg2; // 0 or 1
+        
+        if dest_reg >= self.registers.r.len() {
+            return Err(VmError::InvalidRegister(dest_reg as u16));
+        }
+
+        self.registers.r[dest_reg] = value as i64;
+        Ok(())
+    }
+
 
     // Graph Instructions (simplified for this implementation)
     fn op_graph_node_create(&mut self, _instruction: &Instruction) -> Result<(), VmError> {
@@ -770,7 +923,8 @@ impl VirtualMachine {
         self.security_context.sandbox.execute_external_call(&fn_name)
             .map_err(|e| VmError::SecurityError(vm_safety::security::SecurityError::SandboxViolation(e)))?;
 
-        println!("Calling external function with ID: {}", fn_id);
+        let arg0 = self.registers.r[0];
+        println!("Calling external function with ID: {} (Arg0: {})", fn_id, arg0);
         Ok(())
     }
 

@@ -5,7 +5,7 @@
 use crate::lir::{LirInstruction, LirOp, LirProgram, Register};
 
 pub struct LirBuilder {
-    program: LirProgram,
+    pub program: LirProgram,
 }
 
 impl LirBuilder {

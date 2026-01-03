@@ -38,10 +38,12 @@ impl BytecodeEmitter {
                     self.label_map.insert(*label, self.current_pc);
                 }
                 _ => {
-                    // Emit the actual instruction
-                    let bytecode_instr = self.lir_to_bytecode(lir_instr, allocation);
-                    self.instructions.push(bytecode_instr);
-                    self.current_pc += 1;
+                    // Emit the actual instruction(s)
+                    let bytecode_instrs = self.lir_to_bytecode(lir_instr, allocation);
+                    for instr in bytecode_instrs {
+                        self.instructions.push(instr);
+                        self.current_pc += 1;
+                    }
                 }
             }
         }
@@ -62,34 +64,35 @@ impl BytecodeEmitter {
     }
 
     /// Convert a single LIR instruction to bytecode
-    fn lir_to_bytecode(&mut self, lir_instr: &LirInstruction, allocation: &RegisterAllocation) -> Instruction {
+    fn lir_to_bytecode(&mut self, lir_instr: &LirInstruction, allocation: &RegisterAllocation) -> Vec<Instruction> {
+        let mut instructions = Vec::new();
         match &lir_instr.op {
             // Control Flow Operations
-            LirOp::Nop => Instruction::new(Opcode::Nop as u8, 0, 0, 0, 0),
+            LirOp::Nop => instructions.push(Instruction::new(Opcode::Nop as u8, 0, 0, 0, 0)),
             
             LirOp::Jmp(label) => {
                 // Record this jump for later patching
                 self.pending_jumps.push((self.instructions.len(), *label));
-                Instruction::new(Opcode::Jmp as u8, 0, 0, 0, 0) // Placeholder target
+                instructions.push(Instruction::new(Opcode::Jmp as u8, 0, 0, 0, 0)); // Placeholder target
             },
             
             LirOp::JmpIf(condition, label) => {
                 let cond_reg = self.get_physical_reg(*condition, allocation);
                 self.pending_jumps.push((self.instructions.len(), *label));
-                Instruction::new(Opcode::JmpIf as u8, cond_reg as u16, 0, 0, 0) // Placeholder target
+                instructions.push(Instruction::new(Opcode::JmpIf as u8, cond_reg as u16, 0, 0, 0)); // Placeholder target
             },
             
             LirOp::JmpIfNot(condition, label) => {
                 let cond_reg = self.get_physical_reg(*condition, allocation);
                 self.pending_jumps.push((self.instructions.len(), *label));
-                Instruction::new(Opcode::JmpIf as u8, cond_reg as u16, 0, 0, 0) // Placeholder target, with inverted logic handled by VM
+                instructions.push(Instruction::new(Opcode::JmpIf as u8, cond_reg as u16, 0, 0, 0)); // Placeholder target, with inverted logic handled by VM
             },
             
-            LirOp::Halt => Instruction::new(Opcode::Halt as u8, 0, 0, 0, 0),
+            LirOp::Halt => instructions.push(Instruction::new(Opcode::Halt as u8, 0, 0, 0, 0)),
             
             LirOp::Label(_) => {
                 // Labels are handled in the first pass, return NOP for this position
-                Instruction::new(Opcode::Nop as u8, 0, 0, 0, 0)
+                instructions.push(Instruction::new(Opcode::Nop as u8, 0, 0, 0, 0));
             },
             
             // Data & Symbol Operations
@@ -97,67 +100,67 @@ impl BytecodeEmitter {
                 let dst_reg = self.get_physical_reg(lir_instr.dst.unwrap(), allocation);
                 // For now, we'll use a simple encoding where symbol names are stored in constants
                 // In a real implementation, we'd have a symbol table
-                Instruction::new(Opcode::LoadSym as u8, dst_reg as u16, 0, 0, 0)
+                instructions.push(Instruction::new(Opcode::LoadSym as u8, dst_reg as u16, 0, 0, 0));
             },
             
             LirOp::LoadNum(value) => {
                 let dst_reg = self.get_physical_reg(lir_instr.dst.unwrap(), allocation);
                 // In a real implementation, we'd store the value in the constant pool
-                Instruction::new(Opcode::LoadNum as u8, dst_reg as u16, (*value as u16), 0, 0)
+                instructions.push(Instruction::new(Opcode::LoadNum as u8, dst_reg as u16, (*value as u16), 0, 0));
             },
             
             LirOp::LoadBool(value) => {
                 let dst_reg = self.get_physical_reg(lir_instr.dst.unwrap(), allocation);
                 let bool_val = if *value { 1 } else { 0 };
-                Instruction::new(Opcode::LoadBool as u8, dst_reg as u16, bool_val as u16, 0, 0)
+                instructions.push(Instruction::new(Opcode::LoadBool as u8, dst_reg as u16, bool_val as u16, 0, 0));
             },
             
             LirOp::Move(src, dst) => {
                 let src_reg = self.get_physical_reg(*src, allocation);
                 let dst_reg = self.get_physical_reg(*dst, allocation);
-                Instruction::new(Opcode::Move as u8, dst_reg as u16, src_reg as u16, 0, 0)
+                instructions.push(Instruction::new(Opcode::Move as u8, src_reg as u16, dst_reg as u16, 0, 0));
             },
             
             LirOp::CmpEq(left, right) => {
                 let dst_reg = self.get_physical_reg(lir_instr.dst.unwrap(), allocation);
                 let left_reg = self.get_physical_reg(*left, allocation);
                 let right_reg = self.get_physical_reg(*right, allocation);
-                Instruction::new(Opcode::Compare as u8, dst_reg as u16, left_reg as u16, right_reg as u16, 0x01) // EQ flag
+                instructions.push(Instruction::new(Opcode::Compare as u8, left_reg as u16, right_reg as u16, dst_reg as u16, 0x00)); // EQ flag
             },
             
             LirOp::CmpNe(left, right) => {
                 let dst_reg = self.get_physical_reg(lir_instr.dst.unwrap(), allocation);
                 let left_reg = self.get_physical_reg(*left, allocation);
                 let right_reg = self.get_physical_reg(*right, allocation);
-                Instruction::new(Opcode::Compare as u8, dst_reg as u16, left_reg as u16, right_reg as u16, 0x02) // NE flag
+                instructions.push(Instruction::new(Opcode::Compare as u8, left_reg as u16, right_reg as u16, dst_reg as u16, 0x01)); // NE flag
             },
             
             LirOp::CmpLt(left, right) => {
                 let dst_reg = self.get_physical_reg(lir_instr.dst.unwrap(), allocation);
                 let left_reg = self.get_physical_reg(*left, allocation);
                 let right_reg = self.get_physical_reg(*right, allocation);
-                Instruction::new(Opcode::Compare as u8, dst_reg as u16, left_reg as u16, right_reg as u16, 0x03) // LT flag
+                instructions.push(Instruction::new(Opcode::Compare as u8, left_reg as u16, right_reg as u16, dst_reg as u16, 0x03)); // LT flag
             },
             
             LirOp::CmpLe(left, right) => {
                 let dst_reg = self.get_physical_reg(lir_instr.dst.unwrap(), allocation);
                 let left_reg = self.get_physical_reg(*left, allocation);
                 let right_reg = self.get_physical_reg(*right, allocation);
-                Instruction::new(Opcode::Compare as u8, dst_reg as u16, left_reg as u16, right_reg as u16, 0x04) // LE flag
+                instructions.push(Instruction::new(Opcode::Compare as u8, left_reg as u16, right_reg as u16, dst_reg as u16, 0x05)); // LE flag
             },
             
             LirOp::CmpGt(left, right) => {
                 let dst_reg = self.get_physical_reg(lir_instr.dst.unwrap(), allocation);
                 let left_reg = self.get_physical_reg(*left, allocation);
                 let right_reg = self.get_physical_reg(*right, allocation);
-                Instruction::new(Opcode::Compare as u8, dst_reg as u16, left_reg as u16, right_reg as u16, 0x05) // GT flag
+                instructions.push(Instruction::new(Opcode::Compare as u8, left_reg as u16, right_reg as u16, dst_reg as u16, 0x02)); // GT flag
             },
             
             LirOp::CmpGe(left, right) => {
                 let dst_reg = self.get_physical_reg(lir_instr.dst.unwrap(), allocation);
                 let left_reg = self.get_physical_reg(*left, allocation);
                 let right_reg = self.get_physical_reg(*right, allocation);
-                Instruction::new(Opcode::Compare as u8, dst_reg as u16, left_reg as u16, right_reg as u16, 0x06) // GE flag
+                instructions.push(Instruction::new(Opcode::Compare as u8, left_reg as u16, right_reg as u16, dst_reg as u16, 0x04)); // GE flag
             },
             
             // Arithmetic Operations
@@ -165,42 +168,42 @@ impl BytecodeEmitter {
                 let dst_reg = self.get_physical_reg(lir_instr.dst.unwrap(), allocation);
                 let left_reg = self.get_physical_reg(*left, allocation);
                 let right_reg = self.get_physical_reg(*right, allocation);
-                Instruction::new(Opcode::Add as u8, dst_reg as u16, left_reg as u16, right_reg as u16, 0)
+                instructions.push(Instruction::new(Opcode::Add as u8, dst_reg as u16, left_reg as u16, right_reg as u16, 0));
             },
             
             LirOp::Sub(left, right) => {
                 let dst_reg = self.get_physical_reg(lir_instr.dst.unwrap(), allocation);
                 let left_reg = self.get_physical_reg(*left, allocation);
                 let right_reg = self.get_physical_reg(*right, allocation);
-                Instruction::new(Opcode::Sub as u8, dst_reg as u16, left_reg as u16, right_reg as u16, 0)
+                instructions.push(Instruction::new(Opcode::Sub as u8, dst_reg as u16, left_reg as u16, right_reg as u16, 0));
             },
             
             LirOp::Mul(left, right) => {
                 let dst_reg = self.get_physical_reg(lir_instr.dst.unwrap(), allocation);
                 let left_reg = self.get_physical_reg(*left, allocation);
                 let right_reg = self.get_physical_reg(*right, allocation);
-                Instruction::new(Opcode::Mul as u8, dst_reg as u16, left_reg as u16, right_reg as u16, 0)
+                instructions.push(Instruction::new(Opcode::Mul as u8, dst_reg as u16, left_reg as u16, right_reg as u16, 0));
             },
             
             LirOp::Div(left, right) => {
                 let dst_reg = self.get_physical_reg(lir_instr.dst.unwrap(), allocation);
                 let left_reg = self.get_physical_reg(*left, allocation);
                 let right_reg = self.get_physical_reg(*right, allocation);
-                Instruction::new(Opcode::Div as u8, dst_reg as u16, left_reg as u16, right_reg as u16, 0)
+                instructions.push(Instruction::new(Opcode::Div as u8, dst_reg as u16, left_reg as u16, right_reg as u16, 0));
             },
             
             LirOp::Mod(left, right) => {
                 let dst_reg = self.get_physical_reg(lir_instr.dst.unwrap(), allocation);
                 let left_reg = self.get_physical_reg(*left, allocation);
                 let right_reg = self.get_physical_reg(*right, allocation);
-                Instruction::new(Opcode::Mod as u8, dst_reg as u16, left_reg as u16, right_reg as u16, 0)
+                instructions.push(Instruction::new(Opcode::Mod as u8, dst_reg as u16, left_reg as u16, right_reg as u16, 0));
             },
             
             LirOp::Neg(value) => {
                 let dst_reg = self.get_physical_reg(lir_instr.dst.unwrap(), allocation);
                 let value_reg = self.get_physical_reg(*value, allocation);
                 // Use SUB with 0 - value to implement negation
-                Instruction::new(Opcode::Sub as u8, dst_reg as u16, 0, value_reg as u16, 0) // 0 - value
+                instructions.push(Instruction::new(Opcode::Sub as u8, dst_reg as u16, 0, value_reg as u16, 0)); // 0 - value
             },
             
             // Logical Operations
@@ -208,131 +211,144 @@ impl BytecodeEmitter {
                 let dst_reg = self.get_physical_reg(lir_instr.dst.unwrap(), allocation);
                 let left_reg = self.get_physical_reg(*left, allocation);
                 let right_reg = self.get_physical_reg(*right, allocation);
-                Instruction::new(Opcode::And as u8, dst_reg as u16, left_reg as u16, right_reg as u16, 0)
+                instructions.push(Instruction::new(Opcode::And as u8, dst_reg as u16, left_reg as u16, right_reg as u16, 0));
             },
             
             LirOp::Or(left, right) => {
                 let dst_reg = self.get_physical_reg(lir_instr.dst.unwrap(), allocation);
                 let left_reg = self.get_physical_reg(*left, allocation);
                 let right_reg = self.get_physical_reg(*right, allocation);
-                Instruction::new(Opcode::Or as u8, dst_reg as u16, left_reg as u16, right_reg as u16, 0)
+                instructions.push(Instruction::new(Opcode::Or as u8, dst_reg as u16, left_reg as u16, right_reg as u16, 0));
             },
             
             LirOp::Not(value) => {
                 let dst_reg = self.get_physical_reg(lir_instr.dst.unwrap(), allocation);
                 let value_reg = self.get_physical_reg(*value, allocation);
-                Instruction::new(Opcode::Not as u8, dst_reg as u16, value_reg as u16, 0, 0)
+                instructions.push(Instruction::new(Opcode::Not as u8, dst_reg as u16, value_reg as u16, 0, 0));
             },
             
             // Graph Operations
             LirOp::CreateNode(name) => {
                 let dst_reg = self.get_physical_reg(lir_instr.dst.unwrap(), allocation);
                 // In a real implementation, we'd store the node name in the constant pool
-                Instruction::new(Opcode::CreateNode as u8, dst_reg as u16, 0, 0, 0)
+                instructions.push(Instruction::new(Opcode::CreateNode as u8, dst_reg as u16, 0, 0, 0));
             },
             
             LirOp::Connect(left, right) => {
                 let left_reg = self.get_physical_reg(*left, allocation);
                 let right_reg = self.get_physical_reg(*right, allocation);
-                Instruction::new(Opcode::Connect as u8, left_reg as u16, right_reg as u16, 0, 0)
+                instructions.push(Instruction::new(Opcode::Connect as u8, left_reg as u16, right_reg as u16, 0, 0));
             },
             
             LirOp::Merge(left, right) => {
                 let left_reg = self.get_physical_reg(*left, allocation);
                 let right_reg = self.get_physical_reg(*right, allocation);
-                Instruction::new(Opcode::Merge as u8, left_reg as u16, right_reg as u16, 0, 0)
+                instructions.push(Instruction::new(Opcode::Merge as u8, left_reg as u16, right_reg as u16, 0, 0));
             },
             
             LirOp::DeleteNode(node) => {
                 let node_reg = self.get_physical_reg(*node, allocation);
-                Instruction::new(Opcode::DeleteNode as u8, node_reg as u16, 0, 0, 0)
+                instructions.push(Instruction::new(Opcode::DeleteNode as u8, node_reg as u16, 0, 0, 0));
             },
             
             // Rule Execution Operations
             LirOp::RuleEntry(label, name) => {
                 // Rule entry points are handled specially
-                Instruction::new(Opcode::Nop as u8, 0, 0, 0, 0) // Placeholder
+                instructions.push(Instruction::new(Opcode::Nop as u8, 0, 0, 0, 0)); // Placeholder
             },
             
             LirOp::FlowEntry(label, name) => {
                 // Flow entry points are handled specially
-                Instruction::new(Opcode::Nop as u8, 0, 0, 0, 0) // Placeholder
+                instructions.push(Instruction::new(Opcode::Nop as u8, 0, 0, 0, 0)); // Placeholder
             },
             
             LirOp::ConstraintEntry(label, name) => {
                 // Constraint entry points are handled specially
-                Instruction::new(Opcode::Nop as u8, 0, 0, 0, 0) // Placeholder
+                instructions.push(Instruction::new(Opcode::Nop as u8, 0, 0, 0, 0)); // Placeholder
             },
             
             LirOp::CallRule(name) => {
                 // In a real implementation, we'd store the rule name in the constant pool
-                Instruction::new(Opcode::CallRule as u8, 0, 0, 0, 0)
+                instructions.push(Instruction::new(Opcode::CallRule as u8, 0, 0, 0, 0));
             },
             
             LirOp::ReturnRule => {
-                Instruction::new(Opcode::ReturnRule as u8, 0, 0, 0, 0)
+                instructions.push(Instruction::new(Opcode::ReturnRule as u8, 0, 0, 0, 0));
             },
             
             LirOp::CheckCondition(condition) => {
                 let cond_reg = self.get_physical_reg(*condition, allocation);
-                Instruction::new(Opcode::CheckCondition as u8, cond_reg as u16, 0, 0, 0)
+                instructions.push(Instruction::new(Opcode::CheckCondition as u8, cond_reg as u16, 0, 0, 0));
             },
             
             LirOp::ConstraintFailure(name) => {
                 // In a real implementation, we'd store the constraint name in the constant pool
-                Instruction::new(Opcode::Throw as u8, 0, 0, 0, 0)
+                instructions.push(Instruction::new(Opcode::Throw as u8, 0, 0, 0, 0));
             },
             
             // Context & State Operations
             LirOp::PushCtx => {
-                Instruction::new(Opcode::PushCtx as u8, 0, 0, 0, 0)
+                instructions.push(Instruction::new(Opcode::PushCtx as u8, 0, 0, 0, 0));
             },
             
             LirOp::PopCtx => {
-                Instruction::new(Opcode::PopCtx as u8, 0, 0, 0, 0)
+                instructions.push(Instruction::new(Opcode::PopCtx as u8, 0, 0, 0, 0));
             },
             
             LirOp::SetSymbol(symbol, value) => {
                 let value_reg = self.get_physical_reg(*value, allocation);
                 // In a real implementation, we'd store the symbol name in the constant pool
-                Instruction::new(Opcode::SetSymbol as u8, 0, value_reg as u16, 0, 0)
+                instructions.push(Instruction::new(Opcode::SetSymbol as u8, 0, value_reg as u16, 0, 0));
             },
             
             LirOp::GetSymbol(symbol) => {
                 let dst_reg = self.get_physical_reg(lir_instr.dst.unwrap(), allocation);
                 // In a real implementation, we'd store the symbol name in the constant pool
-                Instruction::new(Opcode::GetSymbol as u8, dst_reg as u16, 0, 0, 0)
+                instructions.push(Instruction::new(Opcode::GetSymbol as u8, dst_reg as u16, 0, 0, 0));
             },
             
             LirOp::CopyCtx => {
-                Instruction::new(Opcode::CopyCtx as u8, 0, 0, 0, 0)
+                instructions.push(Instruction::new(Opcode::CopyCtx as u8, 0, 0, 0, 0));
             },
             
             // External Interface Operations
             LirOp::Call(func_name, args) => {
+                // Emit Move instructions for arguments (Reg -> R0, R1, ...)
+                // We assume standard calling convention where first N args go to R0..RN-1
+                for (i, arg_reg) in args.iter().enumerate() {
+                    if i >= 16 { break; } // Limit to 16 args
+                    let src_phys = self.get_physical_reg(*arg_reg, allocation);
+                    let dst_phys = i as u8;
+                    if src_phys != dst_phys {
+                        instructions.push(Instruction::new(Opcode::Move as u8, src_phys as u16, dst_phys as u16, 0, 0));
+                    }
+                }
+                
                 // In a real implementation, we'd store the function name in the constant pool
-                Instruction::new(Opcode::CallExtern as u8, 0, 0, 0, 0)
+                // For now, using ID 0 for all external calls as per current limitation
+                instructions.push(Instruction::new(Opcode::CallExtern as u8, 0, 0, 0, 0));
             },
             
             LirOp::ReadIo(io_name) => {
                 let dst_reg = self.get_physical_reg(lir_instr.dst.unwrap(), allocation);
                 // In a real implementation, we'd store the IO name in the constant pool
-                Instruction::new(Opcode::ReadIo as u8, dst_reg as u16, 0, 0, 0)
+                instructions.push(Instruction::new(Opcode::ReadIo as u8, dst_reg as u16, 0, 0, 0));
             },
             
             LirOp::WriteIo(io_name, value) => {
                 let value_reg = self.get_physical_reg(*value, allocation);
                 // In a real implementation, we'd store the IO name in the constant pool
-                Instruction::new(Opcode::WriteIo as u8, value_reg as u16, 0, 0, 0)
+                instructions.push(Instruction::new(Opcode::WriteIo as u8, value_reg as u16, 0, 0, 0));
             },
             
             // Special Operations
             LirOp::Phi(dst, values) => {
                 // Phi nodes are eliminated during register allocation
                 // Just return a NOP as placeholder
-                Instruction::new(Opcode::Nop as u8, 0, 0, 0, 0)
+                instructions.push(Instruction::new(Opcode::Nop as u8, 0, 0, 0, 0));
             },
         }
+        instructions
     }
 
     /// Get the physical register for a virtual register

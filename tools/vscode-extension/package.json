@@ -4,7 +4,11 @@
     "description": "Language support for KERN (Knowledge Execution & Reasoning Notation)",
     "version": "0.1.0",
     "publisher": "KERN",
-    "icon": "icon.png",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/KERN-Language/KERN"
+    },
+    "icon": "icons/kern.svg",
     "engines": {
         "vscode": "^1.70.0"
     },
@@ -20,7 +24,9 @@
                     "kern"
                 ],
                 "extensions": [
-                    ".kern"
+                    ".kern",
+                    ".kgraph",
+                    ".kbc"
                 ],
                 "icon": {
                     "light": "./icons/kern.svg",
@@ -36,5 +42,8 @@
                 "path": "./syntaxes/kern.tmLanguage.json"
             }
         ]
+    },
+    "dependencies": {
+        "@vscode/vsce": "^3.7.1"
     }
 }
