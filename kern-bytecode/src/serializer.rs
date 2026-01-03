@@ -114,18 +114,18 @@ impl BytecodeSerializer {
     }
 
     /// Serialize module header
-    fn serialize_header(&self, header: &ModuleHeader) -> [u8; 32] {
-        let mut bytes = [0u8; 32];
-        
+    fn serialize_header(&self, header: &ModuleHeader) -> [u8; 44] {
+        let mut bytes = [0u8; 44];
+
         // Magic number (4 bytes)
         bytes[0..4].copy_from_slice(&header.magic);
-        
+
         // Version (4 bytes)
         bytes[4..8].copy_from_slice(&header.version.to_le_bytes());
-        
+
         // Instruction count (4 bytes)
         bytes[8..12].copy_from_slice(&header.instruction_count.to_le_bytes());
-        
+
         // Section offsets (6 * 4 = 24 bytes)
         let offsets_start = 12;
         bytes[offsets_start..offsets_start + 4].copy_from_slice(&header.section_offsets.instruction_offset.to_le_bytes());
@@ -134,16 +134,17 @@ impl BytecodeSerializer {
         bytes[offsets_start + 12..offsets_start + 16].copy_from_slice(&header.section_offsets.rule_table_offset.to_le_bytes());
         bytes[offsets_start + 16..offsets_start + 20].copy_from_slice(&header.section_offsets.graph_table_offset.to_le_bytes());
         bytes[offsets_start + 20..offsets_start + 24].copy_from_slice(&header.section_offsets.metadata_offset.to_le_bytes());
-        
-        // Checksum (8 bytes)
-        bytes[24..32].copy_from_slice(&header.checksum.to_le_bytes());
-        
+
+        // Checksum (8 bytes) - starts after section offsets at index 36
+        let checksum_start = 36;
+        bytes[checksum_start..checksum_start + 8].copy_from_slice(&header.checksum.to_le_bytes());
+
         bytes
     }
 
     /// Deserialize module header
     fn deserialize_header(&self, bytes: &[u8]) -> Option<ModuleHeader> {
-        if bytes.len() < 32 {
+        if bytes.len() < 44 {
             return None;
         }
 
@@ -182,8 +183,8 @@ impl BytecodeSerializer {
         };
 
         let checksum = u64::from_le_bytes([
-            bytes[24], bytes[25], bytes[26], bytes[27],
-            bytes[28], bytes[29], bytes[30], bytes[31]
+            bytes[36], bytes[37], bytes[38], bytes[39],
+            bytes[40], bytes[41], bytes[42], bytes[43]
         ]);
 
         Some(ModuleHeader {
@@ -298,8 +299,8 @@ mod tests {
 
         let serializer = BytecodeSerializer::new();
         let bytes = serializer.serialize_header(&header);
-        // The header is 32 bytes, so we need to make sure we're reading the right amount
-        assert_eq!(bytes.len(), 32);
+        // The header is 44 bytes, so we need to make sure we're reading the right amount
+        assert_eq!(bytes.len(), 44);
         let deserialized = serializer.deserialize_header(&bytes).unwrap();
 
         assert_eq!(header.magic, deserialized.magic);

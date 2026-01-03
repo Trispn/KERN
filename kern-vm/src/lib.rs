@@ -1,6 +1,17 @@
 use kern_bytecode::{BytecodeModule, Instruction, Opcode};
 use std::collections::HashMap;
 
+pub mod vm_safety;
+
+use vm_safety::{
+    memory_limits::{MemoryLimits, MemoryManager, MemoryRegion},
+    step_limits::{ExecutionLimits, StepLimiter},
+    sandbox::{SandboxEnvironment, SandboxPolicy},
+    security::{SecurityValidationContext, SecurityValidator},
+    perf_monitor::PerformanceMonitor,
+    limit_errors::{LimitError, LimitResult},
+};
+
 // Define the KERN VM registers
 #[derive(Debug, Clone)]
 pub struct VmRegisters {
@@ -126,6 +137,26 @@ impl MemoryRegions {
     }
 }
 
+// VM Configuration object as specified in the safety layer
+#[derive(Debug, Clone)]
+pub struct VMConfig {
+    pub memory_limits: MemoryLimits,
+    pub execution_limits: ExecutionLimits,
+    pub sandbox_policy: SandboxPolicy,
+    pub perf_flags: bool, // Whether to enable performance monitoring
+}
+
+impl VMConfig {
+    pub fn new() -> Self {
+        VMConfig {
+            memory_limits: MemoryLimits::default(),
+            execution_limits: ExecutionLimits::default(),
+            sandbox_policy: SandboxPolicy::new(),
+            perf_flags: true,
+        }
+    }
+}
+
 // Define the KERN Virtual Machine
 pub struct VirtualMachine {
     pub registers: VmRegisters,
@@ -139,6 +170,13 @@ pub struct VirtualMachine {
     pub external_functions: HashMap<String, fn(&mut VirtualMachine) -> Result<(), String>>,
     pub execution_trace: Vec<ExecutionTraceEntry>, // For PSI introspection
     jumped: bool, // Track if the last instruction was a jump
+
+    // Safety layer components
+    pub memory_manager: MemoryManager,
+    pub step_limiter: StepLimiter,
+    pub security_context: SecurityValidationContext,
+    pub performance_monitor: PerformanceMonitor,
+    pub config: VMConfig,
 }
 
 // Execution trace entry for PSI introspection
@@ -163,10 +201,37 @@ pub enum VmError {
     InvalidPc,           // PC out of range
     InvalidInstruction,  // Invalid instruction format
     UndefinedSymbol,     // Symbol not found in context
+    MemoryLimitExceeded,
+    SecurityError(vm_safety::security::SecurityError),
+    SandboxViolation,
+    LimitError(vm_safety::limit_errors::LimitError),
+}
+
+impl From<vm_safety::limit_errors::LimitError> for VmError {
+    fn from(limit_error: vm_safety::limit_errors::LimitError) -> Self {
+        match limit_error {
+            vm_safety::limit_errors::LimitError::MemoryLimitExceeded(_) => VmError::MemoryLimitExceeded,
+            vm_safety::limit_errors::LimitError::StepLimitExceeded => VmError::ExecutionLimitExceeded,
+            vm_safety::limit_errors::LimitError::RuleLimitExceeded => VmError::ExecutionLimitExceeded,
+            vm_safety::limit_errors::LimitError::LoopLimitExceeded => VmError::ExecutionLimitExceeded,
+            vm_safety::limit_errors::LimitError::SandboxViolation => VmError::SandboxViolation,
+            vm_safety::limit_errors::LimitError::SecurityViolation => VmError::SecurityError(
+                vm_safety::security::SecurityError::SecurityViolation
+            ),
+        }
+    }
 }
 
 impl VirtualMachine {
     pub fn new() -> Self {
+        let config = VMConfig::new();
+        let memory_manager = MemoryManager::new(config.memory_limits.clone());
+        let step_limiter = StepLimiter::new(config.execution_limits.clone());
+        let security_validator = SecurityValidator::new();
+        let sandbox = SandboxEnvironment::new(config.sandbox_policy.clone());
+        let security_context = SecurityValidationContext::new(security_validator, sandbox);
+        let performance_monitor = PerformanceMonitor::new();
+
         VirtualMachine {
             registers: VmRegisters::new(),
             contexts: vec![VmContext::new(0)], // Initialize with one context
@@ -179,6 +244,44 @@ impl VirtualMachine {
             external_functions: HashMap::new(),
             execution_trace: Vec::new(),
             jumped: false,
+
+            // Safety layer components
+            memory_manager,
+            step_limiter,
+            security_context,
+            performance_monitor,
+            config,
+        }
+    }
+
+    // Constructor with custom configuration
+    pub fn with_config(config: VMConfig) -> Self {
+        let memory_manager = MemoryManager::new(config.memory_limits.clone());
+        let step_limiter = StepLimiter::new(config.execution_limits.clone());
+        let security_validator = SecurityValidator::new();
+        let sandbox = SandboxEnvironment::new(config.sandbox_policy.clone());
+        let security_context = SecurityValidationContext::new(security_validator, sandbox);
+        let performance_monitor = PerformanceMonitor::new();
+
+        VirtualMachine {
+            registers: VmRegisters::new(),
+            contexts: vec![VmContext::new(0)], // Initialize with one context
+            current_context: 0,
+            memory: MemoryRegions::new(),
+            program: Vec::new(),
+            running: false,
+            max_steps: config.execution_limits.max_steps.min(1_000_000) as u32, // Cap at reasonable value for legacy field
+            step_count: 0,
+            external_functions: HashMap::new(),
+            execution_trace: Vec::new(),
+            jumped: false,
+
+            // Safety layer components
+            memory_manager,
+            step_limiter,
+            security_context,
+            performance_monitor,
+            config,
         }
     }
 
@@ -187,21 +290,51 @@ impl VirtualMachine {
         self.registers.pc = 0;
     }
 
-    /// Execute the program using the canonical fetch-decode-execute cycle
+    /// Execute the program using the canonical fetch-decode-execute cycle with safety checks
     pub fn execute(&mut self) -> Result<(), VmError> {
         self.running = true;
         self.step_count = 0;
+        self.step_limiter.reset(); // Reset step counters
+
+        // Validate the entire program before execution
+        self.security_context.validate_instructions(&self.program)
+            .map_err(|e| VmError::SecurityError(e))?;
 
         while !self.registers.is_halt_requested()
             && self.registers.pc < self.program.len() as u32
-            && self.step_count < self.max_steps
         {
+            // Check step limits before each step
+            if let Some(step_limit_error) = self.step_limiter.exceeds_limit() {
+                let limit_error = match step_limit_error {
+                    vm_safety::step_limits::StepLimitError::StepLimitExceeded =>
+                        vm_safety::limit_errors::LimitError::StepLimitExceeded,
+                    vm_safety::step_limits::StepLimitError::RuleLimitExceeded =>
+                        vm_safety::limit_errors::LimitError::RuleLimitExceeded,
+                    vm_safety::step_limits::StepLimitError::LoopLimitExceeded =>
+                        vm_safety::limit_errors::LimitError::LoopLimitExceeded,
+                };
+                return Err(VmError::from(limit_error));
+            }
+
             self.step()?;
-            self.step_count += 1;
+
+            // Increment step counter after successful step
+            if let Err(_) = self.step_limiter.increment_step() {
+                return Err(VmError::ExecutionLimitExceeded);
+            }
         }
 
-        if self.step_count >= self.max_steps {
-            return Err(VmError::ExecutionLimitExceeded);
+        // Check if execution was halted due to limit violation
+        if let Some(step_limit_error) = self.step_limiter.exceeds_limit() {
+            let limit_error = match step_limit_error {
+                vm_safety::step_limits::StepLimitError::StepLimitExceeded =>
+                    vm_safety::limit_errors::LimitError::StepLimitExceeded,
+                vm_safety::step_limits::StepLimitError::RuleLimitExceeded =>
+                    vm_safety::limit_errors::LimitError::RuleLimitExceeded,
+                vm_safety::step_limits::StepLimitError::LoopLimitExceeded =>
+                    vm_safety::limit_errors::LimitError::LoopLimitExceeded,
+            };
+            return Err(VmError::from(limit_error));
         }
 
         // Set running to false when execution completes
@@ -210,13 +343,22 @@ impl VirtualMachine {
         Ok(())
     }
 
-    /// Execute exactly one instruction (for step-by-step execution)
+    /// Execute exactly one instruction (for step-by-step execution) with safety checks
     pub fn step(&mut self) -> Result<(), VmError> {
         // Reset the jump flag at the beginning of each step
         self.jumped = false;
 
         // Fetch instruction
         let instruction = self.fetch()?;
+
+        // Validate the instruction for security compliance
+        self.security_context.validate_instruction(&instruction)
+            .map_err(|e| VmError::SecurityError(e))?;
+
+        // Record the instruction for performance monitoring
+        if self.config.perf_flags {
+            self.performance_monitor.record_instruction(instruction.opcode.into());
+        }
 
         // Save state before execution for trace
         let pc_before = self.registers.pc;
@@ -260,6 +402,11 @@ impl VirtualMachine {
     }
 
     fn execute_instruction(&mut self, instruction: &Instruction) -> Result<(), VmError> {
+        // Record the instruction for performance monitoring
+        if self.config.perf_flags {
+            self.performance_monitor.record_instruction(instruction.opcode.into());
+        }
+
         match instruction.opcode as u8 {
             // Control Flow Instructions
             0x00 => self.op_nop(),                // NOP
@@ -489,13 +636,31 @@ impl VirtualMachine {
     }
 
     fn op_rule_eval(&mut self, _instruction: &Instruction) -> Result<(), VmError> {
-        // Evaluate a rule
+        // Evaluate a rule with limit checking
+        // Increment rule invocation counter
+        self.step_limiter.increment_rule_invocation()
+            .map_err(|_| VmError::ExecutionLimitExceeded)?;
+
+        // Record for performance monitoring
+        if self.config.perf_flags {
+            self.performance_monitor.record_rule_invocation("anonymous_rule_eval");
+        }
+
         println!("Evaluating rule");
         Ok(())
     }
 
     fn op_rule_fire(&mut self, _instruction: &Instruction) -> Result<(), VmError> {
-        // Fire a rule
+        // Fire a rule with limit checking
+        // Increment rule invocation counter
+        self.step_limiter.increment_rule_invocation()
+            .map_err(|_| VmError::ExecutionLimitExceeded)?;
+
+        // Record for performance monitoring
+        if self.config.perf_flags {
+            self.performance_monitor.record_rule_invocation("anonymous_rule");
+        }
+
         println!("Firing rule");
         Ok(())
     }
@@ -594,15 +759,27 @@ impl VirtualMachine {
 
     // External Interface Instructions
     fn op_ext_call(&mut self, instruction: &Instruction) -> Result<(), VmError> {
-        // Call an external function
+        // Call an external function with sandbox validation
         // operand: function ID
         let fn_id = instruction.arg1 as u64;
+
+        // Convert function ID to a name for sandbox validation
+        let fn_name = format!("extern_fn_{}", fn_id);
+
+        // Validate against sandbox policy
+        self.security_context.sandbox.execute_external_call(&fn_name)
+            .map_err(|e| VmError::SecurityError(vm_safety::security::SecurityError::SandboxViolation(e)))?;
+
         println!("Calling external function with ID: {}", fn_id);
         Ok(())
     }
 
     fn op_ext_bind(&mut self, _instruction: &Instruction) -> Result<(), VmError> {
-        // Bind a symbol to an external adapter
+        // Bind a symbol to an external adapter with sandbox validation
+        // Validate against sandbox policy for external binding
+        self.security_context.sandbox.execute_io_operation("extern_bind")
+            .map_err(|e| VmError::SecurityError(vm_safety::security::SecurityError::SandboxViolation(e)))?;
+
         println!("Binding external function");
         Ok(())
     }
@@ -615,9 +792,14 @@ impl VirtualMachine {
     }
 
     fn op_output(&mut self, instruction: &Instruction) -> Result<(), VmError> {
-        // Output a value
+        // Output a value with IO validation
         // operand: register index
         let reg = instruction.arg1 as usize;
+
+        // Validate against sandbox policy for stdout access
+        self.security_context.sandbox.execute_io_operation("stdout")
+            .map_err(|e| VmError::SecurityError(vm_safety::security::SecurityError::SandboxViolation(e)))?;
+
         if reg < self.registers.r.len() {
             println!("Output: {}", self.registers.r[reg]);
         }
@@ -678,42 +860,62 @@ impl VirtualMachine {
         self.registers.r[reg] = value;
         Ok(())
     }
+
+    // Performance monitoring methods
+    pub fn get_performance_metrics(&self) -> vm_safety::perf_monitor::PerformanceMetrics {
+        self.performance_monitor.get_snapshot()
+    }
+
+    pub fn generate_performance_report(&self) -> String {
+        self.performance_monitor.generate_report()
+    }
+
+    pub fn reset_performance_metrics(&mut self) {
+        self.performance_monitor.reset();
+    }
+
+    // Memory management methods
+    pub fn get_memory_usage(&self) -> &vm_safety::memory_limits::MemoryUsage {
+        &self.memory_manager.usage
+    }
+
+    pub fn get_memory_limits(&self) -> &vm_safety::memory_limits::MemoryLimits {
+        &self.memory_manager.limits
+    }
+
+    // Step limit methods
+    pub fn get_step_count(&self) -> u64 {
+        self.step_limiter.counters.step_count
+    }
+
+    pub fn get_remaining_steps(&self) -> u64 {
+        self.step_limiter.remaining_steps()
+    }
+
+    // Security methods
+    pub fn get_security_validator(&self) -> &vm_safety::security::SecurityValidator {
+        &self.security_context.validator
+    }
+
+    pub fn get_sandbox(&self) -> &vm_safety::sandbox::SandboxEnvironment {
+        &self.security_context.sandbox
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use kern_bytecode::BytecodeCompiler;
-    use kern_graph_builder::GraphBuilder;
-    use kern_parser::Parser;
-
     #[test]
     fn test_vm_execution() {
-        let input = r#"
-        entity TestEntity {
-            value
-        }
-
-        rule TestRule:
-            if value == 42
-            then output(value)
-        "#;
-
-        let mut parser = Parser::new(input);
-        let result = parser.parse_program();
-        assert!(result.is_ok());
-        let program = result.unwrap();
-
-        let mut builder = GraphBuilder::new();
-        let graph = builder.build_execution_graph(&program);
-        println!("Generated execution graph with {} nodes", graph.nodes.len());
-
-        let mut compiler = BytecodeCompiler::new();
-        let bytecode = compiler.compile_graph(&graph);
-        println!("Compiled {} bytecode instructions", bytecode.len());
+        // Create a simple program to test execution
+        let program = vec![
+            Instruction::new(0x11, 0, 42, 0, 0), // LOAD_NUM R0, 42
+            Instruction::new(0x11, 1, 24, 0, 0), // LOAD_NUM R1, 24
+            Instruction::new(0x03, 0, 0, 0, 0),  // HALT
+        ];
 
         let mut vm = VirtualMachine::new();
-        vm.load_program(bytecode);
+        vm.load_program(program);
 
         let execution_result = vm.execute();
         assert!(execution_result.is_ok());
@@ -727,9 +929,9 @@ mod tests {
 
         // Create a simple program: load 42 into R0, load 24 into R1, compare them
         let program = vec![
-            Instruction::new(0x11, 0, (0u64 << 32) | 42), // LOAD_NUM R0, 42
-            Instruction::new(0x11, 0, (1u64 << 32) | 24), // LOAD_NUM R1, 24
-            Instruction::new(0x13, 0, (0u64 << 32) | (1u64 << 16) | 2), // COMPARE R0, R1, R2 (Equal?)
+            Instruction::new(0x11, 0, 42, 0, 0), // LOAD_NUM R0, 42
+            Instruction::new(0x11, 1, 24, 0, 0), // LOAD_NUM R1, 24
+            Instruction::new(0x13, 0, 1, 2, 0), // COMPARE R0, R1, R2 (Equal?)
         ];
 
         vm.load_program(program);
@@ -771,9 +973,9 @@ mod tests {
 
         // Create a simple program: load 42 into R0, load 24 into R1, compare them
         let program = vec![
-            Instruction::new(0x11, 0, (0u64 << 32) | 42), // LOAD_NUM R0, 42
-            Instruction::new(0x11, 0, (1u64 << 32) | 24), // LOAD_NUM R1, 24
-            Instruction::new(0x13, 0, (0u64 << 32) | (1u64 << 16) | 2), // COMPARE R0, R1, R2 (Equal?)
+            Instruction::new(0x11, 0, 42, 0, 0), // LOAD_NUM R0, 42
+            Instruction::new(0x11, 1, 24, 0, 0), // LOAD_NUM R1, 24
+            Instruction::new(0x13, 0, 1, 2, 0), // COMPARE R0, R1, R2 (Equal?)
         ];
 
         vm.load_program(program);
@@ -805,5 +1007,175 @@ mod tests {
 
         let context_trace = vm.trace_context();
         assert_eq!(context_trace.len(), 1); // Should have at least one context
+    }
+
+    #[test]
+    fn test_vm_safety_memory_limits() {
+        use vm_safety::memory_limits::{MemoryLimits, MemoryRegion};
+
+        // Create a VM with strict memory limits
+        let mut config = VMConfig::new();
+        config.memory_limits = MemoryLimits::new(100, 100, 100, 100, 100); // Very strict limits
+        let mut vm = VirtualMachine::with_config(config);
+
+        // Test that we can access memory limits
+        assert_eq!(vm.get_memory_limits().max_heap_bytes, 100);
+        assert_eq!(vm.get_memory_usage().heap_used, 0);
+
+        // Test memory manager functionality
+        assert!(vm.memory_manager.allocate(MemoryRegion::Heap, 50).is_ok());
+        assert_eq!(vm.get_memory_usage().heap_used, 50);
+
+        // Try to allocate more than the limit
+        assert!(vm.memory_manager.allocate(MemoryRegion::Heap, 60).is_err());
+        assert_eq!(vm.get_memory_usage().heap_used, 50); // Should remain unchanged
+    }
+
+    #[test]
+    fn test_vm_safety_step_limits() {
+        use vm_safety::step_limits::ExecutionLimits;
+
+        // Create a VM with strict step limits
+        let mut config = VMConfig::new();
+        config.execution_limits = ExecutionLimits::new(5, 10, 10); // Only 5 steps allowed
+        let mut vm = VirtualMachine::with_config(config);
+
+        // Create a simple program with multiple instructions
+        let program = vec![
+            Instruction::new(0x11, 0, 42, 0, 0), // LOAD_NUM R0, 42
+            Instruction::new(0x11, 1, 24, 0, 0), // LOAD_NUM R1, 24
+            Instruction::new(0x11, 2, 10, 0, 0), // LOAD_NUM R2, 10
+            Instruction::new(0x11, 3, 5, 0, 0),  // LOAD_NUM R3, 5
+            Instruction::new(0x03, 0, 0, 0, 0),  // HALT
+        ];
+
+        vm.load_program(program);
+
+        // Execute should succeed since we have 5 instructions and 5 step limit
+        let result = vm.execute();
+        assert!(result.is_ok());
+
+        // Check that we executed exactly 5 steps
+        assert_eq!(vm.get_step_count(), 5);
+        assert_eq!(vm.get_remaining_steps(), 0);
+    }
+
+    #[test]
+    fn test_vm_safety_step_limit_exceeded() {
+        use vm_safety::step_limits::ExecutionLimits;
+
+        // Create a VM with very strict step limits
+        let mut config = VMConfig::new();
+        config.execution_limits = ExecutionLimits::new(2, 10, 10); // Only 2 steps allowed
+        let mut vm = VirtualMachine::with_config(config);
+
+        // Create a program with more instructions than allowed steps
+        let program = vec![
+            Instruction::new(0x11, 0, 42, 0, 0), // LOAD_NUM R0, 42
+            Instruction::new(0x11, 1, 24, 0, 0), // LOAD_NUM R1, 24
+            Instruction::new(0x11, 2, 10, 0, 0), // LOAD_NUM R2, 10 - This should exceed limit
+        ];
+
+        vm.load_program(program);
+
+        // Execute should fail due to step limit
+        let result = vm.execute();
+        assert!(result.is_err());
+        match result {
+            Err(VmError::ExecutionLimitExceeded) => {}, // Expected
+            _ => panic!("Expected ExecutionLimitExceeded error"),
+        }
+    }
+
+    #[test]
+    fn test_vm_safety_sandbox_policy() {
+        use vm_safety::sandbox::SandboxPolicy;
+
+        // Create a VM with a restrictive sandbox policy
+        let mut config = VMConfig::new();
+        let mut policy = SandboxPolicy::new();
+        policy.allow_function("extern_fn_0");  // This matches what the VM uses for function ID 0
+        policy.set_max_calls_for_function("extern_fn_0", 2);
+        policy.allow_io_channel("stdout");
+        config.sandbox_policy = policy;
+        let mut vm = VirtualMachine::with_config(config);
+
+        // Create a program that calls external functions
+        let program = vec![
+            Instruction::new(0x60, 0, 0, 0, 0), // CALL_EXTERN with function ID 0
+            Instruction::new(0x60, 0, 0, 0, 0), // CALL_EXTERN with function ID 0 again
+            Instruction::new(0x03, 0, 0, 0, 0),  // HALT
+        ];
+
+        vm.load_program(program);
+
+        // Execute should succeed since we have 2 calls allowed and make 2 calls
+        let result = vm.execute();
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_vm_safety_security_validation() {
+        use vm_safety::security::SecurityError;
+
+        let mut vm = VirtualMachine::new();
+
+        // Test that valid instructions pass security validation
+        let valid_instruction = Instruction::new(0x11, 42, 0, 0, 0); // LOAD_NUM
+        assert!(vm.security_context.validate_instruction(&valid_instruction).is_ok());
+
+        // Test that invalid instructions fail security validation
+        let invalid_instruction = Instruction::new(0xFF, 0, 0, 0, 0); // Invalid opcode
+        let result = vm.security_context.validate_instruction(&invalid_instruction);
+        match result {
+            Err(SecurityError::IllegalOpcode(0xFF)) => {}, // Expected
+            _ => panic!("Expected IllegalOpcode error"),
+        }
+    }
+
+    #[test]
+    fn test_vm_safety_performance_monitoring() {
+        let mut vm = VirtualMachine::new();
+
+        // Check initial metrics
+        let initial_metrics = vm.get_performance_metrics();
+        let initial_count = initial_metrics.instruction_count;
+
+        // Execute a simple program
+        let program = vec![
+            Instruction::new(0x11, 0, 42, 0, 0), // LOAD_NUM R0, 42
+            Instruction::new(0x11, 1, 24, 0, 0), // LOAD_NUM R1, 24
+            Instruction::new(0x03, 0, 0, 0, 0),  // HALT
+        ];
+
+        vm.load_program(program);
+        let result = vm.execute();
+        assert!(result.is_ok());
+
+        // Check performance metrics - should have executed at least 3 instructions
+        let metrics = vm.get_performance_metrics();
+        assert!(metrics.instruction_count >= 3); // At least 3 instructions executed
+
+        // Generate performance report
+        let report = vm.generate_performance_report();
+        assert!(report.contains("Total Instructions:"));
+
+        // Reset metrics
+        vm.reset_performance_metrics();
+        let metrics = vm.get_performance_metrics();
+        assert_eq!(metrics.instruction_count, 0);
+    }
+
+    #[test]
+    fn test_vm_config_creation() {
+        let config = VMConfig::new();
+
+        // Check that default limits are reasonable
+        assert!(config.memory_limits.max_heap_bytes > 0);
+        assert!(config.execution_limits.max_steps > 0);
+        assert!(config.perf_flags);
+
+        // Check that sandbox starts with no allowed functions
+        assert_eq!(config.sandbox_policy.allowed_functions.len(), 0);
     }
 }

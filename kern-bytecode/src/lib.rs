@@ -66,7 +66,7 @@ impl Instruction {
 }
 
 // Define the KERN opcodes according to the specification
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Opcode {
     // Control Flow Instructions
     Nop = 0x00,   // Do nothing

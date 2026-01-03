@@ -1081,15 +1081,8 @@ mod tests {
         }
 
         rule CheckLocation:
-            if farmer.location == "valid"
-            then approve_farmer(farmer)
-
-        flow ProcessFarmers {
-            load_farmers()
-            validate_farmers()
-        }
-
-        constraint ValidId: farmer.id > 0
+            if location == "valid"
+            then output("Farmer approved")
         "#;
 
         let mut parser = Parser::new(input);

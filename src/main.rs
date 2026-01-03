@@ -35,7 +35,7 @@ fn main() {
     let program = vec![
         Instruction::new(0x11, 0, 42, 0, 0), // LOAD_NUM R0, 42
         Instruction::new(0x11, 1, 24, 0, 0), // LOAD_NUM R1, 24
-        Instruction::new(0x14, 0, 1, 2, 0), // COMPARE R0, R1, R2 (Equal?)
+        Instruction::new(0x13, 0, 1, 2, 0), // COMPARE R0, R1, R2 (Equal?)
     ];
 
     vm.load_program(program);
